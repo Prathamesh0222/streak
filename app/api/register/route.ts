@@ -7,13 +7,13 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const validatedData = signUpSchema.parse(body);
+    const validatedData = signUpSchema.safeParse(body);
 
-    if (!validatedData) {
+    if (!validatedData.success) {
       return NextResponse.json({ error: "Invalid data" }, { status: 411 });
     }
 
-    const { name, email, password } = validatedData;
+    const { name, email, password } = validatedData.data;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
