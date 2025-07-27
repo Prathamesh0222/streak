@@ -20,3 +20,11 @@ export const signUpSchema = z.object({
       message: "Password must contain at least one number",
     }),
 });
+
+export const signInSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export type SignInInput = z.infer<typeof signInSchema>;
+export type SignUpInput = z.infer<typeof signUpSchema>;
