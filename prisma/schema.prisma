@@ -15,4 +15,49 @@ model User {
   image     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Habit     Habit[]
+}
+
+model Habit {
+  id          String        @id @default(uuid())
+  title       String
+  description String?
+  category    String?
+  status      StatusType    @default(PENDING)
+  priority    PriorityType  @default(MEDIUM)
+  frequency   FrequencyType @default(DAILY)
+  user        User          @relation(fields: [userId], references: [id])
+  userId      String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  HabitLogs   HabitLogs[]
+}
+
+model HabitLogs {
+  id          String   @id @default(uuid())
+  date        DateTime
+  isCompleted Boolean  @default(false)
+  habit       Habit    @relation(fields: [habitId], references: [id])
+  habitId     String
+  createdAt   DateTime @default(now())
+
+  @@index([habitId, date])
+}
+
+enum StatusType {
+  COMPLETED
+  PENDING
+  ONGOING
+}
+
+enum PriorityType {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum FrequencyType {
+  DAILY
+  WEEKLY
+  MONTHLY
 }
