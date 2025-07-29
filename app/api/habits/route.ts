@@ -50,7 +50,7 @@ export const POST = async (req: NextRequest) => {
   }
 };
 
-export const GET = async (req: NextRequest) => {
+export const GET = async () => {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -82,6 +82,7 @@ export const GET = async (req: NextRequest) => {
     });
     return NextResponse.json(habits);
   } catch (error) {
+    console.error("Failed to fetch habits", error);
     return NextResponse.json(
       { error: "Failed to fetch habits" },
       { status: 500 }
