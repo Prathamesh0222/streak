@@ -100,6 +100,29 @@ export const Habit = () => {
     }
   };
 
+  const handleUpdateHabit = async (
+    habitId: string,
+    newStatus: "COMPLETED" | "PENDING" | "ONGOING"
+  ) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.patch(`/api/habits/${habitId}`, {
+        status: newStatus,
+      });
+      toast.success("Status updated!");
+      setHabits(
+        habits.map((habit) =>
+          habit.id === habitId ? response.data.habit : habit
+        )
+      );
+    } catch (error) {
+      console.error("Error while updating status", error);
+      toast.error("Failed to update habit");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Habits</h2>
@@ -326,6 +349,23 @@ export const Habit = () => {
                       Created: {new Date(habit.createdAt).toLocaleDateString()}
                     </p>
                   </div>
+                </div>
+                <div className="flex items-center gap-2 mt-2">
+                  <Select
+                    value={habit.status}
+                    onValueChange={(
+                      value: "COMPLETED" | "PENDING" | "ONGOING"
+                    ) => handleUpdateHabit(habit.id, value)}
+                  >
+                    <SelectTrigger className="w-28 h-8">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="PENDING">Pending</SelectItem>
+                      <SelectItem value="ONGOING">Ongoing</SelectItem>
+                      <SelectItem value="COMPLETED">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             ))}
