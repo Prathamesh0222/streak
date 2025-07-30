@@ -45,7 +45,7 @@ export const Pomodoro = () => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isRunning, timeLeft, mode, sessions]);
+  }, [isRunning, timeLeft, mode, sessions, longBreak, shortBreak, workTime]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

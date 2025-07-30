@@ -4,8 +4,16 @@ import { useEffect, useState } from "react";
 import { Cloud, Wind, Gauge, Droplets, MapPin } from "lucide-react";
 import axios from "axios";
 
+interface WeatherData {
+  temp_C: string;
+  weatherDesc: Array<{ value: string }>;
+  windspeedKmph: string;
+  humidity: string;
+  pressure: string;
+}
+
 export default function WeatherCard() {
-  const [weather, setWeather] = useState<any>(null);
+  const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
