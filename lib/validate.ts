@@ -39,9 +39,15 @@ export const habitSchema = z.object({
     .string()
     .max(50, "Category must be less than 50 characters")
     .optional(),
-  status: z.enum(["COMPLETED", "PENDING", "ONGOING"]).default("PENDING"),
-  priority: z.enum(["HIGH", "MEDIUM", "LOW"]).default("MEDIUM"),
-  frequency: z.enum(["DAILY", "WEEKLY", "MONTHLY"]).default("DAILY"),
+  status: z
+    .enum(["COMPLETED", "PENDING", "ONGOING"])
+    .transform((val) => val || "PENDING"),
+  priority: z
+    .enum(["HIGH", "MEDIUM", "LOW"])
+    .transform((val) => val || "MEDIUM"),
+  frequency: z
+    .enum(["DAILY", "WEEKLY", "MONTHLY"])
+    .transform((val) => val || "DAILY"),
 });
 
 export type SignInInput = z.infer<typeof signInSchema>;
