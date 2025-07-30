@@ -12,15 +12,25 @@ import {
 import { useState } from "react";
 import { Logo } from "./logo";
 
-export const Sidebar = () => {
+export const Sidebar = ({
+  onMenuChange,
+}: {
+  onMenuChange: (menu: string) => void;
+}) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeMenu, setActiveMenu] = useState("Dashboard");
 
   const menuItems = [
     { icon: Home, label: "Dashboard" },
     { icon: FileText, label: "Habits" },
-    { icon: Calendar, label: "Calender" },
+    { icon: Calendar, label: "Calendar" },
     { icon: Settings, label: "Settings" },
   ];
+
+  const handleMenuClick = (label: string) => {
+    setActiveMenu(label);
+    onMenuChange(label);
+  };
 
   return (
     <div
@@ -65,10 +75,17 @@ export const Sidebar = () => {
         <ul className="space-y-1">
           {menuItems.map((item, index) => (
             <li key={index}>
-              <div className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors group">
+              <div
+                className={`flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors group cursor-pointer ${
+                  activeMenu === item.label ? "bg-red-50 text-red-600" : ""
+                }`}
+                onClick={() => handleMenuClick(item.label)}
+              >
                 <item.icon
                   size={25}
-                  className="text-gray-600 group-hover:text-red-600"
+                  className={`${
+                    activeMenu === item.label ? "text-red-600" : "text-gray-600"
+                  }  group-hover:text-red-600`}
                 />
                 {isSidebarOpen && (
                   <span className="text-sm font-medium">{item.label}</span>
