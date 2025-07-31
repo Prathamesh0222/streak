@@ -123,6 +123,37 @@ export const Habit = () => {
     }
   };
 
+  const handleToggleHabitCompletion = async (
+    habitId: string,
+    date: string,
+    isCompleted: boolean
+  ) => {
+    setIsLoading(true);
+    try {
+      await axios.post("/api/habit-logs", {
+        habitId,
+        date,
+        isCompleted: !isCompleted,
+      });
+      toast.success(
+        isCompleted ? "Marked as incomplete" : "Marked as complete!"
+      );
+      await fetchHabits();
+    } catch (error) {
+      console.error("Error while updating habit completion:", error);
+      toast.error("Failed to update habit completion");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const isHabitCompletedToday = (habit: Habit) => {
+    const today = new Date().toDateString();
+    return habit.HabitLogs.some(
+      (log) => log.isCompleted && new Date(log.date).toDateString() === today
+    );
+  };
+
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Habits</h2>
@@ -298,77 +329,85 @@ export const Habit = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {habits.map((habit) => (
-              <div
-                key={habit.id}
-                className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-              >
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-800 mb-1">
-                      {habit.title}
-                    </h4>
-                    {habit.description && (
-                      <p className="text-gray-600 text-sm mb-2">
-                        {habit.description}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-2 mb-2">
-                      {habit.category && (
-                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                          {habit.category}
-                        </span>
+            {habits.map((habit) => {
+              const isCompletedToday = isHabitCompletedToday(habit);
+              return (
+                <div
+                  key={habit.id}
+                  className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-800 mb-1">
+                        {habit.title}
+                      </h4>
+                      {habit.description && (
+                        <p className="text-gray-600 text-sm mb-2">
+                          {habit.description}
+                        </p>
                       )}
-                      <span
-                        className={`text-xs px-2 py-1 rounded ${
-                          habit.status === "COMPLETED"
-                            ? "bg-green-100 text-green-800"
-                            : habit.status === "ONGOING"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {habit.status}
-                      </span>
-                      <span
-                        className={`text-xs px-2 py-1 rounded ${
-                          habit.priority === "HIGH"
-                            ? "bg-red-100 text-red-800"
-                            : habit.priority === "MEDIUM"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-green-100 text-green-800"
-                        }`}
-                      >
-                        {habit.priority}
-                      </span>
-                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                        {habit.frequency}
-                      </span>
+                      <div className="flex items-center gap-2 mb-2">
+                        {habit.category && (
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                            {habit.category}
+                          </span>
+                        )}
+                        <span
+                          className={`text-xs px-2 py-1 rounded ${
+                            habit.status === "COMPLETED"
+                              ? "bg-green-100 text-green-800"
+                              : habit.status === "ONGOING"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}
+                        >
+                          {habit.status}
+                        </span>
+                        <span
+                          className={`text-xs px-2 py-1 rounded ${
+                            habit.priority === "HIGH"
+                              ? "bg-red-100 text-red-800"
+                              : habit.priority === "MEDIUM"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-green-100 text-green-800"
+                          }`}
+                        >
+                          {habit.priority}
+                        </span>
+                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                          {habit.frequency}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        Created:{" "}
+                        {new Date(habit.createdAt).toLocaleDateString()}
+                      </p>
                     </div>
-                    <p className="text-xs text-gray-500">
-                      Created: {new Date(habit.createdAt).toLocaleDateString()}
-                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 mt-3">
+                    <Button
+                      variant={isCompletedToday ? "default" : "outline"}
+                      size="sm"
+                      onClick={() =>
+                        handleToggleHabitCompletion(
+                          habit.id,
+                          new Date().toISOString().split("T")[0],
+                          isCompletedToday
+                        )
+                      }
+                      disabled={isLoading}
+                      className={
+                        isCompletedToday
+                          ? "bg-green-500 hover:bg-green-600"
+                          : ""
+                      }
+                    >
+                      {isCompletedToday ? "✓ Completed Today" : "Mark Complete"}
+                    </Button>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <Select
-                    value={habit.status}
-                    onValueChange={(
-                      value: "COMPLETED" | "PENDING" | "ONGOING"
-                    ) => handleUpdateHabit(habit.id, value)}
-                  >
-                    <SelectTrigger className="w-28 h-8">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="PENDING">Pending</SelectItem>
-                      <SelectItem value="ONGOING">Ongoing</SelectItem>
-                      <SelectItem value="COMPLETED">Completed</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
