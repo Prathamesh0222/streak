@@ -72,7 +72,10 @@ export const authOptions: AuthOptions = {
             where: {
               email,
             },
-            update: {},
+            update: {
+              name: user.name || profile?.name || "",
+              image: user.image || profile?.image || "",
+            },
             create: {
               email,
               name: user.name || profile?.name || "",
@@ -94,6 +97,7 @@ export const authOptions: AuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
+        token.image = user.image;
       }
       return token;
     },
@@ -101,6 +105,7 @@ export const authOptions: AuthOptions = {
       session.user.id = token.id as string;
       session.user.email = token.email as string;
       session.user.name = token.name as string;
+      session.user.image = token.image as string;
 
       return session;
     },

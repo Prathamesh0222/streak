@@ -1,8 +1,20 @@
-import { Bell, User } from "lucide-react";
+"use client";
+
+import { Bell, LogOut, User } from "lucide-react";
 import { Pomodoro } from "./pomodoro";
 import WeatherCard from "./weather-card";
+import { signOut, useSession } from "next-auth/react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Dashboard = () => {
+  const { data: session } = useSession();
   return (
     <>
       <div className="flex justify-between items-center">
@@ -18,14 +30,26 @@ export const Dashboard = () => {
           <button className="p-2 rounded-full hover:bg-gray-100 transition-colors">
             <Bell size={20} className="text-gray-600 hover:text-gray-800" />
           </button>
-          <div className="w-10 h-10 rounded-full border border-gray-300 bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center hover:shadow-md transition-all duration-200 cursor-pointer">
-            <User size={18} className="text-red-600" />
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <div className="w-10 h-10 rounded-full border border-gray-300 bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center hover:shadow-md transition-all duration-200 cursor-pointer">
+                {session?.user.name?.charAt(0) || session?.user.image}
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>{session?.user.name}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => signOut()}>
+                <LogOut />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       <div className="mt-16">
         <h1 className="text-gray-900 text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text">
-          Good Morning, Prathamesh
+          Good Morning, {session?.user.name}
         </h1>
         <p className="text-gray-500 mt-2 text-lg">
           Ready to build some streaks today?
