@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, LogOut, User } from "lucide-react";
+import { Bell, LogOut } from "lucide-react";
 import { Pomodoro } from "./pomodoro";
 import WeatherCard from "./weather-card";
 import { signOut, useSession } from "next-auth/react";
@@ -33,7 +33,17 @@ export const Dashboard = () => {
           <DropdownMenu>
             <DropdownMenuTrigger>
               <div className="w-10 h-10 rounded-full border border-gray-300 bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center hover:shadow-md transition-all duration-200 cursor-pointer">
-                {session?.user.name?.charAt(0) || session?.user.image}
+                {session?.user?.image ? (
+                  <img
+                    src={session.user.image}
+                    alt={session.user.name || "User"}
+                    className="w-10 h-10 object-cover rounded-full"
+                  />
+                ) : (
+                  <span className="text-lg font-semibold text-red-600">
+                    {session?.user?.name?.charAt(0) || "?"}
+                  </span>
+                )}
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
