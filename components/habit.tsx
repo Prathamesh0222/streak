@@ -56,6 +56,7 @@ interface Habit {
 export const Habit = () => {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isStatusUpdating, setIsStatusUpdating] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const form = useForm<HabitInput>({
@@ -104,7 +105,7 @@ export const Habit = () => {
     habitId: string,
     newStatus: "COMPLETED" | "PENDING" | "ONGOING"
   ) => {
-    setIsLoading(true);
+    setIsStatusUpdating(true);
     try {
       const response = await axios.patch(`/api/habits/${habitId}`, {
         status: newStatus,
@@ -112,15 +113,87 @@ export const Habit = () => {
       toast.success("Status updated!");
       setHabits(
         habits.map((habit) =>
-          habit.id === habitId ? response.data.habit : habit
+          habit.id === habitId
+            ? { ...response.data.habit, HabitLogs: habit.HabitLogs }
+            : habit
         )
       );
     } catch (error) {
       console.error("Error while updating status", error);
       toast.error("Failed to update habit");
     } finally {
-      setIsLoading(false);
+      setIsStatusUpdating(false);
     }
+  };
+
+  const isHabitCompletedToday = (habit: Habit) => {
+    const today = new Date().toISOString().split("T")[0];
+    const result =
+      habit.HabitLogs?.some((log) => {
+        const logDate = log.date.split("T")[0];
+        return logDate === today && log.isCompleted;
+      }) || false;
+    return result;
+  };
+
+  const getCompletionRate = (habit: Habit) => {
+    if (!habit.HabitLogs || habit.HabitLogs.length === 0) return 0;
+
+    const last7Days = habit.HabitLogs.filter((log) => {
+      const logDate = new Date(log.date);
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      return logDate >= sevenDaysAgo;
+    });
+
+    if (last7Days.length === 0) return 0;
+
+    const completedLogs = last7Days.filter((log) => log.isCompleted);
+    return Math.round((completedLogs.length / last7Days.length) * 100);
+  };
+
+  const getCurrentStreak = (habit: Habit) => {
+    if (!habit.HabitLogs || habit.HabitLogs.length === 0) return 0;
+
+    const sortedLogs = habit.HabitLogs.filter((log) => log.isCompleted).sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
+    if (sortedLogs.length === 0) return 0;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayLog = sortedLogs.find((log) => {
+      const logDate = new Date(log.date);
+      logDate.setHours(0, 0, 0, 0);
+      return logDate.getTime() === today.getTime();
+    });
+
+    const startDate = todayLog ? today : new Date(sortedLogs[0].date);
+    startDate.setHours(0, 0, 0, 0);
+
+    let streak = 0;
+
+    for (let i = 0; i <= 365; i++) {
+      const checkDate = new Date(startDate);
+      checkDate.setDate(startDate.getDate() - i);
+      checkDate.setHours(0, 0, 0, 0);
+
+      const hasLogForDate = sortedLogs.some((log) => {
+        const logDate = new Date(log.date);
+        logDate.setHours(0, 0, 0, 0);
+        return logDate.getTime() === checkDate.getTime();
+      });
+
+      if (hasLogForDate) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+
+    return streak;
   };
 
   const handleToggleHabitCompletion = async (
@@ -135,6 +208,12 @@ export const Habit = () => {
         date,
         isCompleted: !isCompleted,
       });
+
+      const newStatus = !isCompleted ? "COMPLETED" : "PENDING";
+      await axios.patch(`/api/habits/${habitId}`, {
+        status: newStatus,
+      });
+
       toast.success(
         isCompleted ? "Marked as incomplete" : "Marked as complete!"
       );
@@ -145,13 +224,6 @@ export const Habit = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const isHabitCompletedToday = (habit: Habit) => {
-    const today = new Date().toDateString();
-    return habit.HabitLogs.some(
-      (log) => log.isCompleted && new Date(log.date).toDateString() === today
-    );
   };
 
   return (
@@ -331,6 +403,8 @@ export const Habit = () => {
           <div className="space-y-4">
             {habits.map((habit) => {
               const isCompletedToday = isHabitCompletedToday(habit);
+              const completionRate = getCompletionRate(habit);
+              const currentStreak = getCurrentStreak(habit);
               return (
                 <div
                   key={habit.id}
@@ -341,6 +415,11 @@ export const Habit = () => {
                       <h4 className="font-semibold text-gray-800 mb-1">
                         {habit.title}
                       </h4>
+                      {isCompletedToday && (
+                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                          ✓ Today
+                        </span>
+                      )}
                       {habit.description && (
                         <p className="text-gray-600 text-sm mb-2">
                           {habit.description}
@@ -378,6 +457,14 @@ export const Habit = () => {
                           {habit.frequency}
                         </span>
                       </div>
+                      <div className="flex items-center gap-4 mb-2">
+                        <span className="text-xs text-gray-600">
+                          🔥 {currentStreak} day streak
+                        </span>
+                        <span className="text-xs text-gray-600">
+                          📊 {completionRate}% this week
+                        </span>
+                      </div>
                       <p className="text-xs text-gray-500">
                         Created:{" "}
                         {new Date(habit.createdAt).toLocaleDateString()}
@@ -385,25 +472,46 @@ export const Habit = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 mt-3">
-                    <Button
-                      variant={isCompletedToday ? "default" : "outline"}
-                      size="sm"
-                      onClick={() =>
-                        handleToggleHabitCompletion(
-                          habit.id,
-                          new Date().toISOString().split("T")[0],
+                    <div>
+                      <Button
+                        variant={isCompletedToday ? "default" : "outline"}
+                        size="sm"
+                        onClick={() =>
+                          handleToggleHabitCompletion(
+                            habit.id,
+                            new Date().toISOString().split("T")[0],
+                            isCompletedToday
+                          )
+                        }
+                        disabled={isLoading}
+                        className={
                           isCompletedToday
-                        )
-                      }
-                      disabled={isLoading}
-                      className={
-                        isCompletedToday
-                          ? "bg-green-500 hover:bg-green-600"
-                          : ""
-                      }
+                            ? "bg-green-500 hover:bg-green-600"
+                            : ""
+                        }
+                      >
+                        {isCompletedToday
+                          ? "✓ Completed Today"
+                          : "Mark Complete"}
+                      </Button>
+                    </div>
+                    <Select
+                      key={`${habit.id}-${habit.status}`}
+                      value={habit.status}
+                      onValueChange={(
+                        value: "COMPLETED" | "PENDING" | "ONGOING"
+                      ) => handleUpdateHabit(habit.id, value)}
+                      disabled={isStatusUpdating || isCompletedToday}
                     >
-                      {isCompletedToday ? "✓ Completed Today" : "Mark Complete"}
-                    </Button>
+                      <SelectTrigger className="w-28 h-8">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="PENDING">Pending</SelectItem>
+                        <SelectItem value="ONGOING">Ongoing</SelectItem>
+                        <SelectItem value="COMPLETED">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               );
