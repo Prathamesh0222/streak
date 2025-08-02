@@ -95,14 +95,12 @@ export const Pomodoro = () => {
   };
 
   return (
-    <div className="border border-gray-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 bg-white">
+    <div className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
       <div className="flex flex-col items-center space-y-6">
         <div className="flex items-center justify-between w-full">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Pomodoro Timer
-          </h3>
-          <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-            <Settings className="w-4 h-4 text-gray-600" />
+          <h3 className="text-lg font-semibold">Pomodoro Timer</h3>
+          <button className="p-2 rounded-lg transition-colors">
+            <Settings className="w-4 h-4" />
           </button>
         </div>
 
@@ -124,7 +122,7 @@ export const Pomodoro = () => {
               stroke="currentColor"
               strokeWidth="2"
               fill="none"
-              className="text-gray-200"
+              className="text-gray-200 dark:text-gray-700"
             />
             <circle
               cx="50"
@@ -146,10 +144,10 @@ export const Pomodoro = () => {
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-3xl font-bold text-gray-800">
+            <span className="text-3xl font-bold text-gray-800 dark:text-gray-200">
               {formatTime(timeLeft)}
             </span>
-            <span className="text-sm text-gray-500 mt-1">
+            <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Session {sessions + 1}
             </span>
           </div>
@@ -158,25 +156,25 @@ export const Pomodoro = () => {
         <div className="flex items-center space-x-4">
           <button
             onClick={resetTimer}
-            className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
-            <RotateCcw className="w-5 h-5 text-gray-600" />
+            <RotateCcw className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           </button>
 
           <button
             onClick={toggleTimer}
-            className={`p-4 rounded-full bg-gradient-to-r ${getModeColor()} text-white hover:shadow-lg transition-all duration-200`}
+            className={`p-3 rounded-full bg-gradient-to-r ${getModeColor()} text-white hover:shadow-lg transition-all duration-200`}
           >
             {isRunning ? (
-              <Pause className="w-6 h-6" />
+              <Pause className="w-5 h-5" />
             ) : (
-              <Play className="w-6 h-6 ml-1" />
+              <Play className="w-5 h-5" />
             )}
           </button>
         </div>
 
-        <div className="w-full pt-4 border-t border-gray-100">
-          <div className="flex justify-between text-sm text-gray-600">
+        <div className="w-full pt-4 border-t border-gray-100 dark:border-gray-800">
+          <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
             <span>Sessions today</span>
             <span className="font-semibold">{sessions}</span>
           </div>

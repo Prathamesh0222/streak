@@ -36,34 +36,34 @@ export const Sidebar = ({
     <div
       className={`${
         isSidebarOpen ? "w-60" : "w-16"
-      } bg-white border-r border-gray-200 transition-all ease-in-out duration-300 flex flex-col`}
+      } border-r border-red-500/20 transition-all ease-in-out duration-300 flex flex-col`}
     >
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-red-500/20">
         <div className="flex items-center justify-between">
           {isSidebarOpen && <Logo />}
 
           {isSidebarOpen ? (
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="rounded-lg hover:bg-red-50 transition-colors"
+              className="rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors p-2"
             >
               <PanelLeftClose
                 size={20}
-                className="text-gray-600 hover:text-red-600"
+                className="text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
               />
             </button>
           ) : (
             <div className="relative">
-              <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-sm cursor-pointer hover:scale-115 duration-300 ease-in-out">
+              <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-sm cursor-pointer hover:scale-105 duration-300 ease-in-out">
                 <Flame className="w-4 h-4 text-white" />
               </div>
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="absolute translate-x-8 mt-2 rounded-full bg-white border border-gray-200 shadow-sm p-1 hover:shadow-md transition-all duration-200"
+                className="absolute translate-x-8 mt-2 rounded-full bg-white dark:bg-black border border-red-500/20 shadow-sm p-1 hover:shadow-md transition-all duration-200"
               >
                 <PanelRightClose
                   size={16}
-                  className="text-gray-600 hover:text-red-600 transition-colors duration-200"
+                  className="text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
                 />
               </button>
             </div>
@@ -76,16 +76,20 @@ export const Sidebar = ({
           {menuItems.map((item, index) => (
             <li key={index}>
               <div
-                className={`flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors group cursor-pointer ${
-                  activeMenu === item.label ? "bg-red-50 text-red-600" : ""
+                className={`flex items-center gap-3 p-3 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400 transition-colors group cursor-pointer ${
+                  activeMenu === item.label
+                    ? "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"
+                    : ""
                 }`}
                 onClick={() => handleMenuClick(item.label)}
               >
                 <item.icon
-                  size={25}
+                  size={20}
                   className={`${
-                    activeMenu === item.label ? "text-red-600" : "text-gray-600"
-                  }  group-hover:text-red-600`}
+                    activeMenu === item.label
+                      ? "text-red-600 dark:text-red-400"
+                      : "text-gray-600 dark:text-gray-300"
+                  } group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors`}
                 />
                 {isSidebarOpen && (
                   <span className="text-sm font-medium">{item.label}</span>
@@ -96,11 +100,11 @@ export const Sidebar = ({
         </ul>
       </nav>
 
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-red-500/20">
         {isSidebarOpen ? (
-          <div className="text-xs text-gray-500 text-center"></div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 text-center"></div>
         ) : (
-          <div className="w-8 h-8 bg-red-100 rounded-full mx-auto"></div>
+          <div className="w-8 h-8 bg-red-100 dark:bg-red-950/30 rounded-full mx-auto"></div>
         )}
       </div>
     </div>

@@ -19,8 +19,8 @@ export const Main = ({ currentMenu }: { currentMenu: string }) => {
     }
   };
   return (
-    <div className="p-6 w-full bg-gray-50 min-h-screen">
-      <div className="bg-white border border-gray-200 rounded-2xl h-full p-8 shadow-sm overflow-y-auto">
+    <div className="p-6 w-full min-h-screen">
+      <div className="border border-red-500/20 rounded-2xl h-full p-8 shadow-sm overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {renderContent()}
       </div>
     </div>

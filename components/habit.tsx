@@ -9,7 +9,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "./ui/button";
-import { useState, useEffect } from "react";
+import { Badge } from "./ui/badge";
+import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { habitSchema, HabitInput } from "@/lib/validate";
@@ -32,6 +33,29 @@ import {
 } from "@/components/ui/select";
 import axios from "axios";
 import { toast } from "sonner";
+import {
+  Plus,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  Flame,
+  TrendingUp,
+} from "lucide-react";
+
+const PREDEFINED_CATEGORIES = [
+  "Health & Fitness",
+  "Productivity",
+  "Learning",
+  "Personal Development",
+  "Relationships",
+  "Finance",
+  "Creativity",
+  "Mindfulness",
+  "Career",
+  "Home & Organization",
+  "Social",
+  "Other",
+];
 
 interface HabitLog {
   id: string;
@@ -58,6 +82,7 @@ export const Habit = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isStatusUpdating, setIsStatusUpdating] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showCustomCategory, setShowCustomCategory] = useState(false);
 
   const form = useForm<HabitInput>({
     resolver: zodResolver(habitSchema),
@@ -71,19 +96,56 @@ export const Habit = () => {
     },
   });
 
-  const fetchHabits = async () => {
+  const isHabitCompletedToday = (habit: Habit) => {
+    const today = new Date().toISOString().split("T")[0];
+    const result =
+      habit.HabitLogs?.some((log) => {
+        const logDate = log.date.split("T")[0];
+        return logDate === today && log.isCompleted;
+      }) || false;
+    return result;
+  };
+
+  const fetchHabits = useCallback(async () => {
     try {
       const response = await axios.get("/api/habits");
-      setHabits(response.data);
+      const fetchedHabits: Habit[] = response.data;
+
+      const habitsToReset = fetchedHabits.filter(
+        (habit) =>
+          habit.frequency === "DAILY" &&
+          habit.status === "COMPLETED" &&
+          !isHabitCompletedToday(habit)
+      );
+
+      if (habitsToReset.length > 0) {
+        await Promise.all(
+          habitsToReset.map((habit) =>
+            axios.patch(`/api/habits/${habit.id}`, { status: "PENDING" })
+          )
+        );
+        const newResponse = await axios.get("/api/habits");
+        setHabits(newResponse.data);
+        return;
+      }
+
+      setHabits(fetchedHabits);
     } catch (error) {
       console.error("Failed to fetch habits:", error);
       toast.error("Failed to fetch habits");
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchHabits();
-  }, []);
+  }, [fetchHabits]);
+
+  useEffect(() => {
+    window.addEventListener("focus", fetchHabits);
+    return () => {
+      window.removeEventListener("focus", fetchHabits);
+    };
+  }, [fetchHabits]);
 
   const onSubmit = async (values: HabitInput) => {
     setIsLoading(true);
@@ -93,6 +155,7 @@ export const Habit = () => {
       setHabits([response.data.habit, ...habits]);
       form.reset();
       setIsDialogOpen(false);
+      setShowCustomCategory(false);
     } catch (error) {
       console.error("Failed to create habit:", error);
       toast.error("Failed to create habit");
@@ -124,16 +187,6 @@ export const Habit = () => {
     } finally {
       setIsStatusUpdating(false);
     }
-  };
-
-  const isHabitCompletedToday = (habit: Habit) => {
-    const today = new Date().toISOString().split("T")[0];
-    const result =
-      habit.HabitLogs?.some((log) => {
-        const logDate = log.date.split("T")[0];
-        return logDate === today && log.isCompleted;
-      }) || false;
-    return result;
   };
 
   const getCompletionRate = (habit: Habit) => {
@@ -226,299 +279,409 @@ export const Habit = () => {
     }
   };
 
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "COMPLETED":
+        return (
+          <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+        );
+      case "ONGOING":
+        return <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />;
+      case "PENDING":
+        return (
+          <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+        );
+      default:
+        return (
+          <AlertCircle className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+        );
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "HIGH":
+        return "bg-red-100 text-red-800 dark:bg-red-950/30 dark:text-red-400 border-red-200 dark:border-red-800";
+      case "MEDIUM":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-950/30 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800";
+      case "LOW":
+        return "bg-green-100 text-green-800 dark:bg-green-950/30 dark:text-green-400 border-green-200 dark:border-green-800";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700";
+    }
+  };
+
   return (
     <div className="mt-8">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Habits</h2>
-      <div className="bg-white border border-gray-200 rounded-2xl p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-semibold text-gray-700">
-            Your Habits ({habits.length})
-          </h3>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>Create Habit</Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Create New Habit</DialogTitle>
-                <DialogDescription>
-                  Add a new habit to track your daily progress and build better
-                  routines.
-                </DialogDescription>
-              </DialogHeader>
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-4"
-                >
-                  <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Title</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter habit title" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Enter habit description (optional)"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Category</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter category (optional)"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="grid grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="priority"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Priority</FormLabel>
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
+        Habits
+      </h2>
+
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+          Your Habits ({habits.length})
+        </h3>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700">
+              <Plus className="w-4 h-4 mr-2" />
+              Create Habit
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px] bg-white dark:bg-black border-gray-200 dark:border-gray-800">
+            <DialogHeader>
+              <DialogTitle className="text-gray-800 dark:text-gray-200">
+                Create New Habit
+              </DialogTitle>
+              <DialogDescription className="text-gray-600 dark:text-gray-400">
+                Add a new habit to track your daily progress and build better
+                routines.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 dark:text-gray-300">
+                        Title
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter habit title"
+                          {...field}
+                          className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 dark:text-gray-300">
+                        Description
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Enter habit description (optional)"
+                          {...field}
+                          className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700 dark:text-gray-300">
+                        Category
+                      </FormLabel>
+                      <FormControl>
+                        <div className="space-y-2">
                           <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
+                            onValueChange={(value) => {
+                              if (value === "__custom__") {
+                                setShowCustomCategory(true);
+                                field.onChange("");
+                              } else {
+                                setShowCustomCategory(false);
+                                field.onChange(value);
+                              }
+                            }}
+                            value={
+                              showCustomCategory
+                                ? "__custom__"
+                                : field.value || ""
+                            }
                           >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select priority" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="LOW">Low</SelectItem>
-                              <SelectItem value="MEDIUM">Medium</SelectItem>
-                              <SelectItem value="HIGH">High</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="frequency"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Frequency</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select frequency" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="DAILY">Daily</SelectItem>
-                              <SelectItem value="WEEKLY">Weekly</SelectItem>
-                              <SelectItem value="MONTHLY">Monthly</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="status"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Status</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select status" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="PENDING">Pending</SelectItem>
-                              <SelectItem value="ONGOING">Ongoing</SelectItem>
-                              <SelectItem value="COMPLETED">
-                                Completed
+                            <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                              <SelectValue placeholder="Select category (optional)" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                              <SelectItem value="__no_category__">
+                                No Category
+                              </SelectItem>
+                              {PREDEFINED_CATEGORIES.map((category) => (
+                                <SelectItem key={category} value={category}>
+                                  {category}
+                                </SelectItem>
+                              ))}
+                              <SelectItem value="__custom__">
+                                + Add Custom Category
                               </SelectItem>
                             </SelectContent>
                           </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="flex justify-end space-x-2 pt-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setIsDialogOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button type="submit" disabled={isLoading}>
-                      {isLoading ? "Creating..." : "Create Habit"}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
-        </div>
+                          {showCustomCategory && (
+                            <Input
+                              placeholder="Enter custom category name"
+                              value={field.value}
+                              onChange={(e) => field.onChange(e.target.value)}
+                              onBlur={() => {
+                                if (!field.value) {
+                                  setShowCustomCategory(false);
+                                }
+                              }}
+                              className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
+                            />
+                          )}
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="grid grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="priority"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700 dark:text-gray-300">
+                          Priority
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                              <SelectValue placeholder="Select priority" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                            <SelectItem value="LOW">Low</SelectItem>
+                            <SelectItem value="MEDIUM">Medium</SelectItem>
+                            <SelectItem value="HIGH">High</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="frequency"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700 dark:text-gray-300">
+                          Frequency
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                              <SelectValue placeholder="Select frequency" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                            <SelectItem value="DAILY">Daily</SelectItem>
+                            <SelectItem value="WEEKLY">Weekly</SelectItem>
+                            <SelectItem value="MONTHLY">Monthly</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700 dark:text-gray-300">
+                          Status
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                            <SelectItem value="PENDING">Pending</SelectItem>
+                            <SelectItem value="ONGOING">Ongoing</SelectItem>
+                            <SelectItem value="COMPLETED">Completed</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setIsDialogOpen(false);
+                      setShowCustomCategory(false);
+                    }}
+                    className="border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
+                  >
+                    {isLoading ? "Creating..." : "Create Habit"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      </div>
 
-        {habits.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-500">
-              No habits created yet. Create your first habit to get started!
-            </p>
+      {habits.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Plus className="w-8 h-8 text-gray-400 dark:text-gray-500" />
           </div>
-        ) : (
-          <div className="space-y-4">
-            {habits.map((habit) => {
-              const isCompletedToday = isHabitCompletedToday(habit);
-              const completionRate = getCompletionRate(habit);
-              const currentStreak = getCurrentStreak(habit);
-              return (
-                <div
-                  key={habit.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-800 mb-1">
+          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            No habits created yet
+          </h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">
+            Create your first habit to get started on your journey!
+          </p>
+          <Button
+            onClick={() => setIsDialogOpen(true)}
+            className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Create Your First Habit
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {habits.map((habit) => {
+            const isCompletedToday = isHabitCompletedToday(habit);
+            const completionRate = getCompletionRate(habit);
+            const currentStreak = getCurrentStreak(habit);
+
+            return (
+              <div
+                key={habit.id}
+                className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 rounded-xl p-6 hover:shadow-md transition-all duration-300"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                         {habit.title}
                       </h4>
                       {isCompletedToday && (
-                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                        <Badge className="bg-green-100 text-green-800 dark:bg-green-950/30 dark:text-green-400 border-green-200 dark:border-green-800">
                           ✓ Today
-                        </span>
+                        </Badge>
                       )}
-                      {habit.description && (
-                        <p className="text-gray-600 text-sm mb-2">
-                          {habit.description}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-2 mb-2">
-                        {habit.category && (
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                            {habit.category}
-                          </span>
-                        )}
-                        <span
-                          className={`text-xs px-2 py-1 rounded ${
-                            habit.status === "COMPLETED"
-                              ? "bg-green-100 text-green-800"
-                              : habit.status === "ONGOING"
-                              ? "bg-blue-100 text-blue-800"
-                              : "bg-yellow-100 text-yellow-800"
-                          }`}
-                        >
-                          {habit.status}
-                        </span>
-                        <span
-                          className={`text-xs px-2 py-1 rounded ${
-                            habit.priority === "HIGH"
-                              ? "bg-red-100 text-red-800"
-                              : habit.priority === "MEDIUM"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-green-100 text-green-800"
-                          }`}
-                        >
-                          {habit.priority}
-                        </span>
-                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          {habit.frequency}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-4 mb-2">
-                        <span className="text-xs text-gray-600">
-                          🔥 {currentStreak} day streak
-                        </span>
-                        <span className="text-xs text-gray-600">
-                          📊 {completionRate}% this week
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-500">
-                        Created:{" "}
-                        {new Date(habit.createdAt).toLocaleDateString()}
+                    </div>
+
+                    {habit.description && (
+                      <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
+                        {habit.description}
                       </p>
+                    )}
+
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {habit.category && (
+                        <Badge
+                          variant="outline"
+                          className="border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+                        >
+                          {habit.category}
+                        </Badge>
+                      )}
+                      <Badge className={getPriorityColor(habit.priority)}>
+                        {habit.priority}
+                      </Badge>
+                      <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-950/30 dark:text-blue-400 border-blue-200 dark:border-blue-800">
+                        {habit.frequency}
+                      </Badge>
+                      <div className="flex items-center gap-1">
+                        {getStatusIcon(habit.status)}
+                        <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700">
+                          {habit.status}
+                        </Badge>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 mt-3">
-                    <div>
-                      <Button
-                        variant={isCompletedToday ? "default" : "outline"}
-                        size="sm"
-                        onClick={() =>
-                          handleToggleHabitCompletion(
-                            habit.id,
-                            new Date().toISOString().split("T")[0],
-                            isCompletedToday
-                          )
-                        }
-                        disabled={isLoading}
-                        className={
-                          isCompletedToday
-                            ? "bg-green-500 hover:bg-green-600"
-                            : ""
-                        }
-                      >
-                        {isCompletedToday
-                          ? "✓ Completed Today"
-                          : "Mark Complete"}
-                      </Button>
+
+                    <div className="flex items-center gap-6 text-sm">
+                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                        <Flame className="w-4 h-4 text-red-500" />
+                        <span>{currentStreak} day streak</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                        <TrendingUp className="w-4 h-4 text-blue-500" />
+                        <span>{completionRate}% this week</span>
+                      </div>
                     </div>
-                    <Select
-                      key={`${habit.id}-${habit.status}`}
-                      value={habit.status}
-                      onValueChange={(
-                        value: "COMPLETED" | "PENDING" | "ONGOING"
-                      ) => handleUpdateHabit(habit.id, value)}
-                      disabled={isStatusUpdating || isCompletedToday}
-                    >
-                      <SelectTrigger className="w-28 h-8">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="PENDING">Pending</SelectItem>
-                        <SelectItem value="ONGOING">Ongoing</SelectItem>
-                        <SelectItem value="COMPLETED">Completed</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+
+                <div className="flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+                  <Button
+                    variant={isCompletedToday ? "default" : "outline"}
+                    size="sm"
+                    onClick={() =>
+                      handleToggleHabitCompletion(
+                        habit.id,
+                        new Date().toISOString().split("T")[0],
+                        isCompletedToday
+                      )
+                    }
+                    disabled={isLoading}
+                    className={
+                      isCompletedToday
+                        ? "bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
+                        : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }
+                  >
+                    {isCompletedToday ? "✓ Completed Today" : "Mark Complete"}
+                  </Button>
+
+                  <Select
+                    key={`${habit.id}-${habit.status}`}
+                    value={habit.status}
+                    onValueChange={(
+                      value: "COMPLETED" | "PENDING" | "ONGOING"
+                    ) => handleUpdateHabit(habit.id, value)}
+                    disabled={isStatusUpdating || isCompletedToday}
+                  >
+                    <SelectTrigger className="w-32 h-9 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                      <SelectItem value="PENDING">Pending</SelectItem>
+                      <SelectItem value="ONGOING">Ongoing</SelectItem>
+                      <SelectItem value="COMPLETED">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
