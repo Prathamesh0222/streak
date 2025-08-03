@@ -59,7 +59,7 @@ export const Sidebar = ({
               </div>
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="absolute translate-x-8 mt-2 rounded-full bg-white dark:bg-black border border-red-500/20 shadow-sm p-1 hover:shadow-md transition-all duration-200"
+                className="absolute translate-x-8 mt-2 rounded-full bg-white dark:bg-black/20 border border-red-500/20 shadow-sm p-1 hover:shadow-md transition-all duration-200"
               >
                 <PanelRightClose
                   size={16}
