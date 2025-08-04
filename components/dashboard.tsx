@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ModeToggle } from "./mode-toggle";
+import Image from "next/image";
 
 export const Dashboard = () => {
   const { data: session } = useSession();
@@ -39,10 +40,12 @@ export const Dashboard = () => {
             <DropdownMenuTrigger>
               <div className="w-10 h-10 rounded-full border border-border bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/20 dark:to-red-900/20 flex items-center justify-center hover:shadow-md transition-all duration-200 cursor-pointer">
                 {session?.user?.image ? (
-                  <img
+                  <Image
                     src={session.user.image}
                     alt={session.user.name || "User"}
                     className="w-10 h-10 object-cover rounded-full"
+                    width={40}
+                    height={40}
                   />
                 ) : (
                   <span className="text-lg font-semibold text-red-600 dark:text-red-400">

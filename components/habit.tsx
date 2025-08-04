@@ -41,6 +41,8 @@ import {
   Flame,
   TrendingUp,
 } from "lucide-react";
+import { HabitCategoryChart } from "./habit-category";
+import { ProgressChart } from "./progress-chart";
 
 const PREDEFINED_CATEGORIES = [
   "Health & Fitness",
@@ -97,12 +99,21 @@ export const Habit = () => {
   });
 
   const isHabitCompletedToday = (habit: Habit) => {
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date();
+    const todayStart = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+    const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+
     const result =
       habit.HabitLogs?.some((log) => {
-        const logDate = log.date.split("T")[0];
-        return logDate === today && log.isCompleted;
+        const logDate = new Date(log.date);
+        const isToday = logDate >= todayStart && logDate < todayEnd;
+        return isToday && log.isCompleted;
       }) || false;
+
     return result;
   };
 
@@ -552,6 +563,9 @@ export const Habit = () => {
         </Dialog>
       </div>
 
+      <HabitCategoryChart habits={habits} />
+      <ProgressChart habits={habits} />
+
       {habits.length === 0 ? (
         <div className="text-center py-12">
           <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -645,7 +659,7 @@ export const Habit = () => {
                     onClick={() =>
                       handleToggleHabitCompletion(
                         habit.id,
-                        new Date().toISOString().split("T")[0],
+                        new Date().toLocaleDateString("en-CA"),
                         isCompletedToday
                       )
                     }
