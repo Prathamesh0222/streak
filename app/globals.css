@@ -210,3 +210,85 @@
     @apply bg-background text-foreground;
   }
 }
+
+.color-empty {
+  fill: #f3f4f6;
+}
+
+.color-scale-1 {
+  fill: #fecaca;
+}
+
+.color-scale-2 {
+  fill: #fca5a5;
+}
+
+.color-scale-3 {
+  fill: #f87171;
+}
+
+.color-scale-4 {
+  fill: #ef4444;
+}
+
+.dark .color-empty {
+  fill: #374151;
+}
+
+.dark .color-scale-1 {
+  fill: #eb6464;
+}
+
+.dark .color-scale-2 {
+  fill: #991b1b;
+}
+
+.dark .color-scale-3 {
+  fill: #b91c1c;
+}
+
+.dark .color-scale-4 {
+  fill: #dc2626;
+}
+
+.react-calendar-heatmap {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (min-width: 640px) {
+  .react-calendar-heatmap {
+    max-width: 600px;
+  }
+}
+
+@media (min-width: 768px) {
+  .react-calendar-heatmap {
+    max-width: 800px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .react-calendar-heatmap {
+    max-width: 900px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .react-calendar-heatmap {
+    max-width: 900px;
+  }
+}
+
+.react-calendar-heatmap .react-calendar-heatmap-day {
+  width: 10px;
+  height: 10px;
+  margin: 1px;
+}
+@media (max-width: 640px) {
+  .react-calendar-heatmap .react-calendar-heatmap-day {
+    width: 6px;
+    height: 6px;
+  }
+}
+
