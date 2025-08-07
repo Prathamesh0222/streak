@@ -1,6 +1,6 @@
 import { Calendar } from "./calendar";
 import { Dashboard } from "./dashboard";
-import { Habit } from "./habit";
+import { Habits } from "./habit";
 import { Settings } from "./settings";
 
 export const Main = ({ currentMenu }: { currentMenu: string }) => {
@@ -9,7 +9,7 @@ export const Main = ({ currentMenu }: { currentMenu: string }) => {
       case "Dashboard":
         return <Dashboard />;
       case "Habits":
-        return <Habit />;
+        return <Habits />;
       case "Calendar":
         return <Calendar />;
       case "Settings":

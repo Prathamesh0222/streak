@@ -43,6 +43,7 @@ import {
 } from "lucide-react";
 import { HabitCategoryChart } from "./habit-category";
 import { ProgressChart } from "./progress-chart";
+import { Habit } from "@/types/habit-types";
 
 const PREDEFINED_CATEGORIES = [
   "Health & Fitness",
@@ -59,27 +60,7 @@ const PREDEFINED_CATEGORIES = [
   "Other",
 ];
 
-interface HabitLog {
-  id: string;
-  date: string;
-  isCompleted: boolean;
-  habitId: string;
-  createdAt: string;
-}
-
-interface Habit {
-  id: string;
-  title: string;
-  description?: string;
-  category?: string;
-  status: "COMPLETED" | "PENDING" | "ONGOING";
-  priority: "HIGH" | "MEDIUM" | "LOW";
-  frequency: "DAILY" | "WEEKLY" | "MONTHLY";
-  createdAt: string;
-  HabitLogs: HabitLog[];
-}
-
-export const Habit = () => {
+export const Habits = () => {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isStatusUpdating, setIsStatusUpdating] = useState(false);

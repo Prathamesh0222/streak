@@ -14,9 +14,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ModeToggle } from "./mode-toggle";
 import Image from "next/image";
+import { HeatMap } from "./heatmap";
 
 export const Dashboard = () => {
   const { data: session } = useSession();
+
   return (
     <>
       <div className="flex justify-between items-center">
@@ -79,43 +81,54 @@ export const Dashboard = () => {
           </span>{" "}
           today?
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 items-start">
-          <WeatherCard />
-          <Pomodoro />
-          <div className="border border-red-500/20 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group h-full">
-            <div className="w-12 h-12 bg-red-100 dark:bg-red-950/30 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-200 dark:group-hover:bg-red-900/40 transition-colors">
-              <div className="w-6 h-6 bg-red-500 rounded-full"></div>
+        <div>
+          <div className="w-full mt-8">
+            <div className="w-full max-w-4xl">
+              <HeatMap />
             </div>
-            <h3 className="text-lg font-semibold text-card-foreground mb-2">
-              Today&apos;s Habits
-            </h3>
-            <p className="text-muted-foreground text-sm">
-              Track your daily progress
-            </p>
           </div>
-
-          <div className="border border-red-500/20 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group h-full">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950/30 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-200 dark:group-hover:bg-red-900/40 transition-colors">
-              <div className="w-6 h-6 bg-blue-500 rounded-full"></div>
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-6 mt-8">
+            <div className="break-inside-avoid mb-6">
+              <WeatherCard />
             </div>
-            <h3 className="text-lg font-semibold text-card-foreground mb-2">
-              Weekly Stats
-            </h3>
-            <p className="text-muted-foreground text-sm">
-              View your performance
-            </p>
-          </div>
-
-          <div className="border border-red-500/20 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group h-full">
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-950/30 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-200 dark:group-hover:bg-red-900/40 transition-colors">
-              <div className="w-6 h-6 bg-green-500 rounded-full"></div>
+            <div className="break-inside-avoid mb-6">
+              <Pomodoro />
             </div>
-            <h3 className="text-lg font-semibold text-card-foreground mb-2">
-              Achievements
-            </h3>
-            <p className="text-muted-foreground text-sm">
-              Celebrate your milestones
-            </p>
+            <div className="break-inside-avoid mb-6 border border-red-500/20 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group h-full">
+              <div className="w-12 h-12 bg-red-100 dark:bg-red-950/30 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-200 dark:group-hover:bg-red-900/40 transition-colors">
+                <div className="w-6 h-6 bg-red-500 rounded-full"></div>
+              </div>
+              <h3 className="text-lg font-semibold text-card-foreground mb-2">
+                Today&apos;s Habits
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                Track your daily progress
+              </p>
+            </div>
+
+            <div className="break-inside-avoid mb-6 border border-red-500/20 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group h-full">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950/30 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-200 dark:group-hover:bg-red-900/40 transition-colors">
+                <div className="w-6 h-6 bg-blue-500 rounded-full"></div>
+              </div>
+              <h3 className="text-lg font-semibold text-card-foreground mb-2">
+                Weekly Stats
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                View your performance
+              </p>
+            </div>
+
+            <div className="break-inside-avoid mb-6 border border-red-500/20 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group h-full">
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-950/30 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-200 dark:group-hover:bg-red-900/40 transition-colors">
+                <div className="w-6 h-6 bg-green-500 rounded-full"></div>
+              </div>
+              <h3 className="text-lg font-semibold text-card-foreground mb-2">
+                Achievements
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                Celebrate your milestones
+              </p>
+            </div>
           </div>
         </div>
       </div>
