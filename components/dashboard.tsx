@@ -15,65 +15,75 @@ import {
 import { ModeToggle } from "./mode-toggle";
 import Image from "next/image";
 import { HeatMap } from "./heatmap";
+import { WeeklyStats } from "./weekly-stats";
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good Morning";
+  if (hour < 17) return "Good Afternoon";
+  return "Good Evening";
+}
 
 export const Dashboard = () => {
   const { data: session } = useSession();
 
   return (
     <>
-      <div className="flex justify-between items-center">
-        <h1 className="text-lg font-medium text-foreground">
-          {new Date().toLocaleDateString("en-US", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </h1>
-        <div className="flex gap-4 items-center">
-          <button className="p-2 rounded-full hover:bg-accent transition-colors">
-            <Bell
-              size={20}
-              className="text-muted-foreground hover:text-foreground"
-            />
-          </button>
-          <ModeToggle />
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <div className="w-10 h-10 rounded-full border border-border bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/20 dark:to-red-900/20 flex items-center justify-center hover:shadow-md transition-all duration-200 cursor-pointer">
-                {session?.user?.image ? (
-                  <Image
-                    src={session.user.image}
-                    alt={session.user.name || "User"}
-                    className="w-10 h-10 object-cover rounded-full"
-                    width={40}
-                    height={40}
-                  />
-                ) : (
-                  <span className="text-lg font-semibold text-red-600 dark:text-red-400">
-                    {session?.user?.name?.charAt(0) || "?"}
-                  </span>
-                )}
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel>{session?.user.name}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => signOut()}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+      <header className="-mx-8 px-8 py-4">
+        <div className="flex justify-between items-center">
+          <h1 className="text-lg font-medium text-foreground">
+            {new Date().toLocaleDateString("en-US", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </h1>
+          <div className="flex gap-4 items-center">
+            <button className="p-2 rounded-full hover:bg-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 dark:focus-visible:ring-red-600">
+              <Bell size={20} className="text-muted-foreground" />
+            </button>
+            <ModeToggle />
+            <DropdownMenu>
+              <DropdownMenuTrigger className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 dark:focus-visible:ring-red-600">
+                <div className="w-10 h-10 rounded-full border border-border bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/20 dark:to-red-900/20 flex items-center justify-center hover:shadow-md transition-all duration-200 cursor-pointer">
+                  {session?.user?.image ? (
+                    <Image
+                      src={session.user.image}
+                      alt={session.user.name || "User"}
+                      className="w-10 h-10 object-cover rounded-full"
+                      width={40}
+                      height={40}
+                    />
+                  ) : (
+                    <span className="text-lg font-semibold text-red-600 dark:text-red-400">
+                      {session?.user?.name?.charAt(0) || "?"}
+                    </span>
+                  )}
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>
+                  {session?.user?.name ?? "Account"}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => signOut()}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
-      </div>
-      <div className="mt-16">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-          Good Morning,{" "}
+      </header>
+
+      <section className="mt-8">
+        <h2 className="text-4xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+          {getGreeting()},{" "}
           <span className="text-red-500 underline underline-offset-4">
-            {session?.user.name}
+            {session?.user?.name ?? "there"}
           </span>
-        </h1>
+        </h2>
         <p className="text-muted-foreground mt-2 text-lg">
           Ready to build some{" "}
           <span className="text-red-500 underline underline-offset-4">
@@ -81,57 +91,25 @@ export const Dashboard = () => {
           </span>{" "}
           today?
         </p>
-        <div>
-          <div className="w-full mt-8">
-            <div className="w-full max-w-4xl">
-              <HeatMap />
-            </div>
-          </div>
-          <div className="columns-1 md:columns-2 lg:columns-3 gap-6 mt-8">
-            <div className="break-inside-avoid mb-6">
-              <WeatherCard />
-            </div>
-            <div className="break-inside-avoid mb-6">
-              <Pomodoro />
-            </div>
-            <div className="break-inside-avoid mb-6 border border-red-500/20 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group h-full">
-              <div className="w-12 h-12 bg-red-100 dark:bg-red-950/30 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-200 dark:group-hover:bg-red-900/40 transition-colors">
-                <div className="w-6 h-6 bg-red-500 rounded-full"></div>
-              </div>
-              <h3 className="text-lg font-semibold text-card-foreground mb-2">
-                Today&apos;s Habits
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                Track your daily progress
-              </p>
-            </div>
 
-            <div className="break-inside-avoid mb-6 border border-red-500/20 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group h-full">
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950/30 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-200 dark:group-hover:bg-red-900/40 transition-colors">
-                <div className="w-6 h-6 bg-blue-500 rounded-full"></div>
-              </div>
-              <h3 className="text-lg font-semibold text-card-foreground mb-2">
-                Weekly Stats
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                View your performance
-              </p>
-            </div>
-
-            <div className="break-inside-avoid mb-6 border border-red-500/20 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group h-full">
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-950/30 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-200 dark:group-hover:bg-red-900/40 transition-colors">
-                <div className="w-6 h-6 bg-green-500 rounded-full"></div>
-              </div>
-              <h3 className="text-lg font-semibold text-card-foreground mb-2">
-                Achievements
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                Celebrate your milestones
-              </p>
-            </div>
+        <div className="flex w-full mt-8 md:gap-4">
+          <div className="md:w-full max-w-4xl">
+            <HeatMap />
           </div>
         </div>
-      </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 mb-12 mb:mb-0">
+          <div className="w-full">
+            <WeatherCard />
+          </div>
+          <div className="h-full">
+            <Pomodoro />
+          </div>
+          <div className="break-inside-avoid mb-6">
+            <WeeklyStats />
+          </div>
+        </div>
+      </section>
     </>
   );
 };

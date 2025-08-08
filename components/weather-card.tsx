@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Cloud, Wind, Gauge, Droplets, MapPin } from "lucide-react";
 import axios from "axios";
+import Link from "next/link";
 
 interface WeatherData {
   temp_C: string;
@@ -68,17 +69,17 @@ export default function WeatherCard() {
             Mumbai
           </div>
         </div>
-        <a
-          href="https://wttr.in/Mumbai"
-          className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:underline transition-colors"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View Details
-        </a>
+        <div className="hidden md:block">
+          <Link
+            href="https://wttr.in/Mumbai"
+            className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:underline transition-colors"
+          >
+            View Details
+          </Link>
+        </div>
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="md:flex flex-col md:flex-row items-center gap-6">
         <div className="flex flex-col items-center">
           <div className="w-12 h-12 bg-red-100 dark:bg-red-950/30 rounded-xl flex items-center justify-center mb-2 group-hover:bg-red-200 dark:group-hover:bg-red-900/40 transition-colors">
             <Cloud className="w-6 h-6 text-red-600 dark:text-red-400" />
