@@ -320,7 +320,7 @@ export const Habits = () => {
               Create Habit
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px] bg-white dark:bg-black border-gray-200 dark:border-gray-800">
+          <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle className="text-gray-800 dark:text-gray-200">
                 Create New Habit
@@ -344,11 +344,7 @@ export const Habits = () => {
                         Title
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Enter habit title"
-                          {...field}
-                          className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
-                        />
+                        <Input placeholder="Enter habit title" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -366,7 +362,6 @@ export const Habits = () => {
                         <Textarea
                           placeholder="Enter habit description (optional)"
                           {...field}
-                          className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
                         />
                       </FormControl>
                       <FormMessage />
@@ -399,10 +394,10 @@ export const Habits = () => {
                                 : field.value || ""
                             }
                           >
-                            <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                            <SelectTrigger>
                               <SelectValue placeholder="Select category (optional)" />
                             </SelectTrigger>
-                            <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                            <SelectContent>
                               <SelectItem value="__no_category__">
                                 No Category
                               </SelectItem>
@@ -426,7 +421,6 @@ export const Habits = () => {
                                   setShowCustomCategory(false);
                                 }
                               }}
-                              className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100"
                             />
                           )}
                         </div>
@@ -449,11 +443,11 @@ export const Habits = () => {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                            <SelectTrigger>
                               <SelectValue placeholder="Select priority" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                          <SelectContent>
                             <SelectItem value="LOW">Low</SelectItem>
                             <SelectItem value="MEDIUM">Medium</SelectItem>
                             <SelectItem value="HIGH">High</SelectItem>
@@ -476,11 +470,11 @@ export const Habits = () => {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                            <SelectTrigger>
                               <SelectValue placeholder="Select frequency" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                          <SelectContent>
                             <SelectItem value="DAILY">Daily</SelectItem>
                             <SelectItem value="WEEKLY">Weekly</SelectItem>
                             <SelectItem value="MONTHLY">Monthly</SelectItem>
@@ -503,11 +497,11 @@ export const Habits = () => {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                            <SelectTrigger>
                               <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                          <SelectContent>
                             <SelectItem value="PENDING">Pending</SelectItem>
                             <SelectItem value="ONGOING">Ongoing</SelectItem>
                             <SelectItem value="COMPLETED">Completed</SelectItem>
@@ -526,7 +520,6 @@ export const Habits = () => {
                       setIsDialogOpen(false);
                       setShowCustomCategory(false);
                     }}
-                    className="border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   >
                     Cancel
                   </Button>
@@ -543,13 +536,14 @@ export const Habits = () => {
           </DialogContent>
         </Dialog>
       </div>
-
-      <HabitCategoryChart habits={habits} />
-      <ProgressChart habits={habits} />
+      <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-3 mb-4">
+        <HabitCategoryChart habits={habits} />
+        <ProgressChart habits={habits} />
+      </div>
 
       {habits.length === 0 ? (
         <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <Plus className="w-8 h-8 text-gray-400 dark:text-gray-500" />
           </div>
           <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -567,7 +561,7 @@ export const Habits = () => {
           </Button>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-2">
           {habits.map((habit) => {
             const isCompletedToday = isHabitCompletedToday(habit);
             const completionRate = getCompletionRate(habit);
@@ -647,8 +641,8 @@ export const Habits = () => {
                     disabled={isLoading}
                     className={
                       isCompletedToday
-                        ? "bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
-                        : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        ? "bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 cursor-pointer"
+                        : "dark:hover:text-gray-300 cursor-pointer"
                     }
                   >
                     {isCompletedToday ? "✓ Completed Today" : "Mark Complete"}
@@ -662,10 +656,10 @@ export const Habits = () => {
                     ) => handleUpdateHabit(habit.id, value)}
                     disabled={isStatusUpdating || isCompletedToday}
                   >
-                    <SelectTrigger className="w-32 h-9 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                    <SelectTrigger className="w-32 h-9 cursor-pointer">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                    <SelectContent>
                       <SelectItem value="PENDING">Pending</SelectItem>
                       <SelectItem value="ONGOING">Ongoing</SelectItem>
                       <SelectItem value="COMPLETED">Completed</SelectItem>

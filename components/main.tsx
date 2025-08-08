@@ -2,9 +2,10 @@ import { Calendar } from "./calendar";
 import { Dashboard } from "./dashboard";
 import { Habits } from "./habit";
 import { Settings } from "./settings";
+import { useMemo } from "react";
 
 export const Main = ({ currentMenu }: { currentMenu: string }) => {
-  const renderContent = () => {
+  const content = useMemo(() => {
     switch (currentMenu) {
       case "Dashboard":
         return <Dashboard />;
@@ -17,12 +18,13 @@ export const Main = ({ currentMenu }: { currentMenu: string }) => {
       default:
         return null;
     }
-  };
+  }, [currentMenu]);
+
   return (
-    <div className="p-6 w-full min-h-screen">
-      <div className="border border-red-500/20 rounded-2xl h-full p-8 shadow-sm overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        {renderContent()}
+    <main className="lg:p-6 w-full h-screen overflow-hidden">
+      <div className="border border-red-500/20 lg:rounded-2xl h-full p-8 shadow-sm overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div key={currentMenu}>{content}</div>
       </div>
-    </div>
+    </main>
   );
 };
