@@ -17,3 +17,18 @@ export interface Habit {
   createdAt: string;
   HabitLogs: HabitLog[];
 }
+
+export const PREDEFINED_CATEGORIES = [
+  "Health & Fitness",
+  "Productivity",
+  "Learning",
+  "Personal Development",
+  "Relationships",
+  "Finance",
+  "Creativity",
+  "Mindfulness",
+  "Career",
+  "Home & Organization",
+  "Social",
+  "Other",
+];
