@@ -7,8 +7,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { habitSchema, HabitInput } from "@/lib/validate";
 
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -25,6 +23,7 @@ import {
   AlertCircle,
   Flame,
   TrendingUp,
+  Check,
 } from "lucide-react";
 import { HabitCategoryChart } from "./habit-category";
 import { ProgressChart } from "./progress-chart";
@@ -325,19 +324,42 @@ export const Habits = () => {
                 return (
                   <div
                     key={habit.id}
-                    className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 rounded-xl p-6 hover:shadow-md transition-all duration-300 h-full flex flex-col"
+                    className={`border rounded-xl p-6 hover:shadow-md transition-all duration-300 h-full flex flex-col ${
+                      isCompletedToday
+                        ? "border-red-500 border shadow-md"
+                        : "border-red-500/20 hover:border-red-200 dark:hover:border-red-800"
+                    }`}
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                            {habit.title}
-                          </h4>
-                          {isCompletedToday && (
-                            <Badge className="bg-green-100 text-green-800 dark:bg-green-950/30 dark:text-green-400 border-green-200 dark:border-green-800">
-                              ✓ Today
-                            </Badge>
-                          )}
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-3">
+                            <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                              {habit.title}
+                            </h4>
+                            {isCompletedToday && (
+                              <Badge className="bg-green-100 text-green-800 dark:bg-green-950/30 dark:text-green-400 border-green-200 dark:border-green-800">
+                                ✓ Today
+                              </Badge>
+                            )}
+                          </div>
+                          <button
+                            onClick={() =>
+                              handleToggleHabitCompletion(
+                                habit.id,
+                                new Date().toLocaleDateString("en-CA"),
+                                isCompletedToday
+                              )
+                            }
+                            disabled={isLoading}
+                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                              isCompletedToday
+                                ? "bg-red-500 border-red-500 text-white"
+                                : "border-gray-300 dark:border-gray-600 hover:border-red-500 dark:hover:border-red-400"
+                            }`}
+                          >
+                            {isCompletedToday && <Check className="w-4 h-4" />}
+                          </button>
                         </div>
 
                         {habit.description && (
