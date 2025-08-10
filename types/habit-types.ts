@@ -32,3 +32,21 @@ export const PREDEFINED_CATEGORIES = [
   "Social",
   "Other",
 ];
+
+export interface HabitCardProps {
+  habit: Habit;
+  isCompletedToday: boolean;
+  completionRate: number;
+  currentStreak: number;
+  isLoading: boolean;
+  isStatusUpdating: boolean;
+  onToggleCompletion: (
+    habitId: string,
+    date: string,
+    isCompleted: boolean
+  ) => void;
+  onUpdateStatus: (
+    habitId: string,
+    status: "COMPLETED" | "PENDING" | "ONGOING"
+  ) => void;
+}
