@@ -1,18 +1,15 @@
 "use client";
 
 import { Button } from "./ui/button";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { habitSchema, HabitInput } from "@/lib/validate";
-import axios from "axios";
-import { toast } from "sonner";
 import { Activity, Plus, Search, Tag } from "lucide-react";
 import { HabitCategoryChart } from "./habit-category";
 import { ProgressChart } from "./progress-chart";
 import { Habit, PREDEFINED_CATEGORIES } from "@/types/habit-types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { createHabit } from "./createHabit";
 import { HabitCard } from "./habit-card";
 import { Input } from "./ui/input";
 import {
@@ -22,11 +19,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { useHabits } from "@/hooks/useHabits";
 
 export const Habits = () => {
-  const [habits, setHabits] = useState<Habit[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isStatusUpdating, setIsStatusUpdating] = useState(false);
+  const {
+    habits,
+    loading,
+    createHabit,
+    updateHabit,
+    deleteHabit,
+    toggleHabitCompletion,
+    isStatusUpdating,
+    isHabitCompletedToday,
+  } = useHabits();
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [categoryFilter, setCategoryFilter] = useState("ALL");
@@ -45,121 +51,30 @@ export const Habits = () => {
     },
   });
 
-  const isHabitCompletedToday = (habit: Habit) => {
-    const today = new Date();
-    const todayStart = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    );
-    const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
-
-    const result =
-      habit.HabitLogs?.some((log) => {
-        const logDate = new Date(log.date);
-        const isToday = logDate >= todayStart && logDate < todayEnd;
-        return isToday && log.isCompleted;
-      }) || false;
-
-    return result;
-  };
-
-  const fetchHabits = useCallback(async () => {
-    try {
-      const response = await axios.get("/api/habits");
-      const fetchedHabits: Habit[] = response.data;
-
-      const habitsToReset = fetchedHabits.filter(
-        (habit) =>
-          habit.frequency === "DAILY" &&
-          habit.status === "COMPLETED" &&
-          !isHabitCompletedToday(habit)
-      );
-
-      if (habitsToReset.length > 0) {
-        await Promise.all(
-          habitsToReset.map((habit) =>
-            axios.patch(`/api/habits/${habit.id}`, { status: "PENDING" })
-          )
-        );
-        const newResponse = await axios.get("/api/habits");
-        setHabits(newResponse.data);
-        return;
-      }
-
-      setHabits(fetchedHabits);
-    } catch (error) {
-      console.error("Failed to fetch habits:", error);
-      toast.error("Failed to fetch habits");
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchHabits();
-  }, [fetchHabits]);
-
-  useEffect(() => {
-    window.addEventListener("focus", fetchHabits);
-    return () => {
-      window.removeEventListener("focus", fetchHabits);
-    };
-  }, [fetchHabits]);
-
   const onSubmit = async (values: HabitInput) => {
-    setIsLoading(true);
-    try {
-      const response = await axios.post("/api/habits", values);
-      toast.success("Habit created successfully!");
-      setHabits([response.data.habit, ...habits]);
+    const success = await createHabit(values);
+    if (success) {
       form.reset();
       setIsDialogOpen(false);
       setShowCustomCategory(false);
-    } catch (error) {
-      console.error("Failed to create habit:", error);
-      toast.error("Failed to create habit");
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const filteredHabits = habits.filter((habit) => {
-    const matchesStatus =
-      statusFilter === "ALL" || habit.status === statusFilter;
-    const matchesCategory =
-      categoryFilter === "ALL" || habit.category === categoryFilter;
-    const matchesSearch =
-      searchQuery === "" ||
-      habit.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (habit.description &&
-        habit.description.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredHabits = useMemo(() => {
+    return habits.filter((habit) => {
+      const matchesStatus =
+        statusFilter === "ALL" || habit.status === statusFilter;
+      const matchesCategory =
+        categoryFilter === "ALL" || habit.category === categoryFilter;
+      const matchesSearch =
+        searchQuery === "" ||
+        habit.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (habit.description &&
+          habit.description.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    return matchesStatus && matchesCategory && matchesSearch;
-  });
-
-  const handleUpdateHabit = async (
-    habitId: string,
-    newStatus: "COMPLETED" | "PENDING" | "ONGOING"
-  ) => {
-    setIsStatusUpdating(true);
-    try {
-      const response = await axios.patch(`/api/habits/${habitId}`, {
-        status: newStatus,
-      });
-      toast.success("Status updated!");
-      setHabits(
-        habits.map((habit) =>
-          habit.id === habitId
-            ? { ...response.data.habit, HabitLogs: habit.HabitLogs }
-            : habit
-        )
-      );
-    } catch (error) {
-      console.error("Error while updating status", error);
-      toast.error("Failed to update habit");
-    } finally {
-      setIsStatusUpdating(false);
-    }
-  };
+      return matchesStatus && matchesCategory && matchesSearch;
+    });
+  }, [habits, statusFilter, categoryFilter, searchQuery]);
 
   const getCompletionRate = (habit: Habit) => {
     if (!habit.HabitLogs || habit.HabitLogs.length === 0) return 0;
@@ -221,36 +136,6 @@ export const Habits = () => {
     return streak;
   };
 
-  const handleToggleHabitCompletion = async (
-    habitId: string,
-    date: string,
-    isCompleted: boolean
-  ) => {
-    setIsLoading(true);
-    try {
-      await axios.post("/api/habit-logs", {
-        habitId,
-        date,
-        isCompleted: !isCompleted,
-      });
-
-      const newStatus = !isCompleted ? "COMPLETED" : "PENDING";
-      await axios.patch(`/api/habits/${habitId}`, {
-        status: newStatus,
-      });
-
-      toast.success(
-        isCompleted ? "Marked as incomplete" : "Marked as complete!"
-      );
-      await fetchHabits();
-    } catch (error) {
-      console.error("Error while updating habit completion:", error);
-      toast.error("Failed to update habit completion");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="mt-8">
       <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
@@ -262,7 +147,7 @@ export const Habits = () => {
         setIsDialogOpen,
         form,
         onSubmit,
-        isLoading,
+        isLoading: loading,
         showCustomCategory,
         setShowCustomCategory,
       })}
@@ -354,10 +239,10 @@ export const Habits = () => {
                     isCompletedToday={isCompletedToday}
                     completionRate={completionRate}
                     currentStreak={currentStreak}
-                    isLoading={isLoading}
+                    isLoading={loading}
                     isStatusUpdating={isStatusUpdating}
-                    onToggleCompletion={handleToggleHabitCompletion}
-                    onUpdateStatus={handleUpdateHabit}
+                    onToggleCompletion={toggleHabitCompletion}
+                    onUpdateStatus={updateHabit}
                   />
                 );
               })}
