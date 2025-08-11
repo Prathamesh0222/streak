@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const PATCH = async (
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
@@ -20,11 +20,12 @@ export const PATCH = async (
   }
 
   const { status } = await req.json();
+  const param = await params;
 
   try {
     const updatedHabit = await prisma.habit.update({
       where: {
-        id: params.id,
+        id: param.id,
         userId: session.user.id,
       },
       data: {
@@ -51,7 +52,7 @@ export const PATCH = async (
 
 export const DELETE = async (
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
   const session = await getServerSession(authOptions);
 
@@ -66,10 +67,12 @@ export const DELETE = async (
     );
   }
 
+  const param = await params;
+
   try {
     const existingHabit = await prisma.habit.findFirst({
       where: {
-        id: params.id,
+        id: param.id,
         userId: session.user.id,
       },
     });
@@ -80,7 +83,7 @@ export const DELETE = async (
 
     await prisma.habit.delete({
       where: {
-        id: params.id,
+        id: param.id,
       },
     });
 
