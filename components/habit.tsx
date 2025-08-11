@@ -10,6 +10,7 @@ import { HabitCategoryChart } from "./habit-category";
 import { ProgressChart } from "./progress-chart";
 import { Habit, PREDEFINED_CATEGORIES } from "@/types/habit-types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { createHabit as CreateHabitDialog } from "./createHabit";
 import { HabitCard } from "./habit-card";
 import { Input } from "./ui/input";
 import {
@@ -141,7 +142,7 @@ export const Habits = () => {
       <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
         Habits
       </h2>
-      {createHabit({
+      {CreateHabitDialog({
         habits,
         isDialogOpen,
         setIsDialogOpen,

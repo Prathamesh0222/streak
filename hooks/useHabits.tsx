@@ -2,6 +2,7 @@ import { Habit } from "@/types/habit-types";
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { HabitInput } from "@/lib/validate";
 
 export const useHabits = () => {
   const [habits, setHabits] = useState<Habit[]>([]);
@@ -12,7 +13,7 @@ export const useHabits = () => {
     const today = new Date().toLocaleDateString("en-CA");
 
     return (
-      habit.HabitLogs.some((log) => {
+      (habit.HabitLogs || []).some((log) => {
         const logDate = new Date(log.date).toLocaleDateString("en-CA");
         return logDate === today && log.isCompleted;
       }) || false
@@ -100,7 +101,7 @@ export const useHabits = () => {
     }
   }, []);
 
-  const createHabit = useCallback(async (habitData: any) => {
+  const createHabitAPI = useCallback(async (habitData: HabitInput) => {
     setIsLoading(true);
     try {
       const response = await axios.post("/api/habits", habitData);
@@ -151,7 +152,7 @@ export const useHabits = () => {
     habits,
     loading,
     fetchHabits,
-    createHabit,
+    createHabit: createHabitAPI,
     updateHabit,
     deleteHabit,
     toggleHabitCompletion,
