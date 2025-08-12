@@ -14,8 +14,11 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
+  Target,
+  Calendar,
 } from "lucide-react";
 import { HabitCardProps } from "@/types/habit-types";
+import { Progress } from "@/components/ui/progress";
 
 export const HabitCard = ({
   habit,
@@ -26,6 +29,7 @@ export const HabitCard = ({
   isStatusUpdating,
   onToggleCompletion,
   onUpdateStatus,
+  goalProgress,
 }: HabitCardProps) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -59,9 +63,22 @@ export const HabitCard = ({
     }
   };
 
+  const getGoalTypeDisplay = (goalType: string) => {
+    switch (goalType) {
+      case "STREAK":
+        return "Day Streak";
+      case "WEEKLY_TARGET":
+        return "Weekly Target";
+      case "MONTHLY_TARGET":
+        return "Monthly Target";
+      default:
+        return "Goal";
+    }
+  };
+
   return (
     <div
-      className={`border rounded-xl p-6 hover:shadow-md transition-all duration-300 h-full flex flex-col ${
+      className={`border rounded-xl p-6 hover:shadow-md transition-all duration-300 h-full flex flex-col bg-card ${
         isCompletedToday
           ? "border-red-500 border shadow-md"
           : "border-red-500/20 hover:border-red-200 dark:hover:border-red-800"
@@ -127,6 +144,40 @@ export const HabitCard = ({
               {habit.status}
             </Badge>
           </div>
+
+          {goalProgress && habit.isGoalActive && (
+            <div className="my-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Target className="w-4 h-4 text-red-600 dark:text-red-400" />
+                  <span className="text-sm font-medium text-red-800 dark:text-red-300">
+                    {getGoalTypeDisplay(habit.goalType!)}
+                  </span>
+                </div>
+                <span className="text-sm text-red-300">
+                  {goalProgress.currentValue}/{goalProgress.targetValue}
+                </span>
+              </div>
+
+              <Progress
+                value={goalProgress.progressPercentage}
+                className="h-2 mb-2"
+              />
+
+              <div className="flex items-center justify-between text-xs text-red-600 dark:text-red-400">
+                <span>
+                  {Math.round(goalProgress.progressPercentage)}% complete
+                </span>
+                {goalProgress.daysRemaining !== undefined &&
+                  goalProgress.daysRemaining > 0 && (
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      <span>{goalProgress.daysRemaining} days left</span>
+                    </div>
+                  )}
+              </div>
+            </div>
+          )}
 
           <div className="flex items-center gap-6 text-sm">
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
