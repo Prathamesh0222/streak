@@ -14,6 +14,10 @@ export interface Habit {
   status: "COMPLETED" | "PENDING" | "ONGOING";
   priority: "HIGH" | "MEDIUM" | "LOW";
   frequency: "DAILY" | "WEEKLY" | "MONTHLY";
+  goalType: "STREAK" | "WEEKLY_TARGET" | "MONTHLY_TARGET";
+  goalTarget?: number;
+  goalDeadline?: number;
+  isGoalActive?: boolean;
   createdAt: string;
   HabitLogs: HabitLog[];
 }
@@ -33,6 +37,14 @@ export const PREDEFINED_CATEGORIES = [
   "Other",
 ];
 
+export interface GoalProgress {
+  currentValue: number;
+  targetValue: number;
+  progressPercentage: number;
+  isAchieved: boolean;
+  daysRemaining?: number;
+}
+
 export interface HabitCardProps {
   habit: Habit;
   isCompletedToday: boolean;
@@ -49,4 +61,5 @@ export interface HabitCardProps {
     habitId: string,
     status: "COMPLETED" | "PENDING" | "ONGOING"
   ) => void;
+  goalProgress?: GoalProgress | null;
 }

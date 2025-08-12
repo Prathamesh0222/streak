@@ -9,6 +9,50 @@ export const useHabits = () => {
   const [isStatusUpdating, setIsStatusUpdating] = useState<boolean>(false);
   const [loading, setIsLoading] = useState<boolean>(false);
 
+  const getCurrentStreak = (habit: Habit) => {
+    if (!habit.HabitLogs || habit.HabitLogs.length === 0) return 0;
+
+    const sortedLogs = habit.HabitLogs.filter((log) => log.isCompleted).sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
+    if (sortedLogs.length === 0) return 0;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayLog = sortedLogs.find((log) => {
+      const logDate = new Date(log.date);
+      logDate.setHours(0, 0, 0, 0);
+      return logDate.getTime() === today.getTime();
+    });
+
+    const startDate = todayLog ? today : new Date(sortedLogs[0].date);
+    startDate.setHours(0, 0, 0, 0);
+
+    let streak = 0;
+
+    for (let i = 0; i <= 365; i++) {
+      const checkDate = new Date(startDate);
+      checkDate.setDate(startDate.getDate() - i);
+      checkDate.setHours(0, 0, 0, 0);
+
+      const hasLogForDate = sortedLogs.some((log) => {
+        const logDate = new Date(log.date);
+        logDate.setHours(0, 0, 0, 0);
+        return logDate.getTime() === checkDate.getTime();
+      });
+
+      if (hasLogForDate) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+
+    return streak;
+  };
+
   const isHabitCompletedToday = useCallback((habit: Habit) => {
     const today = new Date().toLocaleDateString("en-CA");
 
@@ -117,6 +161,67 @@ export const useHabits = () => {
     }
   }, []);
 
+  const calculateGoalProgress = useCallback(
+    (habit: Habit) => {
+      if (!habit.isGoalActive || !habit.goalType || !habit.goalTarget) {
+        return null;
+      }
+
+      const habitLogs = habit.HabitLogs || [];
+
+      let currentValue = 0;
+      const targetValue = habit.goalTarget;
+
+      switch (habit.goalType) {
+        case "STREAK":
+          currentValue = getCurrentStreak(habit);
+          break;
+        case "WEEKLY_TARGET":
+          const weekStart = new Date();
+          weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+          weekStart.setHours(0, 0, 0, 0);
+          currentValue = habitLogs.filter((log) => {
+            const logDate = new Date(log.date);
+            return log.isCompleted && logDate >= weekStart;
+          }).length;
+          break;
+        case "MONTHLY_TARGET":
+          const monthStart = new Date();
+          monthStart.setDate(1);
+          monthStart.setHours(0, 0, 0, 0);
+          currentValue = habitLogs.filter((log) => {
+            const logDate = new Date(log.date);
+            return log.isCompleted && logDate >= monthStart;
+          }).length;
+          break;
+      }
+
+      const progressPercentage = Math.min(
+        (currentValue / targetValue) * 100,
+        100
+      );
+      const isAchieved = currentValue >= targetValue;
+
+      let daysRemaining: number | undefined;
+      if (habit.goalDeadline) {
+        const deadlineDate = new Date(habit.goalDeadline);
+        const today = new Date();
+        daysRemaining = Math.ceil(
+          (deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+        );
+      }
+
+      return {
+        currentValue,
+        targetValue,
+        progressPercentage,
+        isAchieved,
+        daysRemaining,
+      };
+    },
+    [getCurrentStreak]
+  );
+
   const toggleHabitCompletion = useCallback(
     async (habitId: string, date: string, isCompleted: boolean) => {
       setIsLoading(true);
@@ -157,6 +262,8 @@ export const useHabits = () => {
     deleteHabit,
     toggleHabitCompletion,
     isStatusUpdating,
+    getCurrentStreak,
+    calculateGoalProgress,
     isHabitCompletedToday,
   };
 };

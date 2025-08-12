@@ -19,18 +19,22 @@ model User {
 }
 
 model Habit {
-  id          String        @id @default(uuid())
-  title       String
-  description String?
-  category    String?
-  status      StatusType    @default(PENDING)
-  priority    PriorityType  @default(MEDIUM)
-  frequency   FrequencyType @default(DAILY)
-  user        User          @relation(fields: [userId], references: [id])
-  userId      String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  HabitLogs   HabitLogs[]
+  id           String        @id @default(uuid())
+  title        String
+  description  String?
+  category     String?
+  status       StatusType    @default(PENDING)
+  priority     PriorityType  @default(MEDIUM)
+  frequency    FrequencyType @default(DAILY)
+  goalType     GoalType?     @default(STREAK)
+  goalTarget   Int?          @default(7)
+  goalDeadline String?
+  isGoalActive Boolean       @default(false)
+  user         User          @relation(fields: [userId], references: [id])
+  userId       String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  HabitLogs    HabitLogs[]
 }
 
 model HabitLogs {
@@ -60,4 +64,10 @@ enum FrequencyType {
   DAILY
   WEEKLY
   MONTHLY
+}
+
+enum GoalType {
+  STREAK
+  WEEKLY_TARGET
+  MONTHLY_TARGET
 }
