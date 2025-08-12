@@ -249,6 +249,96 @@ export const createHabit = ({
                   )}
                 />
               </div>
+
+              <div className="border-t pt-4 space-y-4">
+                <h4 className="text-md font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                  Goal Setting
+                </h4>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="goalType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Goal Type</FormLabel>
+                        <Select
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            if (value === "STREAK") {
+                              form.setValue("isGoalActive", true);
+                            } else {
+                              form.setValue("isGoalActive", false);
+                            }
+                          }}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select goal type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="STREAK">Day Streak</SelectItem>
+                            <SelectItem value="WEEKLY_TARGET">
+                              Weekly Target
+                            </SelectItem>
+                            <SelectItem value="MONTHLY_TARGET">
+                              Monthly Target
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="goalTarget"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Target Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="e.g., 30"
+                            value={field.value || ""}
+                            onChange={(e) => {
+                              const value = Number(e.target.value);
+                              field.onChange(value || undefined);
+                              if (value > 0 && form.getValues("goalType")) {
+                                form.setValue("isGoalActive", true);
+                              } else {
+                                form.setValue("isGoalActive", false);
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="goalDeadline"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Goal Deadline</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          {...field}
+                          min={new Date().toLocaleDateString("en-CA")}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <div className="flex justify-end space-x-2 pt-4">
                 <Button
                   type="button"

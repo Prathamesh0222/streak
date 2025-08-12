@@ -29,6 +29,8 @@ export const Habits = () => {
     createHabit,
     updateHabit,
     deleteHabit,
+    getCurrentStreak,
+    calculateGoalProgress,
     toggleHabitCompletion,
     isStatusUpdating,
     isHabitCompletedToday,
@@ -49,6 +51,10 @@ export const Habits = () => {
       status: "PENDING",
       priority: "MEDIUM",
       frequency: "DAILY",
+      goalType: undefined,
+      goalTarget: undefined,
+      goalDeadline: "",
+      isGoalActive: false,
     },
   });
 
@@ -91,50 +97,6 @@ export const Habits = () => {
 
     const completedLogs = last7Days.filter((log) => log.isCompleted);
     return Math.round((completedLogs.length / last7Days.length) * 100);
-  };
-
-  const getCurrentStreak = (habit: Habit) => {
-    if (!habit.HabitLogs || habit.HabitLogs.length === 0) return 0;
-
-    const sortedLogs = habit.HabitLogs.filter((log) => log.isCompleted).sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
-
-    if (sortedLogs.length === 0) return 0;
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const todayLog = sortedLogs.find((log) => {
-      const logDate = new Date(log.date);
-      logDate.setHours(0, 0, 0, 0);
-      return logDate.getTime() === today.getTime();
-    });
-
-    const startDate = todayLog ? today : new Date(sortedLogs[0].date);
-    startDate.setHours(0, 0, 0, 0);
-
-    let streak = 0;
-
-    for (let i = 0; i <= 365; i++) {
-      const checkDate = new Date(startDate);
-      checkDate.setDate(startDate.getDate() - i);
-      checkDate.setHours(0, 0, 0, 0);
-
-      const hasLogForDate = sortedLogs.some((log) => {
-        const logDate = new Date(log.date);
-        logDate.setHours(0, 0, 0, 0);
-        return logDate.getTime() === checkDate.getTime();
-      });
-
-      if (hasLogForDate) {
-        streak++;
-      } else {
-        break;
-      }
-    }
-
-    return streak;
   };
 
   return (
@@ -232,6 +194,7 @@ export const Habits = () => {
                 const isCompletedToday = isHabitCompletedToday(habit);
                 const completionRate = getCompletionRate(habit);
                 const currentStreak = getCurrentStreak(habit);
+                const goalProgress = calculateGoalProgress(habit);
 
                 return (
                   <HabitCard
@@ -244,6 +207,7 @@ export const Habits = () => {
                     isStatusUpdating={isStatusUpdating}
                     onToggleCompletion={toggleHabitCompletion}
                     onUpdateStatus={updateHabit}
+                    goalProgress={goalProgress}
                   />
                 );
               })}

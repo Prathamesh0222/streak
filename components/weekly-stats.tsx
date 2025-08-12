@@ -88,7 +88,7 @@ export function WeeklyStats() {
 
   if (loading) {
     return (
-      <div className="border border-red-500/20 p-6 rounded-2xl shadow-sm">
+      <div className="border border-red-500/20 p-6 rounded-2xl shadow-sm bg-card">
         <div className="animate-pulse space-y-4">
           <div className="h-5 w-40 bg-gray-200 dark:bg-gray-800 rounded" />
           <div className="h-4 w-24 bg-gray-200 dark:bg-gray-800 rounded" />
@@ -117,7 +117,7 @@ export function WeeklyStats() {
   );
 
   return (
-    <div className="border border-red-500/20 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group h-full">
+    <div className="border border-red-500/20 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group h-full bg-card">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Weekly Stats</h3>
         <span className="text-xs text-muted-foreground">Last 7 days</span>

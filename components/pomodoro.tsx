@@ -95,7 +95,7 @@ export const Pomodoro = () => {
   };
 
   return (
-    <div className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
+    <div className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 bg-card">
       <div className="flex flex-col items-center space-y-6">
         <div className="flex items-center justify-between w-full">
           <h3 className="text-lg font-semibold">Pomodoro Timer</h3>
