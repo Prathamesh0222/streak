@@ -41,7 +41,7 @@ export const Sidebar = ({
   return (
     <>
       <div
-        className={`hidden lg:flex ${
+        className={`hidden lg:flex bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/60 ${
           isSidebarOpen ? "w-60" : "w-16"
         } border-r border-red-500/20 transition-all ease-in-out duration-300 flex-col`}
       >

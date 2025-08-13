@@ -2,7 +2,6 @@
 
 import { Bell, LogOut } from "lucide-react";
 import { Pomodoro } from "./pomodoro";
-import WeatherCard from "./weather-card";
 import { signOut, useSession } from "next-auth/react";
 import {
   DropdownMenu,
@@ -16,6 +15,9 @@ import { ModeToggle } from "./mode-toggle";
 import Image from "next/image";
 import { HeatMap } from "./heatmap";
 import { WeeklyStats } from "./weekly-stats";
+import { HabitCategoryChart } from "./habit-category";
+import { ProgressChart } from "./progress-chart";
+import { useHabits } from "@/hooks/useHabits";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -26,6 +28,7 @@ function getGreeting() {
 
 export const Dashboard = () => {
   const { data: session } = useSession();
+  const { habits } = useHabits();
 
   return (
     <>
@@ -97,16 +100,14 @@ export const Dashboard = () => {
             <HeatMap />
           </div>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 mb-12 mb:mb-0">
-          <div className="w-full">
-            <WeatherCard />
+          <HabitCategoryChart habits={habits} />
+          <ProgressChart habits={habits} />
+          <div className="break-inside-avoid mb-6">
+            <WeeklyStats />
           </div>
           <div className="h-full">
             <Pomodoro />
-          </div>
-          <div className="break-inside-avoid mb-6">
-            <WeeklyStats />
           </div>
         </div>
       </section>

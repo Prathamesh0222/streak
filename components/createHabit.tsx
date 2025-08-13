@@ -55,7 +55,7 @@ export const createHabit = ({
       </h3>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          <Button className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700">
+          <Button className="bg-red-600 dark:text-white hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 font-semibold">
             <Plus className="w-4 h-4 mr-2" />
             Create Habit
           </Button>
