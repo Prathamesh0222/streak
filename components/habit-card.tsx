@@ -8,6 +8,14 @@ import {
   SelectValue,
 } from "./ui/select";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import {
   Flame,
   TrendingUp,
   Check,
@@ -16,9 +24,12 @@ import {
   AlertCircle,
   Target,
   Calendar,
+  Trash,
+  AlertTriangle,
 } from "lucide-react";
 import { HabitCardProps } from "@/types/habit-types";
 import { Progress } from "@/components/ui/progress";
+import { useState } from "react";
 
 export const HabitCard = ({
   habit,
@@ -29,8 +40,19 @@ export const HabitCard = ({
   isStatusUpdating,
   onToggleCompletion,
   onUpdateStatus,
+  onDeleteHabit,
   goalProgress,
 }: HabitCardProps) => {
+  const [open, setOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteHabit = async () => {
+    setIsDeleting(true);
+    await onDeleteHabit(habit.id);
+    setOpen(false);
+    setIsDeleting(false);
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "COMPLETED":
@@ -192,27 +214,7 @@ export const HabitCard = ({
         </div>
       </div>
 
-      <div className="flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-gray-800 mt-auto">
-        <Button
-          variant={isCompletedToday ? "default" : "outline"}
-          size="sm"
-          onClick={() =>
-            onToggleCompletion(
-              habit.id,
-              new Date().toLocaleDateString("en-CA"),
-              isCompletedToday
-            )
-          }
-          disabled={isLoading}
-          className={
-            isCompletedToday
-              ? "bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 cursor-pointer"
-              : "dark:hover:text-gray-300 cursor-pointer"
-          }
-        >
-          {isCompletedToday ? "✓ Completed Today" : "Mark Complete"}
-        </Button>
-
+      <div className="flex items-center justify-between gap-3 pt-4 border-t border-gray-100 dark:border-gray-800 mt-auto">
         <Select
           key={`${habit.id}-${habit.status}`}
           value={habit.status}
@@ -230,6 +232,49 @@ export const HabitCard = ({
             <SelectItem value="COMPLETED">Completed</SelectItem>
           </SelectContent>
         </Select>
+
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <button className="cursor-pointer text-red-500 px-2 hover:bg-red-600 py-2 rounded-md hover:text-white transition-colors">
+              <Trash className="w-4 h-4" />
+            </button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-red-500" />
+                Delete Habit
+              </DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete <strong>"{habit.title}"</strong>
+                ?
+                <br />
+                <span className="text-red-600 dark:text-red-400 text-sm mt-2 block">
+                  This action cannot be undone.
+                </span>
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <Button
+                variant="outline"
+                onClick={() => setOpen(false)}
+                disabled={isDeleting}
+                className="cursor-pointer"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteHabit}
+                disabled={isDeleting}
+                className="cursor-pointer"
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

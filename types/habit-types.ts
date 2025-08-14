@@ -61,5 +61,6 @@ export interface HabitCardProps {
     habitId: string,
     status: "COMPLETED" | "PENDING" | "ONGOING"
   ) => void;
+  onDeleteHabit: (habitId: string) => void;
   goalProgress?: GoalProgress | null;
 }

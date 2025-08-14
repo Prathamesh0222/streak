@@ -209,6 +209,7 @@ export const Habits = () => {
                     isStatusUpdating={isStatusUpdating}
                     onToggleCompletion={toggleHabitCompletion}
                     onUpdateStatus={updateHabit}
+                    onDeleteHabit={deleteHabit}
                     goalProgress={goalProgress}
                   />
                 );
