@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { useHabits } from "@/hooks/useHabits";
+import { HabitTemplates } from "./habit-template";
 
 export const Habits = () => {
   const {
@@ -118,6 +119,7 @@ export const Habits = () => {
         <TabsList>
           <TabsTrigger value="habits">Habits</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="template">Template</TabsTrigger>
         </TabsList>
         <TabsContent value="habits">
           <div className="flex gap-4 mb-6 items-center justify-between">
@@ -218,6 +220,11 @@ export const Habits = () => {
           <div className="grid md:grid-cols-2 grid-cols-1 w-full gap-3 mb-4">
             <HabitCategoryChart habits={habits} />
             <ProgressChart habits={habits} />
+          </div>
+        </TabsContent>
+        <TabsContent value="template">
+          <div>
+            <HabitTemplates />
           </div>
         </TabsContent>
       </Tabs>
