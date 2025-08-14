@@ -102,7 +102,7 @@ export const HabitCard = ({
     <div
       className={`border rounded-xl p-6 hover:shadow-md transition-all duration-300 h-full flex flex-col bg-card ${
         isCompletedToday
-          ? "border-red-500 border shadow-md"
+          ? "border-red-500 bg-red-50 dark:bg-red-950/20"
           : "border-red-500/20 hover:border-red-200 dark:hover:border-red-800"
       }`}
     >

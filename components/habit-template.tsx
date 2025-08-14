@@ -5,16 +5,20 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { HABIT_TEMPLATES, HabitTemplate } from "@/types/template";
 import { Plus, Target, Clock, Sparkles, Check } from "lucide-react";
-import axios from "axios";
 import { toast } from "sonner";
+import { useHabits } from "@/hooks/useHabits";
 
 interface HabitTemplateProps {
   onHabitAdded?: () => void;
 }
 
 export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
+  const { habits, createHabit } = useHabits();
   const [isLoading, setIsLoading] = useState(false);
-  const [addedTemplates, setAddedTemplates] = useState<string[]>([]);
+
+  const isTemplateAdded = (template: HabitTemplate) => {
+    return habits.some((habit) => habit.title === template.title);
+  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -43,6 +47,11 @@ export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
   };
 
   const handleAddTemplate = async (template: HabitTemplate) => {
+    if (isTemplateAdded(template)) {
+      toast.error("This habit already exists!");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -56,16 +65,13 @@ export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
         goalTarget: template.goalTarget,
       };
 
-      const response = await axios.post("/api/habits", habitData);
+      const success = await createHabit(habitData);
 
-      if (response.status === 201) {
-        toast.success(`Added "${template.title}" to your habits!`);
-        setAddedTemplates((prev) => [...prev, template.id]);
+      if (success) {
         onHabitAdded?.();
       }
     } catch (error) {
       console.error("Failed to add habit:", error);
-      toast.error("Failed to add habit. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +91,7 @@ export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {HABIT_TEMPLATES.map((template) => {
-          const isAdded = addedTemplates.includes(template.id);
+          const isAdded = isTemplateAdded(template);
 
           return (
             <div
