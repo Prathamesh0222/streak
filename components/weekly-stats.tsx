@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { Habit } from "@/types/habit-types";
 import {
   ChartContainer,
@@ -26,28 +24,13 @@ function weekdayShort(d: Date) {
   return d.toLocaleDateString(undefined, { weekday: "short" });
 }
 
-export function WeeklyStats() {
-  const [habits, setHabits] = useState<Habit[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState<string | null>(null);
-
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const res = await axios.get("/api/habits");
-        if (mounted) setHabits(res.data as Habit[]);
-      } catch (e) {
-        if (mounted) setErr("Failed to load weekly stats");
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
+export function WeeklyStats({
+  habits,
+  loading,
+}: {
+  habits: Habit[];
+  loading: boolean;
+}) {
   const today = startOfDay(new Date());
   const baseDays: DayPoint[] = Array.from({ length: 7 }, (_, i) => {
     const day = new Date(today);
@@ -99,14 +82,6 @@ export function WeeklyStats() {
           </div>
           <div className="h-40 rounded-xl" />
         </div>
-      </div>
-    );
-  }
-
-  if (err) {
-    return (
-      <div className="p-6 rounded-2xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400">
-        {err}
       </div>
     );
   }

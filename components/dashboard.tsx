@@ -28,7 +28,7 @@ function getGreeting() {
 
 export const Dashboard = () => {
   const { data: session } = useSession();
-  const { habits } = useHabits();
+  const { habits, loading } = useHabits();
 
   return (
     <>
@@ -104,7 +104,7 @@ export const Dashboard = () => {
           <HabitCategoryChart habits={habits} />
           <ProgressChart habits={habits} />
           <div className="break-inside-avoid mb-6">
-            <WeeklyStats />
+            <WeeklyStats habits={habits} loading={loading} />
           </div>
           <div className="h-full">
             <Pomodoro />
