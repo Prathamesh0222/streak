@@ -70,7 +70,35 @@ export const useHabits = () => {
       const response = await axios.get("/api/habits");
       const fetchedHabits: Habit[] = response.data;
 
-      const habitsToReset = fetchedHabits.filter(
+      const habitsToRemove = fetchedHabits.filter((habit) => {
+        if (!habit.goalTarget) return false;
+        const currentStreak = getCurrentStreak(habit);
+        return currentStreak >= habit.goalTarget;
+      });
+
+      if (habitsToRemove.length > 0) {
+        if (habitsToRemove.length === 1) {
+          toast.success(
+            `Congratulations! You completed "${habitsToRemove[0].title}" challenge!`
+          );
+        } else {
+          toast.success(
+            `Congratulations! You completed ${habitsToRemove.length} challenges!`
+          );
+        }
+
+        Promise.all(
+          habitsToRemove.map((habit) => axios.delete(`/api/habits/${habit.id}`))
+        ).catch((error) =>
+          console.error("Failed to delete completed habits:", error)
+        );
+      }
+
+      const remainingHabits = fetchedHabits.filter(
+        (habit) => !habitsToRemove.some((removed) => removed.id === habit.id)
+      );
+
+      const habitsToReset = remainingHabits.filter(
         (habit) =>
           habit.frequency === "DAILY" &&
           habit.status === "COMPLETED" &&
@@ -78,16 +106,23 @@ export const useHabits = () => {
       );
 
       if (habitsToReset.length > 0) {
-        await Promise.all(
+        Promise.all(
           habitsToReset.map((habit) =>
             axios.patch(`/api/habits/${habit.id}`, { status: "PENDING" })
           )
+        ).catch((error) =>
+          console.error("Failed to reset daily habits:", error)
         );
-        const newResponse = await axios.get("/api/habits");
-        setHabits(newResponse.data);
-      } else {
-        setHabits(fetchedHabits);
       }
+
+      const finalHabits = remainingHabits.map((habit) => {
+        if (habitsToReset.some((h) => h.id === habit.id)) {
+          return { ...habit, status: "PENDING" as const };
+        }
+        return habit;
+      });
+
+      setHabits(finalHabits);
     } catch (error) {
       console.error("Failed to fetch habits:", error);
       toast.error("Failed to fetch habits");
@@ -98,14 +133,7 @@ export const useHabits = () => {
 
   useEffect(() => {
     fetchHabits();
-  }, [fetchHabits]);
-
-  useEffect(() => {
-    window.addEventListener("focus", fetchHabits);
-    return () => {
-      window.removeEventListener("focus", fetchHabits);
-    };
-  }, [fetchHabits]);
+  }, []);
 
   const updateHabit = useCallback(
     async (habitId: string, newStatus: "COMPLETED" | "PENDING" | "ONGOING") => {
@@ -163,38 +191,10 @@ export const useHabits = () => {
 
   const calculateGoalProgress = useCallback(
     (habit: Habit) => {
-      if (!habit.isGoalActive || !habit.goalType || !habit.goalTarget) {
-        return null;
-      }
+      const goalTarget = habit.goalTarget || 7;
 
-      const habitLogs = habit.HabitLogs || [];
-
-      let currentValue = 0;
-      const targetValue = habit.goalTarget;
-
-      switch (habit.goalType) {
-        case "STREAK":
-          currentValue = getCurrentStreak(habit);
-          break;
-        case "WEEKLY_TARGET":
-          const weekStart = new Date();
-          weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-          weekStart.setHours(0, 0, 0, 0);
-          currentValue = habitLogs.filter((log) => {
-            const logDate = new Date(log.date);
-            return log.isCompleted && logDate >= weekStart;
-          }).length;
-          break;
-        case "MONTHLY_TARGET":
-          const monthStart = new Date();
-          monthStart.setDate(1);
-          monthStart.setHours(0, 0, 0, 0);
-          currentValue = habitLogs.filter((log) => {
-            const logDate = new Date(log.date);
-            return log.isCompleted && logDate >= monthStart;
-          }).length;
-          break;
-      }
+      const currentValue = getCurrentStreak(habit);
+      const targetValue = goalTarget;
 
       const progressPercentage = Math.min(
         (currentValue / targetValue) * 100,
@@ -202,21 +202,11 @@ export const useHabits = () => {
       );
       const isAchieved = currentValue >= targetValue;
 
-      let daysRemaining: number | undefined;
-      if (habit.goalDeadline) {
-        const deadlineDate = new Date(habit.goalDeadline);
-        const today = new Date();
-        daysRemaining = Math.ceil(
-          (deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-        );
-      }
-
       return {
         currentValue,
         targetValue,
         progressPercentage,
         isAchieved,
-        daysRemaining,
       };
     },
     [getCurrentStreak]
@@ -240,7 +230,16 @@ export const useHabits = () => {
         toast.success(
           isCompleted ? "Marked as incomplete" : "Marked as complete!"
         );
-        await fetchHabits();
+
+        setHabits((prevHabits) =>
+          prevHabits.map((habit) => {
+            if (habit.id === habitId) {
+              return { ...habit, status: newStatus };
+            }
+            return habit;
+          })
+        );
+
         return true;
       } catch (error) {
         console.error("Error while updating habit completion:", error);
@@ -250,7 +249,7 @@ export const useHabits = () => {
         setIsLoading(false);
       }
     },
-    [fetchHabits]
+    []
   );
 
   return {

@@ -48,13 +48,11 @@ export const habitSchema = z.object({
   frequency: z
     .enum(["DAILY", "WEEKLY", "MONTHLY"])
     .transform((val) => val || "DAILY"),
-  goalType: z.enum(["STREAK", "WEEKLY_TARGET", "MONTHLY_TARGET"]).optional(),
   goalTarget: z
     .number()
     .min(1, "Goal target must be at least 1")
     .max(365, "Goal target must be less than 365")
     .optional(),
-  goalDeadline: z.string().optional(),
   isGoalActive: z.boolean().optional(),
 });
 

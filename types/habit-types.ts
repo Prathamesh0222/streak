@@ -14,9 +14,7 @@ export interface Habit {
   status: "COMPLETED" | "PENDING" | "ONGOING";
   priority: "HIGH" | "MEDIUM" | "LOW";
   frequency: "DAILY" | "WEEKLY" | "MONTHLY";
-  goalType: "STREAK" | "WEEKLY_TARGET" | "MONTHLY_TARGET";
   goalTarget?: number;
-  goalDeadline?: number;
   isGoalActive?: boolean;
   createdAt: string;
   HabitLogs: HabitLog[];
@@ -42,7 +40,6 @@ export interface GoalProgress {
   targetValue: number;
   progressPercentage: number;
   isAchieved: boolean;
-  daysRemaining?: number;
 }
 
 export interface HabitCardProps {

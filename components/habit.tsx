@@ -52,9 +52,7 @@ export const Habits = () => {
       status: "PENDING",
       priority: "MEDIUM",
       frequency: "DAILY",
-      goalType: undefined,
       goalTarget: undefined,
-      goalDeadline: "",
       isGoalActive: false,
     },
   });

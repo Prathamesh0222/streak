@@ -85,19 +85,6 @@ export const HabitCard = ({
     }
   };
 
-  const getGoalTypeDisplay = (goalType: string) => {
-    switch (goalType) {
-      case "STREAK":
-        return "Day Streak";
-      case "WEEKLY_TARGET":
-        return "Weekly Target";
-      case "MONTHLY_TARGET":
-        return "Monthly Target";
-      default:
-        return "Goal";
-    }
-  };
-
   return (
     <div
       className={`border rounded-xl p-6 hover:shadow-md transition-all duration-300 h-full flex flex-col bg-card ${
@@ -167,13 +154,13 @@ export const HabitCard = ({
             </Badge>
           </div>
 
-          {goalProgress && habit.isGoalActive && (
+          {goalProgress && (
             <div className="my-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <Target className="w-4 h-4 text-red-600 dark:text-red-400" />
                   <span className="text-sm font-medium text-red-800 dark:text-red-300">
-                    {getGoalTypeDisplay(habit.goalType!)}
+                    {"goal"}
                   </span>
                 </div>
                 <span className="text-sm text-red-300">
@@ -190,11 +177,14 @@ export const HabitCard = ({
                 <span>
                   {Math.round(goalProgress.progressPercentage)}% complete
                 </span>
-                {goalProgress.daysRemaining !== undefined &&
-                  goalProgress.daysRemaining > 0 && (
+                {goalProgress.currentValue !== undefined &&
+                  goalProgress.currentValue > 0 && (
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      <span>{goalProgress.daysRemaining} days left</span>
+                      <span>
+                        {goalProgress.targetValue - goalProgress.currentValue}{" "}
+                        days left
+                      </span>
                     </div>
                   )}
               </div>
