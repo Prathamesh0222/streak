@@ -1,13 +1,160 @@
 import { Habit } from "@/types/habit-types";
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { HabitInput } from "@/lib/validate";
 
 export const useHabits = () => {
-  const [habits, setHabits] = useState<Habit[]>([]);
-  const [isStatusUpdating, setIsStatusUpdating] = useState<boolean>(false);
-  const [loading, setIsLoading] = useState<boolean>(false);
+  const queryClient = useQueryClient();
+
+  const {
+    data: habits = [],
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: ["habits"],
+    queryFn: async (): Promise<Habit[]> => {
+      const response = await axios.get("/api/habits");
+      const fetchedHabits: Habit[] = response.data;
+
+      const habitsToRemove = fetchedHabits.filter((habit) => {
+        if (!habit.goalTarget) return false;
+        const currentStreak = getCurrentStreak(habit);
+        return currentStreak >= habit.goalTarget;
+      });
+
+      if (habitsToRemove.length > 0) {
+        if (habitsToRemove.length === 1) {
+          toast.success(
+            `Congratulations! You completed "${habitsToRemove[0].title}" challenge!`
+          );
+        } else {
+          toast.success(
+            `Congratulations! You completed ${habitsToRemove.length} challenges!`
+          );
+        }
+
+        Promise.all(
+          habitsToRemove.map((habit) => axios.delete(`/api/habits/${habit.id}`))
+        )
+          .then(() => {
+            queryClient.invalidateQueries({ queryKey: ["habits"] });
+          })
+          .catch((error) =>
+            console.error("Failed to delete completed habits:", error)
+          );
+      }
+
+      const remainingHabits = fetchedHabits.filter(
+        (habit) => !habitsToRemove.some((removed) => removed.id === habit.id)
+      );
+
+      const habitsToReset = remainingHabits.filter(
+        (habit) =>
+          habit.frequency === "DAILY" &&
+          habit.status === "COMPLETED" &&
+          !isHabitCompletedToday(habit)
+      );
+
+      if (habitsToReset.length > 0) {
+        Promise.all(
+          habitsToReset.map((habit) =>
+            axios.patch(`/api/habits/${habit.id}`, { status: "PENDING" })
+          )
+        )
+          .then(() => {
+            queryClient.invalidateQueries({ queryKey: ["habits"] });
+          })
+          .catch((error) =>
+            console.error("Failed to reset daily habits:", error)
+          );
+      }
+
+      return remainingHabits.map((habit) => {
+        if (habitsToReset.some((h) => h.id === habit.id)) {
+          return { ...habit, status: "PENDING" as const };
+        }
+        return habit;
+      });
+    },
+  });
+
+  const toggleHabitCompletion = useMutation({
+    mutationFn: async ({
+      habitId,
+      date,
+      isCompleted,
+    }: {
+      habitId: string;
+      date: string;
+      isCompleted: boolean;
+    }) => {
+      await axios.post("/api/habit-logs", {
+        habitId,
+        date,
+        isCompleted: !isCompleted,
+      });
+
+      const newStatus = !isCompleted ? "COMPLETED" : "PENDING";
+      await axios.patch(`/api/habits/${habitId}`, {
+        status: newStatus,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["habits"] });
+      toast.success("Habit updated!");
+    },
+    onError: () => {
+      toast.error("Failed to update habit");
+    },
+  });
+
+  const updateHabit = useMutation({
+    mutationFn: async ({
+      habitId,
+      status,
+    }: {
+      habitId: string;
+      status: "COMPLETED" | "PENDING" | "ONGOING";
+    }) => {
+      const response = await axios.patch(`/api/habits/${habitId}`, { status });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["habits"] });
+      toast.success("Status updated!");
+    },
+    onError: () => {
+      toast.error("Failed to update habit");
+    },
+  });
+
+  const deleteHabit = useMutation({
+    mutationFn: async (habitId: string) => {
+      await axios.delete(`/api/habits/${habitId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["habits"] });
+      toast.success("Habit deleted successfully!");
+    },
+    onError: () => {
+      toast.error("Failed to delete habit");
+    },
+  });
+
+  const createHabit = useMutation({
+    mutationFn: async (habitData: HabitInput) => {
+      const response = await axios.post("/api/habits", habitData);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["habits"] });
+      toast.success("Habit created successfully!");
+    },
+    onError: () => {
+      toast.error("Failed to create habit");
+    },
+  });
 
   const getCurrentStreak = (habit: Habit) => {
     if (!habit.HabitLogs || habit.HabitLogs.length === 0) return 0;
@@ -53,214 +200,55 @@ export const useHabits = () => {
     return streak;
   };
 
-  const isHabitCompletedToday = useCallback((habit: Habit) => {
+  const isHabitCompletedToday = (habit: Habit) => {
     const today = new Date().toLocaleDateString("en-CA");
+    return (habit.HabitLogs || []).some((log) => {
+      const logDate = new Date(log.date).toLocaleDateString("en-CA");
+      return logDate === today && log.isCompleted;
+    });
+  };
 
-    return (
-      (habit.HabitLogs || []).some((log) => {
-        const logDate = new Date(log.date).toLocaleDateString("en-CA");
-        return logDate === today && log.isCompleted;
-      }) || false
+  const calculateGoalProgress = (habit: Habit) => {
+    const goalTarget = habit.goalTarget || 7;
+    const currentValue = getCurrentStreak(habit);
+    const targetValue = goalTarget;
+    const progressPercentage = Math.min(
+      (currentValue / targetValue) * 100,
+      100
     );
-  }, []);
+    const isAchieved = currentValue >= targetValue;
 
-  const fetchHabits = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get("/api/habits");
-      const fetchedHabits: Habit[] = response.data;
-
-      const habitsToRemove = fetchedHabits.filter((habit) => {
-        if (!habit.goalTarget) return false;
-        const currentStreak = getCurrentStreak(habit);
-        return currentStreak >= habit.goalTarget;
-      });
-
-      if (habitsToRemove.length > 0) {
-        if (habitsToRemove.length === 1) {
-          toast.success(
-            `Congratulations! You completed "${habitsToRemove[0].title}" challenge!`
-          );
-        } else {
-          toast.success(
-            `Congratulations! You completed ${habitsToRemove.length} challenges!`
-          );
-        }
-
-        Promise.all(
-          habitsToRemove.map((habit) => axios.delete(`/api/habits/${habit.id}`))
-        ).catch((error) =>
-          console.error("Failed to delete completed habits:", error)
-        );
-      }
-
-      const remainingHabits = fetchedHabits.filter(
-        (habit) => !habitsToRemove.some((removed) => removed.id === habit.id)
-      );
-
-      const habitsToReset = remainingHabits.filter(
-        (habit) =>
-          habit.frequency === "DAILY" &&
-          habit.status === "COMPLETED" &&
-          !isHabitCompletedToday(habit)
-      );
-
-      if (habitsToReset.length > 0) {
-        Promise.all(
-          habitsToReset.map((habit) =>
-            axios.patch(`/api/habits/${habit.id}`, { status: "PENDING" })
-          )
-        ).catch((error) =>
-          console.error("Failed to reset daily habits:", error)
-        );
-      }
-
-      const finalHabits = remainingHabits.map((habit) => {
-        if (habitsToReset.some((h) => h.id === habit.id)) {
-          return { ...habit, status: "PENDING" as const };
-        }
-        return habit;
-      });
-
-      setHabits(finalHabits);
-    } catch (error) {
-      console.error("Failed to fetch habits:", error);
-      toast.error("Failed to fetch habits");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isHabitCompletedToday]);
-
-  useEffect(() => {
-    fetchHabits();
-  }, []);
-
-  const updateHabit = useCallback(
-    async (habitId: string, newStatus: "COMPLETED" | "PENDING" | "ONGOING") => {
-      setIsStatusUpdating(true);
-      try {
-        const response = await axios.patch(`/api/habits/${habitId}`, {
-          status: newStatus,
-        });
-        toast.success("Status updated!");
-        setHabits((prevHabits) =>
-          prevHabits.map((habit) =>
-            habit.id === habitId
-              ? { ...response.data.habit, HabitLogs: habit.HabitLogs }
-              : habit
-          )
-        );
-      } catch (error) {
-        console.error("Error while updating status", error);
-        toast.error("Failed to update habit");
-      } finally {
-        setIsStatusUpdating(false);
-      }
-    },
-    []
-  );
-
-  const deleteHabit = useCallback(async (habitId: string) => {
-    try {
-      await axios.delete(`/api/habits/${habitId}`);
-      setHabits((prevHabits) =>
-        prevHabits.filter((habit) => habit.id !== habitId)
-      );
-      toast.success("Habit deleted successfully!");
-    } catch (error) {
-      console.error("Failed to delete habit:", error);
-      toast.error("Failed to delete habit");
-    }
-  }, []);
-
-  const createHabitAPI = useCallback(async (habitData: HabitInput) => {
-    setIsLoading(true);
-    try {
-      const response = await axios.post("/api/habits", habitData);
-      toast.success("Habit created successfully!");
-      setHabits((prevHabits) => [response.data.habit, ...prevHabits]);
-      return true;
-    } catch (error) {
-      console.error("Failed to create habit:", error);
-      toast.error("Failed to create habit");
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const calculateGoalProgress = useCallback(
-    (habit: Habit) => {
-      const goalTarget = habit.goalTarget || 7;
-
-      const currentValue = getCurrentStreak(habit);
-      const targetValue = goalTarget;
-
-      const progressPercentage = Math.min(
-        (currentValue / targetValue) * 100,
-        100
-      );
-      const isAchieved = currentValue >= targetValue;
-
-      return {
-        currentValue,
-        targetValue,
-        progressPercentage,
-        isAchieved,
-      };
-    },
-    [getCurrentStreak]
-  );
-
-  const toggleHabitCompletion = useCallback(
-    async (habitId: string, date: string, isCompleted: boolean) => {
-      setIsLoading(true);
-      try {
-        await axios.post("/api/habit-logs", {
-          habitId,
-          date,
-          isCompleted: !isCompleted,
-        });
-
-        const newStatus = !isCompleted ? "COMPLETED" : "PENDING";
-        await axios.patch(`/api/habits/${habitId}`, {
-          status: newStatus,
-        });
-
-        toast.success(
-          isCompleted ? "Marked as incomplete" : "Marked as complete!"
-        );
-
-        setHabits((prevHabits) =>
-          prevHabits.map((habit) => {
-            if (habit.id === habitId) {
-              return { ...habit, status: newStatus };
-            }
-            return habit;
-          })
-        );
-
-        return true;
-      } catch (error) {
-        console.error("Error while updating habit completion:", error);
-        toast.error("Failed to update habit completion");
-        return false;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    []
-  );
+    return {
+      currentValue,
+      targetValue,
+      progressPercentage,
+      isAchieved,
+    };
+  };
 
   return {
     habits,
     loading,
-    fetchHabits,
-    createHabit: createHabitAPI,
-    updateHabit,
-    deleteHabit,
-    toggleHabitCompletion,
-    isStatusUpdating,
+    error,
+    toggleHabitCompletion: (
+      habitId: string,
+      date: string,
+      isCompleted: boolean
+    ) => toggleHabitCompletion.mutate({ habitId, date, isCompleted }),
+    updateHabit: (
+      habitId: string,
+      status: "COMPLETED" | "PENDING" | "ONGOING"
+    ) => updateHabit.mutate({ habitId, status }),
+    deleteHabit: (habitId: string) => deleteHabit.mutate(habitId),
+    createHabit: async (habitData: HabitInput) => {
+      return new Promise((resolve) => {
+        createHabit.mutate(habitData, {
+          onSuccess: () => resolve(true),
+          onError: () => resolve(false),
+        });
+      });
+    },
+    isStatusUpdating: updateHabit.isPending,
     getCurrentStreak,
     calculateGoalProgress,
     isHabitCompletedToday,

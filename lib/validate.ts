@@ -53,7 +53,6 @@ export const habitSchema = z.object({
     .min(1, "Goal target must be at least 1")
     .max(365, "Goal target must be less than 365")
     .optional(),
-  isGoalActive: z.boolean().optional(),
 });
 
 export type SignInInput = z.infer<typeof signInSchema>;
