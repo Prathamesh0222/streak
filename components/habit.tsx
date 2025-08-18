@@ -53,7 +53,6 @@ export const Habits = () => {
       priority: "MEDIUM",
       frequency: "DAILY",
       goalTarget: undefined,
-      isGoalActive: false,
     },
   });
 

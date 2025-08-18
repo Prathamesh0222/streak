@@ -15,7 +15,11 @@ export const ModeToggle = () => {
 
   if (!mounted) {
     return (
-      <Button variant="outline" size="icon" className="w-9 h-9">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="w-9 h-9 cursor-pointer rounded-full"
+      >
         <Sun className="h-4 w-4" />
       </Button>
     );
@@ -23,9 +27,9 @@ export const ModeToggle = () => {
 
   return (
     <Button
-      variant="outline"
+      variant="ghost"
       size="icon"
-      className="w-9 h-9"
+      className="w-9 h-9 cursor-pointer rounded-full"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
     >
