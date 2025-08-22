@@ -112,15 +112,15 @@ export const Habits = () => {
         showCustomCategory,
         setShowCustomCategory,
       })}
-      <Tabs defaultValue="habits" className="w-full">
+      <Tabs defaultValue="habits" className="w-full mb-12">
         <TabsList>
           <TabsTrigger value="habits">Habits</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="template">Template</TabsTrigger>
         </TabsList>
         <TabsContent value="habits">
-          <div className="flex gap-4 mb-6 items-center justify-between">
-            <div className="relative w-80">
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="relative max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 placeholder="Search habits..."
@@ -135,7 +135,7 @@ export const Habits = () => {
                 onValueChange={(value) => setStatusFilter(value)}
               >
                 <SelectTrigger className="w-[160px]">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 md:text-sm text-xs">
                     <Activity className="w-4 h-4 text-gray-500" />
                     <SelectValue placeholder="Status" />
                   </div>
@@ -152,7 +152,7 @@ export const Habits = () => {
                 onValueChange={(value) => setCategoryFilter(value)}
               >
                 <SelectTrigger className="w-[180px]">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 md:text-sm text-xs">
                     <Tag className="w-4 h-4 text-gray-500" />
                     <SelectValue placeholder="Category" />
                   </div>

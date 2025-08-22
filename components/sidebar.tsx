@@ -116,7 +116,7 @@ export const Sidebar = ({
         </div>
       </div>
 
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 border-t border-red-500/20 bg-background z-50">
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 border-t rounded-t-3xl border-red-500/50 bg-background z-50">
         <ul className="grid grid-cols-4">
           {menuItems.map((item, index) => (
             <li key={index}>

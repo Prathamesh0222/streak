@@ -100,11 +100,6 @@ export const HabitCard = ({
               <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                 {habit.title}
               </h4>
-              {isCompletedToday && (
-                <Badge className="bg-green-100 text-green-800 dark:bg-green-950/30 dark:text-green-400 border-green-200 dark:border-green-800">
-                  ✓ Today
-                </Badge>
-              )}
             </div>
             <button
               onClick={() =>
