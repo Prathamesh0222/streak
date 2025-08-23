@@ -8,7 +8,6 @@ import {
   RadialBar,
   RadialBarChart,
 } from "recharts";
-
 import {
   Card,
   CardContent,
@@ -18,26 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
-
-interface HabitLog {
-  id: string;
-  date: string;
-  isCompleted: boolean;
-  habitId: string;
-  createdAt: string;
-}
-
-interface Habit {
-  id: string;
-  title: string;
-  description?: string;
-  category?: string;
-  status: "COMPLETED" | "PENDING" | "ONGOING";
-  priority: "HIGH" | "MEDIUM" | "LOW";
-  frequency: "DAILY" | "WEEKLY" | "MONTHLY";
-  createdAt: string;
-  HabitLogs: HabitLog[];
-}
+import { Habit } from "@/types/habit-types";
 
 interface ProgressChartProps {
   habits: Habit[];

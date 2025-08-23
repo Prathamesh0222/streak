@@ -8,14 +8,18 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String?
-  email     String   @unique
-  password  String
-  image     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Habit     Habit[]
+  id               String            @id @default(uuid())
+  name             String?
+  email            String            @unique
+  password         String
+  image            String?
+  level            Int               @default(1)
+  xp               Int               @default(0)
+  totalXp          Int               @default(0)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  Habit            Habit[]
+  UserAchievements UserAchievement[]
 }
 
 model Habit {
@@ -45,6 +49,33 @@ model HabitLogs {
   @@index([habitId, date])
 }
 
+model Achievement {
+  id               String              @id @default(uuid())
+  name             String              @unique
+  description      String
+  icon             String?
+  xpReward         Int                 @default(0)
+  category         AchievementCategory @default(STREAK)
+  requirement      Int
+  isActive         Boolean             @default(true)
+  createdAt        DateTime            @default(now())
+  UserAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String      @id @default(uuid())
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  achievementId String
+  unlockedAt    DateTime    @default(now())
+  progress      Int         @default(0)
+  isCompleted   Boolean     @default(false)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+}
+
 enum StatusType {
   COMPLETED
   PENDING
@@ -61,4 +92,10 @@ enum FrequencyType {
   DAILY
   WEEKLY
   MONTHLY
+}
+
+enum AchievementCategory {
+  STREAK
+  HABITS
+  CONSISTENCY
 }
