@@ -99,9 +99,21 @@ export const useHabits = () => {
       await axios.patch(`/api/habits/${habitId}`, {
         status: newStatus,
       });
+
+      if (!isCompleted) {
+        try {
+          await axios.post("/api/achievements/check", {
+            habitId,
+            action: "complete",
+          });
+        } catch (error) {
+          console.error("Failed to check achievements:", error);
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["habits"] });
+      queryClient.invalidateQueries({ queryKey: ["achievements"] });
       toast.success("Habit updated!");
     },
     onError: () => {
@@ -145,10 +157,21 @@ export const useHabits = () => {
   const createHabit = useMutation({
     mutationFn: async (habitData: HabitInput) => {
       const response = await axios.post("/api/habits", habitData);
+
+      try {
+        await axios.post("/api/achievements/check", {
+          habitId: response.data.id,
+          action: "create",
+        });
+      } catch (error) {
+        console.error("Failed to check achievements:", error);
+      }
+
       return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["habits"] });
+      queryClient.invalidateQueries({ queryKey: ["achievements"] });
       toast.success("Habit created successfully!");
     },
     onError: () => {
