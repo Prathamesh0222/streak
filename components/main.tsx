@@ -2,6 +2,7 @@ import { Calendar } from "./calendar";
 import { Dashboard } from "./dashboard";
 import { Habits } from "./habit";
 import { Settings } from "./settings";
+import { AchievementsSection } from "./achievements-section";
 import { useMemo } from "react";
 
 export const Main = ({ currentMenu }: { currentMenu: string }) => {
@@ -13,6 +14,8 @@ export const Main = ({ currentMenu }: { currentMenu: string }) => {
         return <Habits />;
       case "Calendar":
         return <Calendar />;
+      case "Achievements":
+        return <AchievementsSection />;
       case "Settings":
         return <Settings />;
       default:

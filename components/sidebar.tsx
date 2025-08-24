@@ -7,6 +7,7 @@ import {
   Settings,
   FileText,
   Calendar,
+  Trophy,
   Flame,
 } from "lucide-react";
 import { useState } from "react";
@@ -16,23 +17,24 @@ export const Sidebar = ({
   onMenuChange,
 }: {
   onMenuChange: (
-    menu: "Dashboard" | "Habits" | "Calendar" | "Settings"
+    menu: "Dashboard" | "Habits" | "Calendar" | "Achievements" | "Settings"
   ) => void;
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeMenu, setActiveMenu] = useState<
-    "Dashboard" | "Habits" | "Calendar" | "Settings"
+    "Dashboard" | "Habits" | "Calendar" | "Achievements" | "Settings"
   >("Dashboard");
 
   const menuItems = [
     { icon: Home, label: "Dashboard" },
     { icon: FileText, label: "Habits" },
     { icon: Calendar, label: "Calendar" },
+    { icon: Trophy, label: "Achievements" },
     { icon: Settings, label: "Settings" },
   ] as const;
 
   const handleMenuClick = (
-    label: "Dashboard" | "Habits" | "Calendar" | "Settings"
+    label: "Dashboard" | "Habits" | "Calendar" | "Achievements" | "Settings"
   ) => {
     setActiveMenu(label);
     onMenuChange(label);
@@ -117,7 +119,7 @@ export const Sidebar = ({
       </div>
 
       <nav className="lg:hidden fixed bottom-0 inset-x-0 border-t rounded-t-3xl border-red-500/50 bg-background z-50">
-        <ul className="grid grid-cols-4">
+        <ul className="grid grid-cols-5">
           {menuItems.map((item, index) => (
             <li key={index}>
               <button
