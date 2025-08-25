@@ -3,7 +3,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { AchievementProgress } from "@/types/achievement-types";
+import {
+  AchievementProgress,
+  ACHIEVEMENT_ICONS,
+} from "@/types/achievement-types";
 import {
   getAchievementCategoryColor,
   getAchievementCategoryIcon,
@@ -31,6 +34,21 @@ export function AchievementCard({
   const titleSize =
     size === "sm" ? "text-sm" : size === "lg" ? "text-lg" : "text-base";
 
+  const renderIcon = () => {
+    if (
+      achievementData.icon &&
+      ACHIEVEMENT_ICONS[achievementData.icon as keyof typeof ACHIEVEMENT_ICONS]
+    ) {
+      const IconComponent =
+        ACHIEVEMENT_ICONS[
+          achievementData.icon as keyof typeof ACHIEVEMENT_ICONS
+        ];
+      return <IconComponent className="h-5 w-5" />;
+    }
+    const CategoryIcon = getAchievementCategoryIcon(achievementData.category);
+    return <CategoryIcon className="h-5 w-5" />;
+  };
+
   return (
     <Card
       className={`relative transition-all duration-200 ${
@@ -44,15 +62,7 @@ export function AchievementCard({
       <CardHeader className={`${cardSize} pb-2`}>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
-            {(() => {
-              if (achievementData.icon) {
-                return <span className="text-lg">{achievementData.icon}</span>;
-              }
-              const CategoryIcon = getAchievementCategoryIcon(
-                achievementData.category
-              );
-              return <CategoryIcon className="h-4 w-4" />;
-            })()}
+            <div className="flex-shrink-0">{renderIcon()}</div>
             <div>
               <CardTitle
                 className={`${titleSize} ${

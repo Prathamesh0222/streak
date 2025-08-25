@@ -1,3 +1,15 @@
+import {
+  Target,
+  Zap,
+  Flame,
+  Crown,
+  Sprout,
+  Hammer,
+  Tent,
+  Calendar,
+  Trophy,
+} from "lucide-react";
+
 export type AchievementCategory = "STREAK" | "HABITS" | "CONSISTENCY";
 
 export interface Achievement {
@@ -44,12 +56,24 @@ export interface AchievementConfig {
   requirement: number;
 }
 
+export const ACHIEVEMENT_ICONS = {
+  Target,
+  Zap,
+  Flame,
+  Crown,
+  Sprout,
+  Hammer,
+  Tent,
+  Calendar,
+  Trophy,
+} as const;
+
 export const PREDEFINED_ACHIEVEMENTS: AchievementConfig[] = [
   // Streak achievements
   {
     name: "First Steps",
     description: "Complete a 3-day habit streak",
-    icon: "🎯",
+    icon: "Target",
     xpReward: 50,
     category: "STREAK",
     requirement: 3,
@@ -57,7 +81,7 @@ export const PREDEFINED_ACHIEVEMENTS: AchievementConfig[] = [
   {
     name: "Week Warrior",
     description: "Complete a 7-day habit streak",
-    icon: "⚡",
+    icon: "Zap",
     xpReward: 100,
     category: "STREAK",
     requirement: 7,
@@ -65,7 +89,7 @@ export const PREDEFINED_ACHIEVEMENTS: AchievementConfig[] = [
   {
     name: "Streak Master",
     description: "Complete a 30-day habit streak",
-    icon: "🔥",
+    icon: "Flame",
     xpReward: 500,
     category: "STREAK",
     requirement: 30,
@@ -73,7 +97,7 @@ export const PREDEFINED_ACHIEVEMENTS: AchievementConfig[] = [
   {
     name: "Legendary Streak",
     description: "Complete a 100-day habit streak",
-    icon: "👑",
+    icon: "Crown",
     xpReward: 1000,
     category: "STREAK",
     requirement: 100,
@@ -82,7 +106,7 @@ export const PREDEFINED_ACHIEVEMENTS: AchievementConfig[] = [
   {
     name: "Habit Beginner",
     description: "Create your first habit",
-    icon: "🌱",
+    icon: "Sprout",
     xpReward: 25,
     category: "HABITS",
     requirement: 1,
@@ -90,7 +114,7 @@ export const PREDEFINED_ACHIEVEMENTS: AchievementConfig[] = [
   {
     name: "Habit Builder",
     description: "Create 5 habits",
-    icon: "🏗️",
+    icon: "Hammer",
     xpReward: 150,
     category: "HABITS",
     requirement: 5,
@@ -98,7 +122,7 @@ export const PREDEFINED_ACHIEVEMENTS: AchievementConfig[] = [
   {
     name: "Habit Master",
     description: "Create 10 habits",
-    icon: "🎪",
+    icon: "Tent",
     xpReward: 300,
     category: "HABITS",
     requirement: 10,
@@ -107,7 +131,7 @@ export const PREDEFINED_ACHIEVEMENTS: AchievementConfig[] = [
   {
     name: "Consistent Player",
     description: "Complete habits for 7 consecutive days",
-    icon: "📅",
+    icon: "Calendar",
     xpReward: 200,
     category: "CONSISTENCY",
     requirement: 7,
@@ -115,7 +139,7 @@ export const PREDEFINED_ACHIEVEMENTS: AchievementConfig[] = [
   {
     name: "Consistency King",
     description: "Complete habits for 30 consecutive days",
-    icon: "🏆",
+    icon: "Trophy",
     xpReward: 750,
     category: "CONSISTENCY",
     requirement: 30,

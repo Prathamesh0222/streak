@@ -19,8 +19,7 @@ export const useHabits = () => {
 
       const habitsToRemove = fetchedHabits.filter((habit) => {
         if (!habit.goalTarget) return false;
-        const currentStreak = getCurrentStreak(habit);
-        return currentStreak >= habit.goalTarget;
+        return habit.goalProgress.isAchieved;
       });
 
       if (habitsToRemove.length > 0) {
@@ -53,7 +52,7 @@ export const useHabits = () => {
         (habit) =>
           habit.frequency === "DAILY" &&
           habit.status === "COMPLETED" &&
-          !isHabitCompletedToday(habit)
+          !habit.completedToday
       );
 
       if (habitsToReset.length > 0) {
@@ -179,76 +178,6 @@ export const useHabits = () => {
     },
   });
 
-  const getCurrentStreak = (habit: Habit) => {
-    if (!habit.HabitLogs || habit.HabitLogs.length === 0) return 0;
-
-    const sortedLogs = habit.HabitLogs.filter((log) => log.isCompleted).sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
-
-    if (sortedLogs.length === 0) return 0;
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const todayLog = sortedLogs.find((log) => {
-      const logDate = new Date(log.date);
-      logDate.setHours(0, 0, 0, 0);
-      return logDate.getTime() === today.getTime();
-    });
-
-    const startDate = todayLog ? today : new Date(sortedLogs[0].date);
-    startDate.setHours(0, 0, 0, 0);
-
-    let streak = 0;
-
-    for (let i = 0; i <= 365; i++) {
-      const checkDate = new Date(startDate);
-      checkDate.setDate(startDate.getDate() - i);
-      checkDate.setHours(0, 0, 0, 0);
-
-      const hasLogForDate = sortedLogs.some((log) => {
-        const logDate = new Date(log.date);
-        logDate.setHours(0, 0, 0, 0);
-        return logDate.getTime() === checkDate.getTime();
-      });
-
-      if (hasLogForDate) {
-        streak++;
-      } else {
-        break;
-      }
-    }
-
-    return streak;
-  };
-
-  const isHabitCompletedToday = (habit: Habit) => {
-    const today = new Date().toLocaleDateString("en-CA");
-    return (habit.HabitLogs || []).some((log) => {
-      const logDate = new Date(log.date).toLocaleDateString("en-CA");
-      return logDate === today && log.isCompleted;
-    });
-  };
-
-  const calculateGoalProgress = (habit: Habit) => {
-    const goalTarget = habit.goalTarget || 7;
-    const currentValue = getCurrentStreak(habit);
-    const targetValue = goalTarget;
-    const progressPercentage = Math.min(
-      (currentValue / targetValue) * 100,
-      100
-    );
-    const isAchieved = currentValue >= targetValue;
-
-    return {
-      currentValue,
-      targetValue,
-      progressPercentage,
-      isAchieved,
-    };
-  };
-
   return {
     habits,
     loading,
@@ -272,8 +201,5 @@ export const useHabits = () => {
       });
     },
     isStatusUpdating: updateHabit.isPending,
-    getCurrentStreak,
-    calculateGoalProgress,
-    isHabitCompletedToday,
   };
 };

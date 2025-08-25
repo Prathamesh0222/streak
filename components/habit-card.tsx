@@ -33,15 +33,11 @@ import { useState } from "react";
 
 export const HabitCard = ({
   habit,
-  isCompletedToday,
-  completionRate,
-  currentStreak,
   isLoading,
   isStatusUpdating,
   onToggleCompletion,
   onUpdateStatus,
   onDeleteHabit,
-  goalProgress,
 }: HabitCardProps) => {
   const [open, setOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -88,7 +84,7 @@ export const HabitCard = ({
   return (
     <div
       className={`border rounded-xl p-6 hover:shadow-md transition-all duration-300 h-full flex flex-col bg-card ${
-        isCompletedToday
+        habit.completedToday
           ? "border-red-500 bg-red-50 dark:bg-red-950/20"
           : "border-red-500/20 hover:border-red-200 dark:hover:border-red-800"
       }`}
@@ -106,17 +102,17 @@ export const HabitCard = ({
                 onToggleCompletion(
                   habit.id,
                   new Date().toLocaleDateString("en-CA"),
-                  isCompletedToday
+                  habit.completedToday
                 )
               }
               disabled={isLoading}
               className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 cursor-pointer ${
-                isCompletedToday
+                habit.completedToday
                   ? "bg-red-500 border-red-500 text-white"
                   : "border-gray-300 dark:border-gray-600 hover:border-red-500 dark:hover:border-red-400"
               }`}
             >
-              {isCompletedToday && <Check className="w-4 h-4" />}
+              {habit.completedToday && <Check className="w-4 h-4" />}
             </button>
           </div>
 
@@ -149,7 +145,7 @@ export const HabitCard = ({
             </Badge>
           </div>
 
-          {goalProgress && (
+          {habit.goalProgress && (
             <div className="my-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
@@ -159,25 +155,27 @@ export const HabitCard = ({
                   </span>
                 </div>
                 <span className="text-sm text-red-300">
-                  {goalProgress.currentValue}/{goalProgress.targetValue}
+                  {habit.goalProgress.currentValue}/
+                  {habit.goalProgress.targetValue}
                 </span>
               </div>
 
               <Progress
-                value={goalProgress.progressPercentage}
+                value={habit.goalProgress.progressPercentage}
                 className="h-2 mb-2"
               />
 
               <div className="flex items-center justify-between text-xs text-red-600 dark:text-red-400">
                 <span>
-                  {Math.round(goalProgress.progressPercentage)}% complete
+                  {Math.round(habit.goalProgress.progressPercentage)}% complete
                 </span>
-                {goalProgress.currentValue !== undefined &&
-                  goalProgress.currentValue > 0 && (
+                {habit.goalProgress.currentValue !== undefined &&
+                  habit.goalProgress.currentValue > 0 && (
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       <span>
-                        {goalProgress.targetValue - goalProgress.currentValue}{" "}
+                        {habit.goalProgress.targetValue -
+                          habit.goalProgress.currentValue}{" "}
                         days left
                       </span>
                     </div>
@@ -189,11 +187,11 @@ export const HabitCard = ({
           <div className="flex items-center gap-6 text-sm">
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
               <Flame className="w-4 h-4 text-red-500" />
-              <span>{currentStreak} day streak</span>
+              <span>{habit.currentStreak} day streak</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
               <TrendingUp className="w-4 h-4 text-blue-500" />
-              <span>{completionRate}% this week</span>
+              <span>{habit.totalCompletions} completions</span>
             </div>
           </div>
         </div>
@@ -206,7 +204,7 @@ export const HabitCard = ({
           onValueChange={(value: "COMPLETED" | "PENDING" | "ONGOING") =>
             onUpdateStatus(habit.id, value)
           }
-          disabled={isStatusUpdating || isCompletedToday}
+          disabled={isStatusUpdating || habit.completedToday}
         >
           <SelectTrigger className="w-32 h-9 cursor-pointer">
             <SelectValue />

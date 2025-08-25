@@ -8,7 +8,7 @@ import { habitSchema, HabitInput } from "@/lib/validate";
 import { Activity, Plus, Search, Tag } from "lucide-react";
 import { HabitCategoryChart } from "./habit-category";
 import { ProgressChart } from "./progress-chart";
-import { Habit, PREDEFINED_CATEGORIES } from "@/types/habit-types";
+import { PREDEFINED_CATEGORIES } from "@/types/habit-types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createHabit as CreateHabitDialog } from "./createHabit";
 import { HabitCard } from "./habit-card";
@@ -30,11 +30,8 @@ export const Habits = () => {
     createHabit,
     updateHabit,
     deleteHabit,
-    getCurrentStreak,
-    calculateGoalProgress,
     toggleHabitCompletion,
     isStatusUpdating,
-    isHabitCompletedToday,
   } = useHabits();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -80,22 +77,6 @@ export const Habits = () => {
       return matchesStatus && matchesCategory && matchesSearch;
     });
   }, [habits, statusFilter, categoryFilter, searchQuery]);
-
-  const getCompletionRate = (habit: Habit) => {
-    if (!habit.HabitLogs || habit.HabitLogs.length === 0) return 0;
-
-    const last7Days = habit.HabitLogs.filter((log) => {
-      const logDate = new Date(log.date);
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      return logDate >= sevenDaysAgo;
-    });
-
-    if (last7Days.length === 0) return 0;
-
-    const completedLogs = last7Days.filter((log) => log.isCompleted);
-    return Math.round((completedLogs.length / last7Days.length) * 100);
-  };
 
   return (
     <div className="mt-8">
@@ -190,24 +171,15 @@ export const Habits = () => {
           ) : (
             <div className="space-y-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {filteredHabits.map((habit) => {
-                const isCompletedToday = isHabitCompletedToday(habit);
-                const completionRate = getCompletionRate(habit);
-                const currentStreak = getCurrentStreak(habit);
-                const goalProgress = calculateGoalProgress(habit);
-
                 return (
                   <HabitCard
                     key={habit.id}
                     habit={habit}
-                    isCompletedToday={isCompletedToday}
-                    completionRate={completionRate}
-                    currentStreak={currentStreak}
                     isLoading={loading}
                     isStatusUpdating={isStatusUpdating}
                     onToggleCompletion={toggleHabitCompletion}
                     onUpdateStatus={updateHabit}
                     onDeleteHabit={deleteHabit}
-                    goalProgress={goalProgress}
                   />
                 );
               })}
