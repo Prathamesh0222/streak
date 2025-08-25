@@ -6,6 +6,13 @@ interface HabitLog {
   createdAt: string;
 }
 
+export interface GoalProgress {
+  currentValue: number;
+  targetValue: number;
+  progressPercentage: number;
+  isAchieved: boolean;
+}
+
 export interface Habit {
   id: string;
   title: string;
@@ -18,6 +25,11 @@ export interface Habit {
   isGoalActive?: boolean;
   createdAt: string;
   HabitLogs: HabitLog[];
+  currentStreak: number;
+  completedToday: boolean;
+  goalProgress: GoalProgress;
+  totalCompletions: number;
+  lastCompletionDate: string | null;
 }
 
 export const PREDEFINED_CATEGORIES = [
@@ -35,18 +47,8 @@ export const PREDEFINED_CATEGORIES = [
   "Other",
 ];
 
-export interface GoalProgress {
-  currentValue: number;
-  targetValue: number;
-  progressPercentage: number;
-  isAchieved: boolean;
-}
-
 export interface HabitCardProps {
   habit: Habit;
-  isCompletedToday: boolean;
-  completionRate: number;
-  currentStreak: number;
   isLoading: boolean;
   isStatusUpdating: boolean;
   onToggleCompletion: (
@@ -59,5 +61,4 @@ export interface HabitCardProps {
     status: "COMPLETED" | "PENDING" | "ONGOING"
   ) => void;
   onDeleteHabit: (habitId: string) => void;
-  goalProgress?: GoalProgress | null;
 }

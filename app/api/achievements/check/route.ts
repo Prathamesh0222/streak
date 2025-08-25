@@ -1,30 +1,9 @@
+import { getLevelFromXp } from "@/lib/achievements";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { calculateStreak } from "@/lib/streak";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-
-function getXpForLevel(level: number): number {
-  return Math.floor((100 * level * (level + 1)) / 2);
-}
-
-function getLevelFromXp(totalXp: number): { level: number; currentXp: number } {
-  let level = 1;
-  let xpUsed = 0;
-
-  while (true) {
-    const xpForNextLevel = getXpForLevel(level);
-    if (xpUsed + xpForNextLevel > totalXp) {
-      break;
-    }
-    xpUsed += xpForNextLevel;
-    level++;
-  }
-
-  return {
-    level,
-    currentXp: totalXp - xpUsed,
-  };
-}
 
 export const POST = async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
@@ -148,45 +127,3 @@ export const POST = async (req: NextRequest) => {
     );
   }
 };
-
-function calculateStreak(logs: any[]): number {
-  if (!logs || logs.length === 0) return 0;
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const sortedLogs = logs.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
-
-  const todayLog = sortedLogs.find((log) => {
-    const logDate = new Date(log.date);
-    logDate.setHours(0, 0, 0, 0);
-    return logDate.getTime() === today.getTime();
-  });
-
-  const startDate = todayLog ? today : new Date(sortedLogs[0].date);
-  startDate.setHours(0, 0, 0, 0);
-
-  let streak = 0;
-
-  for (let i = 0; i <= 365; i++) {
-    const checkDate = new Date(startDate);
-    checkDate.setDate(startDate.getDate() - i);
-    checkDate.setHours(0, 0, 0, 0);
-
-    const hasLogForDate = sortedLogs.some((log) => {
-      const logDate = new Date(log.date);
-      logDate.setHours(0, 0, 0, 0);
-      return logDate.getTime() === checkDate.getTime();
-    });
-
-    if (hasLogForDate) {
-      streak++;
-    } else {
-      break;
-    }
-  }
-
-  return streak;
-}

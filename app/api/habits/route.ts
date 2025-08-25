@@ -1,6 +1,12 @@
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import {
+  calculateGoalProgress,
+  calculateStreak,
+  isCompletedToday,
+} from "@/lib/streak";
 import { habitSchema } from "@/lib/validate";
+
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -73,14 +79,30 @@ export const GET = async () => {
           orderBy: {
             date: "desc",
           },
-          take: 7,
         },
       },
       orderBy: {
         createdAt: "desc",
       },
     });
-    return NextResponse.json(habits);
+
+    const habitsWithMetadata = habits.map((habit) => {
+      const logs = habit.HabitLogs || [];
+
+      return {
+        ...habit,
+        currentStreak: calculateStreak(logs),
+        completedToday: isCompletedToday(logs),
+        goalProgress: calculateGoalProgress(logs, habit.goalTarget || 7),
+
+        totalCompletions: logs.filter((log) => log.isCompleted).length,
+        lastCompletionDate: logs.find((log) => log.isCompleted)?.date || null,
+
+        HabitLogs: logs.slice(0, 7),
+      };
+    });
+
+    return NextResponse.json(habitsWithMetadata);
   } catch (error) {
     console.error("Failed to fetch habits", error);
     return NextResponse.json(
