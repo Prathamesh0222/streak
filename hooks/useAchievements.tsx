@@ -89,20 +89,6 @@ export const useAchievements = () => {
     },
   });
 
-  const seedAchievements = useMutation({
-    mutationFn: async () => {
-      const response = await axios.post("/api/achievements/seed");
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["achievements"] });
-      toast.success("Achievements database seeded!");
-    },
-    onError: () => {
-      toast.error("Failed to seed achievements");
-    },
-  });
-
   const getCompletedAchievements = () => {
     return data?.achievements.filter((a) => a.isCompleted) || [];
   };
@@ -146,7 +132,6 @@ export const useAchievements = () => {
     checkAchievements: (habitId: string, action: string = "complete") =>
       checkAchievements.mutate({ habitId, action }),
     initializeAchievements: () => initializeAchievements.mutate(),
-    seedAchievements: () => seedAchievements.mutate(),
     isCheckingAchievements: checkAchievements.isPending,
     getCompletedAchievements,
     getInProgressAchievements,

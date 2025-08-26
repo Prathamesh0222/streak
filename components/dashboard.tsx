@@ -17,8 +17,8 @@ import { HeatMap } from "./heatmap";
 import { WeeklyStats } from "./weekly-stats";
 import { HabitCategoryChart } from "./habit-category";
 import { ProgressChart } from "./progress-chart";
-import { UserLevel } from "./user-level";
 import { useHabits } from "@/hooks/useHabits";
+import { UserLevelIcon } from "./user-level-icons";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -100,9 +100,9 @@ export const Dashboard = () => {
           <div className="md:w-full max-w-4xl">
             <HeatMap />
           </div>
+          <UserLevelIcon />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 mb-12 mb:mb-0">
-          <UserLevel />
           <HabitCategoryChart habits={habits} />
           <ProgressChart habits={habits} />
           <div className="break-inside-avoid mb-6">
