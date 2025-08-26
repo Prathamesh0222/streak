@@ -1,3 +1,5 @@
+import { FrequencyType, PriorityType } from "@prisma/client";
+
 interface HabitLog {
   id: string;
   date: string;
@@ -62,3 +64,37 @@ export interface HabitCardProps {
   ) => void;
   onDeleteHabit: (habitId: string) => void;
 }
+
+export const predefinedHabits: Array<{
+  title: string;
+  description?: string;
+  category?: string;
+  frequency: FrequencyType;
+  priority: PriorityType;
+  goalTarget?: number;
+}> = [
+  {
+    title: "Morning Walk",
+    description: "Walk for 20 minutes",
+    category: "Health",
+    frequency: "DAILY",
+    priority: "MEDIUM",
+    goalTarget: 7,
+  },
+  {
+    title: "Read Books",
+    description: "Read 10 pages",
+    category: "Learning",
+    frequency: "DAILY",
+    priority: "LOW",
+    goalTarget: 7,
+  },
+  {
+    title: "Weekly Review",
+    description: "Plan the next week",
+    category: "Planning",
+    frequency: "WEEKLY",
+    priority: "HIGH",
+    goalTarget: 4,
+  },
+];
