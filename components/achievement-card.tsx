@@ -53,7 +53,7 @@ export function AchievementCard({
     <Card
       className={`relative transition-all duration-200 ${
         isCompleted
-          ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950"
+          ? "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950"
           : isLocked
           ? "opacity-60"
           : "hover:shadow-md"
@@ -100,7 +100,7 @@ export function AchievementCard({
         </div>
       </CardHeader>
 
-      {!isLocked && (
+      {!isLocked && !isCompleted && (
         <CardContent className={`${cardSize} pt-0`}>
           <div className="space-y-1">
             <div className="flex justify-between text-xs text-muted-foreground">
