@@ -50,7 +50,7 @@ export const HeatMap = () => {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 365);
   return (
-    <div className="hidden md:block p-4 border rounded-xl bg-card">
+    <div className="hidden md:block p-4 rounded-xl bg-card border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 hover:shadow-md transition-all duration-300">
       <CalendarHeatmap
         startDate={startDate}
         endDate={endDate}

@@ -140,11 +140,7 @@ export function WeeklyStats({
               <ChartTooltipContent labelKey="label" nameKey="completions" />
             }
           />
-          <Bar
-            dataKey="count"
-            fill="var(--color-completions)"
-            radius={[6, 6, 0, 0]}
-          />
+          <Bar dataKey="count" fill="#ef4444" radius={[6, 6, 0, 0]} />
         </BarChart>
       </ChartContainer>
     </div>

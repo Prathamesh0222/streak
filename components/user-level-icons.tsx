@@ -52,7 +52,7 @@ export function UserLevelIcon() {
   };
 
   return (
-    <Card className="w-auto gap-2">
+    <Card className="w-auto gap-2  border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 hover:shadow-md transition-all duration-300">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-sm">
           {(() => {

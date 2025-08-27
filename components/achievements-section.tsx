@@ -27,7 +27,6 @@ export function AchievementsSection() {
     getLockedAchievements,
     getAchievementsByCategory,
     getCompletionRate,
-    seedAchievements,
   } = useAchievements();
 
   if (loading) {
@@ -56,7 +55,7 @@ export function AchievementsSection() {
   const completionRate = getCompletionRate();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mb-12 lg:mb-0">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <UserLevel />
 
@@ -101,15 +100,6 @@ export function AchievementsSection() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Achievements</CardTitle>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={seedAchievements}
-              className="flex items-center gap-2"
-            >
-              <RefreshCw className="h-4 w-4" />
-              Seed Achievements
-            </Button>
           </div>
         </CardHeader>
         <CardContent>
