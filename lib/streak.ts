@@ -71,3 +71,15 @@ export function calculateGoalProgress(
     isAchieved,
   };
 }
+
+export const getWeekRange = (startDate: Date): string => {
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 6);
+  return `${startDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  })} - ${endDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  })}`;
+};
