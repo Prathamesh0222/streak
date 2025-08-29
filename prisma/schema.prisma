@@ -76,6 +76,18 @@ model UserAchievement {
   @@index([userId])
 }
 
+model WeeklyInsight {
+  id        String   @id @default(uuid())
+  userEmail String
+  weekStart DateTime
+  insights  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userEmail, weekStart])
+  @@index([userEmail, weekStart])
+}
+
 enum StatusType {
   COMPLETED
   PENDING

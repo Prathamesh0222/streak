@@ -11,6 +11,7 @@
     "seed": "bunx prisma/seed.ts"
   },
   "dependencies": {
+    "@google/genai": "^1.16.0",
     "@hookform/resolvers": "^5.2.0",
     "@prisma/client": "^6.12.0",
     "@radix-ui/react-dialog": "^1.1.14",
