@@ -19,6 +19,7 @@ import { HabitCategoryChart } from "./habit-category";
 import { ProgressChart } from "./progress-chart";
 import { useHabits } from "@/hooks/useHabits";
 import { UserLevelIcon } from "./user-level-icons";
+import { WeeklyAIInsights } from "./weekly-ai-insights";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -111,6 +112,7 @@ export const Dashboard = () => {
           <div className="h-full">
             <Pomodoro />
           </div>
+          <WeeklyAIInsights habits={habits} />
         </div>
       </section>
     </>
