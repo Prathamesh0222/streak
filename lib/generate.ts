@@ -27,7 +27,7 @@ export const generateWeeklyInsights = async (
   };
 
   const prompt = `
-    Analyze this user's weekly habit data and provide 3-4 comprehensive weekly insights.
+    Analyze this user's weekly habit data and provide 3-4 brief weekly insights.
     
     Weekly Data:
     ${JSON.stringify(weeklyData, null, 2)}
@@ -36,27 +36,22 @@ export const generateWeeklyInsights = async (
     {
       "insights": [
         {
-          "title": "Weekly insight title",
-          "description": "Detailed weekly analysis with specific numbers and trends",
+          "title": "Brief insight title (max 6 words)",
+          "description": "One clear sentence with specific numbers. Max 25 words.",
           "type": "achievement|pattern|prediction|recommendation",
           "priority": "high|medium|low"
         }
       ]
     }
     
-    Focus on:
-    1. **Weekly Achievements**: What they accomplished this week
-    2. **Weekly Patterns**: Trends, best/worst days, category performance
-    3. **Weekly Predictions**: Next week forecasts based on current trends
-    4. **Weekly Recommendations**: Specific actions for next week
+    Requirements:
+    - Title: Maximum 6 words
+    - Description: Maximum 25 words, one sentence only
+    - Include specific numbers/percentages
+    - Be encouraging and actionable
+    - Focus on the most important insight only
     
-    Make insights:
-    - Specific with actual numbers and percentages
-    - Actionable with clear next steps
-    - Encouraging and motivating
-    - Based on the full week's data
-    
-    Return only valid JSON, no additional text.
+    Return only valid JSON, no markdown formatting.
     `;
 
   try {
@@ -66,10 +61,21 @@ export const generateWeeklyInsights = async (
     });
 
     const text = response.text;
+    let cleanText = text;
+    if (cleanText?.startsWith("```json")) {
+      cleanText = cleanText.slice(7);
+    }
+    if (cleanText?.startsWith("```")) {
+      cleanText = cleanText.slice(3);
+    }
+    if (cleanText?.endsWith("```")) {
+      cleanText = cleanText.slice(0, -3);
+    }
+    cleanText = cleanText?.trim();
 
     let aiInsights;
     try {
-      aiInsights = JSON.parse(text!);
+      aiInsights = JSON.parse(cleanText!);
     } catch (error) {
       console.error("Failed to parse Gemini response:", text);
       throw new Error("Failed to parse AI response");

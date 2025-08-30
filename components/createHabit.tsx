@@ -270,11 +270,6 @@ export const createHabit = ({
                             onChange={(e) => {
                               const value = Number(e.target.value);
                               field.onChange(value || undefined);
-                              if (value > 0) {
-                                form.setValue("isGoalActive", true);
-                              } else {
-                                form.setValue("isGoalActive", false);
-                              }
                             }}
                           />
                         </FormControl>

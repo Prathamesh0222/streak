@@ -97,22 +97,25 @@ export const Dashboard = () => {
           today?
         </p>
 
-        <div className="flex w-full mt-8 md:gap-4">
-          <div className="md:w-full max-w-4xl">
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 mt-8 mb-12 md:mb-0">
+          <div className="break-inside-avoid mb-6">
             <HeatMap />
           </div>
-          <UserLevelIcon />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 mb-12 mb:mb-0">
-          <HabitCategoryChart habits={habits} />
-          <ProgressChart habits={habits} />
+          <div className="break-inside-avoid mb-6">
+            <UserLevelIcon />
+          </div>
+          <div className="break-inside-avoid mb-6">
+            <ProgressChart habits={habits} />
+          </div>
+          <div className="break-inside-avoid mb-6">
+            <HabitCategoryChart habits={habits} />
+          </div>
           <div className="break-inside-avoid mb-6">
             <WeeklyStats habits={habits} loading={loading} />
           </div>
-          <div className="h-full">
-            <Pomodoro />
+          <div className="break-inside-avoid mb-6">
+            <WeeklyAIInsights habits={habits} />
           </div>
-          <WeeklyAIInsights habits={habits} />
         </div>
       </section>
     </>
