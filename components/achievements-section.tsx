@@ -3,7 +3,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useAchievements } from "@/hooks/useAchievements";
 import { AchievementCard } from "./achievement-card";
@@ -12,9 +11,8 @@ import {
   Trophy,
   Target,
   Calendar,
-  RefreshCw,
-  PartyPopper,
-  Crosshair,
+  CheckCircle,
+  Clock,
   Lock,
 } from "lucide-react";
 
@@ -31,15 +29,18 @@ export function AchievementsSection() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <Card>
           <CardContent className="p-6">
             <div className="animate-pulse space-y-4">
-              <div className="h-6 bg-gray-200 rounded w-1/3"></div>
-              <div className="h-20 bg-gray-200 rounded"></div>
+              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+              <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-32 bg-gray-200 rounded"></div>
+                  <div
+                    key={i}
+                    className="h-32 bg-gray-200 dark:bg-gray-700 rounded"
+                  ></div>
                 ))}
               </div>
             </div>
@@ -58,11 +59,10 @@ export function AchievementsSection() {
     <div className="space-y-6 mb-12 lg:mb-0">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <UserLevel />
-
-        <Card>
+        <Card className="border-red-500/20 hover:border-red-200 dark:hover:border-red-800 hover:shadow-md transition-all duration-300">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
-              <Trophy className="h-4 w-4" />
+              <Trophy className="h-4 w-4 text-red-500" />
               Achievements
             </CardTitle>
           </CardHeader>
@@ -79,7 +79,7 @@ export function AchievementsSection() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-red-500/20 hover:border-red-200 dark:hover:border-red-800 hover:shadow-md transition-all duration-300">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Quick Stats</CardTitle>
           </CardHeader>
@@ -96,11 +96,9 @@ export function AchievementsSection() {
         </Card>
       </div>
 
-      <Card>
+      <Card className="border-red-500/20">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Achievements</CardTitle>
-          </div>
+          <CardTitle>Achievements</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="all" className="w-full">
@@ -124,11 +122,11 @@ export function AchievementsSection() {
             </TabsList>
 
             <TabsContent value="all" className="mt-4">
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {completedAchievements.length > 0 && (
                   <div>
-                    <h3 className="font-medium text-green-600 dark:text-green-400 mb-2 flex items-center gap-2">
-                      <PartyPopper className="h-4 w-4" />
+                    <h3 className="font-medium text-red-600 dark:text-red-400 mb-3 flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4" />
                       Completed ({completedAchievements.length})
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -144,8 +142,8 @@ export function AchievementsSection() {
 
                 {inProgressAchievements.length > 0 && (
                   <div>
-                    <h3 className="font-medium text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2">
-                      <Crosshair className="h-4 w-4" />
+                    <h3 className="font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                      <Clock className="h-4 w-4" />
                       In Progress ({inProgressAchievements.length})
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -161,7 +159,7 @@ export function AchievementsSection() {
 
                 {lockedAchievements.length > 0 && (
                   <div>
-                    <h3 className="font-medium text-muted-foreground mb-2 flex items-center gap-2">
+                    <h3 className="font-medium text-muted-foreground mb-3 flex items-center gap-2">
                       <Lock className="h-4 w-4" />
                       Locked ({lockedAchievements.length})
                     </h3>
