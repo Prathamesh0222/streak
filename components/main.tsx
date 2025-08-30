@@ -1,4 +1,4 @@
-import { Calendar } from "./calendar";
+import { CalendarTrack } from "./calendarTrack";
 import { Dashboard } from "./dashboard";
 import { Habits } from "./habit";
 import { Settings } from "./settings";
@@ -13,7 +13,7 @@ export const Main = ({ currentMenu }: { currentMenu: string }) => {
       case "Habits":
         return <Habits />;
       case "Calendar":
-        return <Calendar />;
+        return <CalendarTrack />;
       case "Achievements":
         return <AchievementsSection />;
       case "Settings":
