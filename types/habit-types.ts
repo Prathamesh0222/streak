@@ -15,6 +15,19 @@ export interface GoalProgress {
   isAchieved: boolean;
 }
 
+export interface DateHabits {
+  id: string;
+  date: string;
+  isCompleted: boolean;
+  habitId: string;
+  habit: {
+    id: string;
+    title: string;
+    category?: string;
+    priority: "HIGH" | "MEDIUM" | "LOW";
+  };
+}
+
 export interface Habit {
   id: string;
   title: string;

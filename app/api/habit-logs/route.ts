@@ -86,11 +86,69 @@ export const GET = async (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.url);
     const habitId = searchParams.get("habitId");
+    const dateParam = searchParams.get("date");
+
+    if (dateParam) {
+      const targetDate = new Date(dateParam);
+      const startOfDay = new Date(targetDate);
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date(targetDate);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const userHabits = await prisma.habit.findMany({
+        where: {
+          userId: session.user.id,
+          createdAt: {
+            lte: endOfDay,
+          },
+        },
+        include: {
+          HabitLogs: {
+            where: {
+              date: {
+                gte: startOfDay,
+                lte: endOfDay,
+              },
+            },
+          },
+        },
+      });
+
+      const habitLogs = [];
+
+      for (const habit of userHabits) {
+        const logForDate = habit.HabitLogs[0];
+
+        habitLogs.push({
+          id: logForDate?.id || `pending-${habit.id}`,
+          date: targetDate.toISOString(),
+          isCompleted: logForDate?.isCompleted || false,
+          habitId: habit.id,
+          habit: {
+            id: habit.id,
+            title: habit.title,
+            category: habit.category,
+            priority: habit.priority,
+          },
+        });
+      }
+
+      const totalHabits = habitLogs.length;
+      const completedHabits = habitLogs.filter((log) => log.isCompleted).length;
+
+      return NextResponse.json({
+        date: targetDate.toISOString().split("T")[0],
+        totalHabits,
+        completedHabits,
+        habits: habitLogs,
+      });
+    }
 
     if (!habitId) {
       return NextResponse.json(
         {
-          error: "Habit ID is required",
+          error: "Habit ID or date is required",
         },
         {
           status: 400,
