@@ -26,9 +26,9 @@ export function UserLevel() {
     (userProgress.xp / userProgress.xpForCurrentLevel) * 100;
 
   return (
-    <Card className="w-full">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm">
+    <div className="bg-card border border-red-500/20 rounded-lg p-3">
+      <div className="p-4 pb-3">
+        <div className="flex items-center gap-2 text-sm font-medium mb-3">
           {(() => {
             const LevelIcon = getLevelBadge(userProgress.level);
             return <LevelIcon className="h-4 w-4" />;
@@ -40,9 +40,9 @@ export function UserLevel() {
           >
             {userProgress.totalXp} XP
           </Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0">
+        </div>
+      </div>
+      <div className="px-4 pb-4">
         <div className="space-y-2">
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>
@@ -52,7 +52,7 @@ export function UserLevel() {
           </div>
           <Progress value={progressPercentage} className="h-2" />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

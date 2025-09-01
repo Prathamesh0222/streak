@@ -1,7 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useAchievements } from "@/hooks/useAchievements";
@@ -14,7 +12,10 @@ import {
   CheckCircle,
   Clock,
   Lock,
+  Award,
+  Star,
 } from "lucide-react";
+import { useState } from "react";
 
 export function AchievementsSection() {
   const {
@@ -29,23 +30,26 @@ export function AchievementsSection() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="animate-pulse space-y-4">
-              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
-              <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[...Array(6)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-32 bg-gray-200 dark:bg-gray-700 rounded"
-                  ></div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="space-y-8">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-6"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {[...Array(3)].map((_, i) => (
+              <div
+                key={i}
+                className="h-24 bg-gray-200 dark:bg-gray-700 rounded-lg"
+              ></div>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg"
+              ></div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -55,20 +59,42 @@ export function AchievementsSection() {
   const lockedAchievements = getLockedAchievements();
   const completionRate = getCompletionRate();
 
+  const categories = [
+    { id: "all", name: "All", icon: Award },
+    { id: "STREAK", name: "Streak", icon: Target },
+    { id: "HABITS", name: "Habits", icon: Trophy },
+    { id: "CONSISTENCY", name: "Consistency", icon: Calendar },
+  ];
+
+  const [activeCategory, setActiveCategory] = useState("all");
+
+  const getAchievementsForCategory = (category: string) => {
+    if (category === "all") return achievements;
+    return getAchievementsByCategory(category);
+  };
+
   return (
-    <div className="space-y-6 mb-12 lg:mb-0">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="space-y-8 mb-12 lg:mb-0">
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+          <Trophy className="h-4 w-4 text-white" />
+        </div>
+        <h2 className="text-xl font-medium">Achievements</h2>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <UserLevel />
-        <Card className="border-red-500/20 hover:border-red-200 dark:hover:border-red-800 hover:shadow-md transition-all duration-300">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Trophy className="h-4 w-4 text-red-500" />
+
+        <div className="bg-card border border-red-500/20 rounded-lg p-3">
+          <div className="p-4 pb-3">
+            <div className="flex items-center gap-2 text-sm font-medium mb-3">
+              <Star className="h-4 w-4 text-red-500" />
               Achievements
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
+            </div>
+          </div>
+          <div className="px-4 pb-4">
             <div className="space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Completed</span>
                 <span>
                   {completedAchievements.length} / {achievements.length}
@@ -76,121 +102,184 @@ export function AchievementsSection() {
               </div>
               <Progress value={completionRate} className="h-2" />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="border-red-500/20 hover:border-red-200 dark:hover:border-red-800 hover:shadow-md transition-all duration-300">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Quick Stats</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0 space-y-1">
-            <div className="flex justify-between text-xs">
-              <span>In Progress:</span>
-              <Badge variant="secondary">{inProgressAchievements.length}</Badge>
+        <div className="bg-card border border-red-500/20 rounded-lg p-7">
+          <div className="flex items-center gap-2 mb-3">
+            <CheckCircle className="h-4 w-4 text-red-500" />
+            <span className="font-medium text-sm">Status</span>
+          </div>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-muted-foreground">Active</span>
+              <Badge
+                variant="default"
+                className="bg-red-500 hover:bg-red-600 text-xs"
+              >
+                {inProgressAchievements.length}
+              </Badge>
             </div>
-            <div className="flex justify-between text-xs">
-              <span>Locked:</span>
-              <Badge variant="outline">{lockedAchievements.length}</Badge>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-muted-foreground">Pending</span>
+              <Badge variant="outline" className="text-xs">
+                {lockedAchievements.length}
+              </Badge>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
-      <Card className="border-red-500/20">
-        <CardHeader>
-          <CardTitle>Achievements</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="all" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="STREAK" className="flex items-center gap-1">
-                <Target className="h-3 w-3" />
-                Streak
-              </TabsTrigger>
-              <TabsTrigger value="HABITS" className="flex items-center gap-1">
-                <Trophy className="h-3 w-3" />
-                Habits
-              </TabsTrigger>
-              <TabsTrigger
-                value="CONSISTENCY"
-                className="flex items-center gap-1"
+      <div className="flex gap-2 overflow-x-auto">
+        {categories.map((category) => {
+          const IconComponent = category.icon;
+          const isActive = activeCategory === category.id;
+          const count = getAchievementsForCategory(category.id).length;
+
+          return (
+            <button
+              key={category.id}
+              onClick={() => setActiveCategory(category.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-colors ${
+                isActive
+                  ? "bg-red-500 text-white"
+                  : "bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <IconComponent className="h-3 w-3" />
+              {category.name}
+              <span
+                className={`text-xs px-1.5 py-0.5 rounded ${
+                  isActive ? "bg-red-600" : "bg-background"
+                }`}
               >
-                <Calendar className="h-3 w-3" />
-                Consistency
-              </TabsTrigger>
-            </TabsList>
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
-            <TabsContent value="all" className="mt-4">
-              <div className="space-y-6">
-                {completedAchievements.length > 0 && (
-                  <div>
-                    <h3 className="font-medium text-red-600 dark:text-red-400 mb-3 flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4" />
-                      Completed ({completedAchievements.length})
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {completedAchievements.map((achievement) => (
-                        <AchievementCard
-                          key={achievement.id}
-                          achievement={achievement}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {inProgressAchievements.length > 0 && (
-                  <div>
-                    <h3 className="font-medium text-muted-foreground mb-3 flex items-center gap-2">
-                      <Clock className="h-4 w-4" />
-                      In Progress ({inProgressAchievements.length})
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {inProgressAchievements.map((achievement) => (
-                        <AchievementCard
-                          key={achievement.id}
-                          achievement={achievement}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {lockedAchievements.length > 0 && (
-                  <div>
-                    <h3 className="font-medium text-muted-foreground mb-3 flex items-center gap-2">
-                      <Lock className="h-4 w-4" />
-                      Locked ({lockedAchievements.length})
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {lockedAchievements.map((achievement) => (
-                        <AchievementCard
-                          key={achievement.id}
-                          achievement={achievement}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-
-            {(["STREAK", "HABITS", "CONSISTENCY"] as const).map((category) => (
-              <TabsContent key={category} value={category} className="mt-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {getAchievementsByCategory(category).map((achievement) => (
-                    <AchievementCard
-                      key={achievement.id}
-                      achievement={achievement}
-                    />
-                  ))}
+      <div className="space-y-6">
+        {completedAchievements.length > 0 &&
+          (activeCategory === "all" ||
+            getAchievementsByCategory(activeCategory).some((a) =>
+              completedAchievements.find((ca) => ca.id === a.id)
+            )) && (
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-5 h-5 bg-red-500 rounded flex items-center justify-center">
+                  <CheckCircle className="h-3 w-3 text-white" />
                 </div>
-              </TabsContent>
-            ))}
-          </Tabs>
-        </CardContent>
-      </Card>
+                <h3 className="font-medium text-red-600 dark:text-red-400">
+                  Completed
+                </h3>
+                <div className="flex-1 border-b border-red-500/20"></div>
+                <span className="text-xs text-red-500 bg-red-50 dark:bg-red-950/30 px-2 py-1 rounded">
+                  {activeCategory === "all"
+                    ? completedAchievements.length
+                    : getAchievementsByCategory(activeCategory).filter((a) =>
+                        completedAchievements.find((ca) => ca.id === a.id)
+                      ).length}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {(activeCategory === "all"
+                  ? completedAchievements
+                  : completedAchievements.filter((a) =>
+                      getAchievementsByCategory(activeCategory as any).find(
+                        (ca) => ca.id === a.id
+                      )
+                    )
+                ).map((achievement) => (
+                  <AchievementCard
+                    key={achievement.id}
+                    achievement={achievement}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+        {inProgressAchievements.length > 0 &&
+          (activeCategory === "all" ||
+            getAchievementsByCategory(activeCategory as any).some((a) =>
+              inProgressAchievements.find((ia) => ia.id === a.id)
+            )) && (
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-5 h-5 bg-muted rounded flex items-center justify-center">
+                  <Clock className="h-3 w-3 text-muted-foreground" />
+                </div>
+                <h3 className="font-medium text-muted-foreground">
+                  In Progress
+                </h3>
+                <div className="flex-1 border-b border-border"></div>
+                <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+                  {activeCategory === "all"
+                    ? inProgressAchievements.length
+                    : getAchievementsByCategory(activeCategory as any).filter(
+                        (a) =>
+                          inProgressAchievements.find((ia) => ia.id === a.id)
+                      ).length}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {(activeCategory === "all"
+                  ? inProgressAchievements
+                  : inProgressAchievements.filter((a) =>
+                      getAchievementsByCategory(activeCategory as any).find(
+                        (ia) => ia.id === a.id
+                      )
+                    )
+                ).map((achievement) => (
+                  <AchievementCard
+                    key={achievement.id}
+                    achievement={achievement}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+        {lockedAchievements.length > 0 &&
+          (activeCategory === "all" ||
+            getAchievementsByCategory(activeCategory as any).some((a) =>
+              lockedAchievements.find((la) => la.id === a.id)
+            )) && (
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-5 h-5 bg-muted rounded flex items-center justify-center">
+                  <Lock className="h-3 w-3 text-muted-foreground" />
+                </div>
+                <h3 className="font-medium text-muted-foreground">Locked</h3>
+                <div className="flex-1 border-b border-border"></div>
+                <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+                  {activeCategory === "all"
+                    ? lockedAchievements.length
+                    : getAchievementsByCategory(activeCategory as any).filter(
+                        (a) => lockedAchievements.find((la) => la.id === a.id)
+                      ).length}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {(activeCategory === "all"
+                  ? lockedAchievements
+                  : lockedAchievements.filter((a) =>
+                      getAchievementsByCategory(activeCategory as any).find(
+                        (la) => la.id === a.id
+                      )
+                    )
+                ).map((achievement) => (
+                  <AchievementCard
+                    key={achievement.id}
+                    achievement={achievement}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+      </div>
     </div>
   );
 }

@@ -1,8 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import {
   AchievementProgress,
   ACHIEVEMENT_ICONS,
@@ -27,7 +25,7 @@ export function AchievementCard({
   } = achievement;
 
   const isLocked = progress === 0 && !isCompleted;
-  const cardSize = size === "sm" ? "p-3" : size === "lg" ? "p-6" : "p-4";
+  const cardSize = size === "sm" ? "p-3" : size === "lg" ? "p-6" : "p-7";
   const titleSize =
     size === "sm" ? "text-sm" : size === "lg" ? "text-lg" : "text-base";
 
@@ -47,39 +45,39 @@ export function AchievementCard({
   };
 
   return (
-    <Card
-      className={`border transition-all duration-200 ${
+    <div
+      className={`border rounded-lg transition-all duration-200 ${
         isCompleted
-          ? "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/30"
+          ? "border-red-500/30 bg-red-50/50 dark:border-red-500/40 dark:bg-red-950/20"
           : isLocked
-          ? "border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-950/50 opacity-60"
-          : "border-red-500/20 hover:border-red-300 dark:hover:border-red-700 hover:shadow-md"
+          ? "border-border bg-muted/30 opacity-70"
+          : "border-red-500/20 hover:border-red-500/40 bg-card"
       }`}
     >
-      <CardHeader className={`${cardSize} pb-2`}>
-        <div className="flex items-start gap-3">
+      <div className={`${cardSize}`}>
+        <div className="flex items-start gap-3 mb-3">
           <div
-            className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-              isCompleted
-                ? "bg-red-500"
-                : isLocked
-                ? "bg-gray-400"
-                : "bg-red-500"
+            className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+              isCompleted ? "bg-red-500" : isLocked ? "bg-muted" : "bg-red-500"
             }`}
           >
-            {isLocked ? <Lock className="h-4 w-4 text-white" /> : renderIcon()}
+            {isLocked ? (
+              <Lock className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              renderIcon()
+            )}
           </div>
 
-          <div className="flex-1">
-            <CardTitle
-              className={`${titleSize} ${
-                isLocked ? "text-muted-foreground" : ""
+          <div className="flex-1 min-w-0">
+            <h4
+              className={`${titleSize} font-medium leading-tight ${
+                isLocked ? "text-muted-foreground" : "text-foreground"
               }`}
             >
               {achievementData.name}
-            </CardTitle>
+            </h4>
             <p
-              className={`text-xs text-muted-foreground mt-1 ${
+              className={`text-xs text-muted-foreground mt-1 line-clamp-2 ${
                 isLocked ? "opacity-60" : ""
               }`}
             >
@@ -88,17 +86,22 @@ export function AchievementCard({
           </div>
 
           {isCompleted && (
-            <CheckCircle className="h-4 w-4 text-red-500 flex-shrink-0" />
+            <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <CheckCircle className="h-3 w-3 text-white" />
+            </div>
           )}
         </div>
 
-        <div className="flex items-center justify-between mt-3">
-          <Badge
-            variant="secondary"
-            className="text-xs bg-red-100 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800"
+        <div className="flex items-center justify-between">
+          <div
+            className={`text-xs px-2 py-1 rounded ${
+              isCompleted
+                ? "bg-red-500 text-white"
+                : "bg-muted text-muted-foreground"
+            }`}
           >
             +{achievementData.xpReward} XP
-          </Badge>
+          </div>
 
           {!isLocked && (
             <span className="text-xs text-muted-foreground">
@@ -106,11 +109,9 @@ export function AchievementCard({
             </span>
           )}
         </div>
-      </CardHeader>
 
-      {!isLocked && !isCompleted && (
-        <CardContent className={`${cardSize} pt-0`}>
-          <div className="space-y-1">
+        {!isLocked && !isCompleted && (
+          <div className="mt-3 space-y-1">
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Progress</span>
               <span>
@@ -119,16 +120,16 @@ export function AchievementCard({
             </div>
             <Progress value={progressPercentage} className="h-1.5" />
           </div>
-        </CardContent>
-      )}
+        )}
 
-      {isCompleted && achievement.unlockedAt && (
-        <CardContent className={`${cardSize} pt-0`}>
-          <p className="text-xs text-red-600 dark:text-red-400">
-            Unlocked {new Date(achievement.unlockedAt).toLocaleDateString()}
-          </p>
-        </CardContent>
-      )}
-    </Card>
+        {isCompleted && achievement.unlockedAt && (
+          <div className="mt-3">
+            <p className="text-xs text-red-500">
+              Unlocked {new Date(achievement.unlockedAt).toLocaleDateString()}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
