@@ -9,6 +9,7 @@ import {
   Calendar,
   Trophy,
   Flame,
+  Medal,
 } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "./logo";
@@ -17,12 +18,23 @@ export const Sidebar = ({
   onMenuChange,
 }: {
   onMenuChange: (
-    menu: "Dashboard" | "Habits" | "Calendar" | "Achievements" | "Settings"
+    menu:
+      | "Dashboard"
+      | "Habits"
+      | "Calendar"
+      | "Achievements"
+      | "Settings"
+      | "Leaderboard"
   ) => void;
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeMenu, setActiveMenu] = useState<
-    "Dashboard" | "Habits" | "Calendar" | "Achievements" | "Settings"
+    | "Dashboard"
+    | "Habits"
+    | "Calendar"
+    | "Achievements"
+    | "Settings"
+    | "Leaderboard"
   >("Dashboard");
 
   const menuItems = [
@@ -31,10 +43,17 @@ export const Sidebar = ({
     { icon: Calendar, label: "Calendar" },
     { icon: Trophy, label: "Achievements" },
     { icon: Settings, label: "Settings" },
+    { icon: Medal, label: "Leaderboard" },
   ] as const;
 
   const handleMenuClick = (
-    label: "Dashboard" | "Habits" | "Calendar" | "Achievements" | "Settings"
+    label:
+      | "Dashboard"
+      | "Habits"
+      | "Calendar"
+      | "Achievements"
+      | "Settings"
+      | "Leaderboard"
   ) => {
     setActiveMenu(label);
     onMenuChange(label);
@@ -119,21 +138,20 @@ export const Sidebar = ({
       </div>
 
       <nav className="lg:hidden fixed bottom-0 inset-x-0 border-t rounded-t-3xl border-red-500/50 bg-background z-50">
-        <ul className="grid grid-cols-5">
+        <ul className="grid grid-cols-6">
           {menuItems.map((item, index) => (
             <li key={index}>
               <button
                 type="button"
                 aria-label={item.label}
                 onClick={() => handleMenuClick(item.label)}
-                className={`w-full flex flex-col items-center justify-center py-2 text-xs transition-colors ${
+                className={`w-full flex flex-col items-center justify-center py-4 text-xs transition-colors ${
                   activeMenu === item.label
                     ? "text-red-600 dark:text-red-400"
                     : "text-gray-600 dark:text-gray-300"
                 }`}
               >
                 <item.icon size={20} />
-                <span className="mt-1">{item.label}</span>
               </button>
             </li>
           ))}

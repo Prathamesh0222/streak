@@ -32,10 +32,7 @@ export function WeeklyAIInsights({ habits }: WeeklyAIInsightsProps) {
     <Card className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 hover:shadow-md transition-all duration-300">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Brain className="h-5 w-5 text-red-500" />
-            Weekly AI Insights
-          </div>
+          <div className="flex items-center gap-2">Weekly AI Insights</div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Calendar className="h-3 w-3" />

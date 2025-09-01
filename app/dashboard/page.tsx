@@ -5,10 +5,28 @@ import { Sidebar } from "@/components/sidebar";
 import { useState } from "react";
 
 export default function Dashboard() {
-  const [currentMenu, setCurrentMenu] = useState("Dashboard");
+  const [currentMenu, setCurrentMenu] = useState<
+    | "Dashboard"
+    | "Habits"
+    | "Calendar"
+    | "Achievements"
+    | "Settings"
+    | "Leaderboard"
+  >("Dashboard");
+
   return (
     <div className="relative flex h-screen">
-      <Sidebar onMenuChange={setCurrentMenu} />
+      <Sidebar
+        onMenuChange={(
+          menu:
+            | "Dashboard"
+            | "Habits"
+            | "Calendar"
+            | "Achievements"
+            | "Settings"
+            | "Leaderboard"
+        ) => setCurrentMenu(menu)}
+      />
       <Main currentMenu={currentMenu} />
     </div>
   );

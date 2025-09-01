@@ -28,6 +28,8 @@ export function AchievementsSection() {
     getCompletionRate,
   } = useAchievements();
 
+  const [activeCategory, setActiveCategory] = useState("all");
+
   if (loading) {
     return (
       <div className="space-y-8">
@@ -65,8 +67,6 @@ export function AchievementsSection() {
     { id: "HABITS", name: "Habits", icon: Trophy },
     { id: "CONSISTENCY", name: "Consistency", icon: Calendar },
   ];
-
-  const [activeCategory, setActiveCategory] = useState("all");
 
   const getAchievementsForCategory = (category: string) => {
     if (category === "all") return achievements;

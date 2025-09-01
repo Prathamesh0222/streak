@@ -4,6 +4,7 @@ import { Habits } from "./habit";
 import { Settings } from "./settings";
 import { AchievementsSection } from "./achievements-section";
 import { useMemo } from "react";
+import { Leaderboard } from "./leaderboard";
 
 export const Main = ({ currentMenu }: { currentMenu: string }) => {
   const content = useMemo(() => {
@@ -18,6 +19,8 @@ export const Main = ({ currentMenu }: { currentMenu: string }) => {
         return <AchievementsSection />;
       case "Settings":
         return <Settings />;
+      case "Leaderboard":
+        return <Leaderboard />;
       default:
         return null;
     }
