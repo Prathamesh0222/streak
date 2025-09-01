@@ -15,7 +15,7 @@ export const Hero = () => {
   ];
 
   return (
-    <div className="relative h-full overflow-hidden">
+    <div className="relative h-full overflow-hidden max-w-7xl mx-auto border-x">
       <div className="relative h-full">
         <div className="flex flex-col items-center justify-center text-center h-full py-12">
           <Badge className="mb-4 rounded-xl bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100 items-center border dark:border-white/15 border-black/15">
@@ -41,13 +41,6 @@ export const Hero = () => {
             >
               Start Building Habits
               <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-            <Button
-              onClick={() => router.push("/signin")}
-              variant="outline"
-              className="border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 font-semibold cursor-pointer"
-            >
-              Sign In
             </Button>
           </div>
 

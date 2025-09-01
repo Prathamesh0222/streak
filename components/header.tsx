@@ -9,7 +9,7 @@ export const Header = () => {
   const router = useRouter();
 
   return (
-    <nav className="p-3 flex justify-between items-center backdrop-blur-sm sticky top-0 z-50">
+    <nav className="p-3 flex justify-between items-center backdrop-blur-sm sticky top-0 z-50 max-w-7xl mx-auto border-x">
       <div className="flex items-center gap-3">
         <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-sm">
           <Flame className="w-5 h-5 text-white" />
@@ -20,14 +20,14 @@ export const Header = () => {
         <ModeToggle />
         <Button
           onClick={() => router.push("/signin")}
-          variant="outline"
-          className="border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 font-semibold cursor-pointer"
+          variant="ghost"
+          className="border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 font-semibold cursor-pointer hover:rounded-xl"
         >
           Login
         </Button>
         <Button
           onClick={() => router.push("/signup")}
-          className="bg-red-600 hover:bg-red-700 transition-all duration-200 font-semibold cursor-pointer dark:text-white"
+          className="bg-red-600 hover:bg-red-700 transition-all duration-200 font-semibold cursor-pointer dark:text-white rounded-xl"
         >
           Get Started
         </Button>
