@@ -1,13 +1,6 @@
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -34,9 +27,7 @@ import { useState } from "react";
 export const HabitCard = ({
   habit,
   isLoading,
-  isStatusUpdating,
   onToggleCompletion,
-  onUpdateStatus,
   onDeleteHabit,
 }: HabitCardProps) => {
   const [open, setOpen] = useState(false);
@@ -138,13 +129,6 @@ export const HabitCard = ({
               {habit.frequency}
             </Badge>
           </div>
-          <div className="flex items-center mb-3">
-            {getStatusIcon(habit.status)}
-            <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700">
-              {habit.status}
-            </Badge>
-          </div>
-
           {habit.goalProgress && (
             <div className="my-4">
               <div className="flex items-center justify-between mb-2">
@@ -198,24 +182,9 @@ export const HabitCard = ({
       </div>
 
       <div className="flex items-center justify-between gap-3 pt-4 border-t border-gray-100 dark:border-gray-800 mt-auto">
-        <Select
-          key={`${habit.id}-${habit.status}`}
-          value={habit.status}
-          onValueChange={(value: "COMPLETED" | "PENDING" | "ONGOING") =>
-            onUpdateStatus(habit.id, value)
-          }
-          disabled={isStatusUpdating || habit.completedToday}
-        >
-          <SelectTrigger className="w-32 h-9 cursor-pointer">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="PENDING">Pending</SelectItem>
-            <SelectItem value="ONGOING">Ongoing</SelectItem>
-            <SelectItem value="COMPLETED">Completed</SelectItem>
-          </SelectContent>
-        </Select>
-
+        <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700">
+          {habit.status}
+        </Badge>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <button className="cursor-pointer text-red-500 px-2 hover:bg-red-600 py-2 rounded-md hover:text-white transition-colors">

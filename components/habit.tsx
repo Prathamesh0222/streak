@@ -5,11 +5,8 @@ import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { habitSchema, HabitInput } from "@/lib/validate";
-import { Activity, Plus, Search, Tag } from "lucide-react";
-import { HabitCategoryChart } from "./habit-category";
-import { ProgressChart } from "./progress-chart";
+import { Activity, Plus, Search, Tag, Target, BookOpen } from "lucide-react";
 import { PREDEFINED_CATEGORIES } from "@/types/habit-types";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createHabit as CreateHabitDialog } from "./createHabit";
 import { HabitCard } from "./habit-card";
 import { Input } from "./ui/input";
@@ -39,6 +36,7 @@ export const Habits = () => {
   const [categoryFilter, setCategoryFilter] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [showCustomCategory, setShowCustomCategory] = useState(false);
+  const [activeTab, setActiveTab] = useState("habits");
 
   const form = useForm<HabitInput>({
     resolver: zodResolver(habitSchema),
@@ -78,51 +76,87 @@ export const Habits = () => {
     });
   }, [habits, statusFilter, categoryFilter, searchQuery]);
 
+  const tabs = [
+    { id: "habits", name: "My Habits", icon: Target },
+    { id: "template", name: "Templates", icon: BookOpen },
+  ];
+
   return (
-    <div className="mt-8">
-      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
-        Habits
-      </h2>
-      {CreateHabitDialog({
-        habits,
-        isDialogOpen,
-        setIsDialogOpen,
-        form,
-        onSubmit,
-        isLoading: loading,
-        showCustomCategory,
-        setShowCustomCategory,
-      })}
-      <Tabs defaultValue="habits" className="w-full mb-12">
-        <TabsList>
-          <TabsTrigger value="habits">Habits</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="template">Template</TabsTrigger>
-        </TabsList>
-        <TabsContent value="habits">
-          <div className="flex flex-col gap-4 mb-6">
+    <div className="space-y-8">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+            <Target className="h-4 w-4 text-white" />
+          </div>
+          <h2 className="text-xl font-medium">Habits</h2>
+        </div>
+        {CreateHabitDialog({
+          isDialogOpen,
+          setIsDialogOpen,
+          form,
+          onSubmit,
+          isLoading: loading,
+          showCustomCategory,
+          setShowCustomCategory,
+        })}
+      </div>
+
+      <div className="flex gap-2 overflow-x-auto">
+        {tabs.map((tab) => {
+          const IconComponent = tab.icon;
+          const isActive = activeTab === tab.id;
+
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-colors ${
+                isActive
+                  ? "bg-red-500 text-white"
+                  : "bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <IconComponent className="h-3 w-3" />
+              {tab.name}
+              {tab.id === "habits" && (
+                <span
+                  className={`text-xs px-1.5 py-0.5 rounded ${
+                    isActive ? "bg-red-600" : "bg-background"
+                  }`}
+                >
+                  {habits.length}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {activeTab === "habits" && (
+        <div className="space-y-6">
+          <div className="space-y-4">
             <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 placeholder="Search habits..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4"
+                className="pl-10 pr-4 border-red-500/20 focus:border-red-500"
               />
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               <Select
                 value={statusFilter}
                 onValueChange={(value) => setStatusFilter(value)}
               >
-                <SelectTrigger className="w-[160px]">
-                  <div className="flex items-center gap-2 md:text-sm text-xs">
-                    <Activity className="w-4 h-4 text-gray-500" />
+                <SelectTrigger className="w-[160px] border-red-500/20">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Activity className="w-4 h-4 text-red-500" />
                     <SelectValue placeholder="Status" />
                   </div>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ALL">All</SelectItem>
+                  <SelectItem value="ALL">All Status</SelectItem>
                   <SelectItem value="PENDING">Pending</SelectItem>
                   <SelectItem value="ONGOING">Ongoing</SelectItem>
                   <SelectItem value="COMPLETED">Completed</SelectItem>
@@ -132,9 +166,9 @@ export const Habits = () => {
                 value={categoryFilter}
                 onValueChange={(value) => setCategoryFilter(value)}
               >
-                <SelectTrigger className="w-[180px]">
-                  <div className="flex items-center gap-2 md:text-sm text-xs">
-                    <Tag className="w-4 h-4 text-gray-500" />
+                <SelectTrigger className="w-[180px] border-red-500/20">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Tag className="w-4 h-4 text-red-500" />
                     <SelectValue placeholder="Category" />
                   </div>
                 </SelectTrigger>
@@ -149,29 +183,48 @@ export const Habits = () => {
               </Select>
             </div>
           </div>
+
           {filteredHabits.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Plus className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+            <div className="bg-card border border-red-500/10 rounded-lg p-12 text-center">
+              <div className="w-16 h-16 bg-red-50 dark:bg-red-950/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Plus className="w-8 h-8 text-red-500" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                No habits created yet
+              <h3 className="text-lg font-medium mb-2">
+                {searchQuery ||
+                statusFilter !== "ALL" ||
+                categoryFilter !== "ALL"
+                  ? "No habits match your filters"
+                  : "No habits created yet"}
               </h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">
-                Create your first habit to get started on your journey!
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                {searchQuery ||
+                statusFilter !== "ALL" ||
+                categoryFilter !== "ALL"
+                  ? "Try adjusting your search or filters to find habits."
+                  : "Create your first habit to get started on your journey to better habits!"}
               </p>
-              <Button
-                onClick={() => setIsDialogOpen(true)}
-                className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Create Your First Habit
-              </Button>
+              {!searchQuery &&
+                statusFilter === "ALL" &&
+                categoryFilter === "ALL" && (
+                  <Button
+                    onClick={() => setIsDialogOpen(true)}
+                    className="bg-red-500 hover:bg-red-600 text-white"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Your First Habit
+                  </Button>
+                )}
             </div>
           ) : (
-            <div className="space-y-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {filteredHabits.map((habit) => {
-                return (
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-5 h-5 bg-red-500 rounded flex items-center justify-center">
+                  <Target className="h-3 w-3 text-white" />
+                </div>
+                <h3 className="font-medium">Your Habits</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {filteredHabits.map((habit) => (
                   <HabitCard
                     key={habit.id}
                     habit={habit}
@@ -181,23 +234,18 @@ export const Habits = () => {
                     onUpdateStatus={updateHabit}
                     onDeleteHabit={deleteHabit}
                   />
-                );
-              })}
+                ))}
+              </div>
             </div>
           )}
-        </TabsContent>
-        <TabsContent value="analytics">
-          <div className="grid md:grid-cols-2 grid-cols-1 w-full gap-3 mb-4">
-            <HabitCategoryChart habits={habits} />
-            <ProgressChart habits={habits} />
-          </div>
-        </TabsContent>
-        <TabsContent value="template">
-          <div>
-            <HabitTemplates />
-          </div>
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
+
+      {activeTab === "template" && (
+        <div className="space-y-6">
+          <HabitTemplates />
+        </div>
+      )}
     </div>
   );
 };
