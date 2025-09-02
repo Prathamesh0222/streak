@@ -10,6 +10,56 @@ export const GET = async () => {
   }
 
   try {
+    const existingUserAchievements = await prisma.userAchievement.findMany({
+      where: { userId: session.user.id },
+    });
+
+    if (existingUserAchievements.length === 0) {
+      const achievements = await prisma.achievement.findMany({
+        where: { isActive: true },
+      });
+
+      const userAchievements = achievements.map((achievement) => ({
+        userId: session.user.id,
+        achievementId: achievement.id,
+        progress: 0,
+        isCompleted: false,
+      }));
+
+      await prisma.userAchievement.createMany({
+        data: userAchievements,
+        skipDuplicates: true,
+      });
+
+      const newUserAchievements = await prisma.userAchievement.findMany({
+        where: { userId: session.user.id },
+        include: { achievement: true },
+      });
+
+      const achievementsWithProgress = newUserAchievements.map(
+        (userAchievement) => ({
+          id: userAchievement.id,
+          userId: session.user.id,
+          achievementId: userAchievement.achievementId,
+          unlockedAt: userAchievement.unlockedAt,
+          progress: userAchievement.progress,
+          isCompleted: userAchievement.isCompleted,
+          achievement: userAchievement.achievement,
+          progressPercentage: Math.min(
+            (userAchievement.progress /
+              userAchievement.achievement.requirement) *
+              100,
+            100
+          ),
+        })
+      );
+
+      return NextResponse.json({
+        achievements: achievementsWithProgress,
+        userProgress: { level: 1, xp: 0, totalXp: 0 },
+      });
+    }
+
     const achievements = await prisma.achievement.findMany({
       where: { isActive: true },
       include: {
@@ -72,6 +122,16 @@ export const POST = async () => {
   }
 
   try {
+    const existingAchievements = await prisma.userAchievement.findFirst({
+      where: { userId: session.user.id },
+    });
+
+    if (existingAchievements) {
+      return NextResponse.json({
+        message: "Achievements already initialized",
+      });
+    }
+
     const achievements = await prisma.achievement.findMany({
       where: { isActive: true },
     });
