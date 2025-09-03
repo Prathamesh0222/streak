@@ -1,7 +1,6 @@
 "use client";
 
-import { Bell, LogOut } from "lucide-react";
-import { Pomodoro } from "./pomodoro";
+import { LogOut } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import {
   DropdownMenu,
@@ -20,6 +19,7 @@ import { ProgressChart } from "./progress-chart";
 import { useHabits } from "@/hooks/useHabits";
 import { UserLevelIcon } from "./user-level-icons";
 import { WeeklyAIInsights } from "./weekly-ai-insights";
+import { NotificationBell } from "./notifications-bell";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -45,9 +45,7 @@ export const Dashboard = () => {
             })}
           </h1>
           <div className="flex gap-4 items-center">
-            <button className="p-2 rounded-full hover:bg-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 dark:focus-visible:ring-red-600">
-              <Bell size={20} className="text-muted-foreground" />
-            </button>
+            <NotificationBell />
             <ModeToggle />
             <DropdownMenu>
               <DropdownMenuTrigger className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 dark:focus-visible:ring-red-600">
