@@ -5,8 +5,16 @@ import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { habitSchema, HabitInput } from "@/lib/validate";
-import { Activity, Plus, Search, Tag, Target, BookOpen } from "lucide-react";
-import { PREDEFINED_CATEGORIES } from "@/types/habit-types";
+import {
+  Activity,
+  Plus,
+  Search,
+  Tag,
+  Target,
+  BookOpen,
+  Bot,
+} from "lucide-react";
+import { HabitSuggestion, PREDEFINED_CATEGORIES } from "@/types/habit-types";
 import { createHabit as CreateHabitDialog } from "./createHabit";
 import { HabitCard } from "./habit-card";
 import { Input } from "./ui/input";
@@ -19,6 +27,7 @@ import {
 } from "./ui/select";
 import { useHabits } from "@/hooks/useHabits";
 import { HabitTemplates } from "./habit-template";
+import { AiAssistant } from "./ai-assistant";
 
 export const Habits = () => {
   const {
@@ -60,6 +69,18 @@ export const Habits = () => {
     }
   };
 
+  const handleAIHabitCreation = (suggestion: HabitSuggestion) => {
+    form.setValue("title", suggestion.title);
+    form.setValue("description", suggestion.description);
+    form.setValue("category", suggestion.category);
+    form.setValue("frequency", suggestion.frequency);
+    form.setValue("priority", suggestion.priority);
+    if (suggestion.goalTarget) {
+      form.setValue("goalTarget", suggestion.goalTarget);
+    }
+    setIsDialogOpen(true);
+  };
+
   const filteredHabits = useMemo(() => {
     return habits.filter((habit) => {
       const matchesStatus =
@@ -78,6 +99,7 @@ export const Habits = () => {
 
   const tabs = [
     { id: "habits", name: "My Habits", icon: Target },
+    { id: "ai-assistant", name: "AI Assistant", icon: Bot },
     { id: "template", name: "Templates", icon: BookOpen },
   ];
 
@@ -246,6 +268,23 @@ export const Habits = () => {
           <HabitTemplates />
         </div>
       )}
+
+      <div className="hidden md:block">
+        {activeTab === "ai-assistant" && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="w-5 h-5 bg-red-500 rounded flex items-center justify-center">
+                <Bot className="h-3 w-3 text-white" />
+              </div>
+              <h3 className="font-medium">AI Habit Assistant</h3>
+            </div>
+            <AiAssistant
+              habits={habits}
+              onCreateHabit={handleAIHabitCreation}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

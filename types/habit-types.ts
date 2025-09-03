@@ -111,3 +111,21 @@ export const predefinedHabits: Array<{
     goalTarget: 4,
   },
 ];
+
+export interface ChatMessage {
+  id: string;
+  type: "user" | "assistant";
+  content: string;
+  suggestions?: HabitSuggestion[];
+  timestamp: Date;
+}
+
+export interface HabitSuggestion {
+  title: string;
+  description: string;
+  category: string;
+  frequency: "DAILY" | "WEEKLY" | "MONTHLY";
+  priority: "HIGH" | "MEDIUM" | "LOW";
+  goalTarget: number;
+  reasoning: string;
+}
