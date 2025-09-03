@@ -12,7 +12,7 @@ export const GET = async () => {
 
     const leaderboard = await prisma.user.findMany({
       orderBy: {
-        xp: "desc",
+        totalXp: "desc",
       },
       select: {
         id: true,

@@ -61,6 +61,67 @@ export const POST = async (req: NextRequest) => {
         },
       });
     }
+
+    try {
+      const targetDate = new Date(date);
+      const startOfDay = new Date(targetDate);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(targetDate);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const userHabits = await prisma.habit.findMany({
+        where: {
+          userId: session.user.id,
+          createdAt: { lte: endOfDay },
+        },
+        include: {
+          HabitLogs: {
+            where: {
+              date: { gte: startOfDay, lte: endOfDay },
+            },
+            select: { isCompleted: true },
+          },
+        },
+      });
+
+      const totalHabits = userHabits.length;
+      const completedHabits = userHabits.filter(
+        (h) => h.HabitLogs[0]?.isCompleted === true
+      ).length;
+
+      const allDone = totalHabits > 0 && completedHabits === totalHabits;
+
+      if (allDone) {
+        const existingNotification = await prisma.notification.findFirst({
+          where: {
+            userId: session.user.id,
+            type: "ALL_HABITS_COMPLETED",
+            createdAt: { gte: startOfDay, lte: endOfDay },
+          },
+        });
+
+        if (!existingNotification) {
+          await prisma.notification.create({
+            data: {
+              userId: session.user.id,
+              type: "ALL_HABITS_COMPLETED",
+              title: "All habits completed!",
+              body: `Great job! You finished all ${totalHabits} habits for today.`,
+            },
+          });
+        }
+      }
+    } catch (error) {
+      console.error(
+        "Failed to create all habits completed notification:",
+        error
+      );
+      return NextResponse.json(
+        { error: "Failed to create all habits completed notification" },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       {
         message: "Habit log updated successfully",

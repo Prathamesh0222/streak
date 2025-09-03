@@ -109,6 +109,28 @@ export const POST = async (req: NextRequest) => {
           level: newLevel,
         },
       });
+
+      if (newLevel > user.level) {
+        await prisma.notification.create({
+          data: {
+            userId: session.user.id,
+            type: "LEVEL_UP",
+            title: `Level ${newLevel} reached!`,
+            body: `You gained ${totalXpGained} XP`,
+          },
+        });
+      }
+    }
+
+    if (newlyCompleted.length > 0) {
+      await prisma.notification.createMany({
+        data: newlyCompleted.map((a) => ({
+          userId: session.user.id,
+          type: "ACHIEVEMENT",
+          title: `Achievement Unlocked: ${a.name}`,
+          body: `You've unlocked a new achievement: ${a.name}`,
+        })),
+      });
     }
 
     return NextResponse.json({
