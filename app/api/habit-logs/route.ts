@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { processHabitCompletion } from "@/lib/xp-service";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -60,6 +61,22 @@ export const POST = async (req: NextRequest) => {
           isCompleted,
         },
       });
+    }
+
+    if (isCompleted) {
+      try {
+        const xpResult = await processHabitCompletion({
+          habitId,
+          userId: session.user.id,
+          habitPriority: habit.priority,
+          habitTitle: habit.title,
+        });
+        console.log(
+          `User gained ${xpResult.xpGained} XP. Level: ${xpResult.newLevel}`
+        );
+      } catch (error) {
+        console.error("Failed to process XP:", error);
+      }
     }
 
     try {
