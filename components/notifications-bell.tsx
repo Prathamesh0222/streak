@@ -13,6 +13,8 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useNotifications } from "@/hooks/useNotifications";
+import Image from "next/image";
+import { getNotificationImage } from "@/types/notifications-types";
 
 export const NotificationBell = () => {
   const [open, setOpen] = useState(false);
@@ -69,6 +71,7 @@ export const NotificationBell = () => {
 
           {notifications.map((n) => {
             const isUnread = !n.readAt;
+            const notificationImage = getNotificationImage(n.type);
             return (
               <button
                 key={n.id}
@@ -81,12 +84,27 @@ export const NotificationBell = () => {
                     : "border-border"
                 )}
               >
-                <div className="text-sm font-semibold">{n.title}</div>
-                <div className="text-sm text-muted-foreground">{n.body}</div>
-                <div className="mt-1 text-[11px] text-muted-foreground">
-                  {formatDistanceToNow(new Date(n.createdAt), {
-                    addSuffix: true,
-                  })}
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <div className="text-sm font-semibold">{n.title}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {n.body}
+                    </div>
+                    <div className="mt-1 text-[11px] text-muted-foreground">
+                      {formatDistanceToNow(new Date(n.createdAt), {
+                        addSuffix: true,
+                      })}
+                    </div>
+                  </div>
+                  {notificationImage && (
+                    <Image
+                      src={notificationImage.src}
+                      alt={notificationImage.alt}
+                      width={70}
+                      height={70}
+                      className="h-15 rounded-xl"
+                    />
+                  )}
                 </div>
               </button>
             );

@@ -19,7 +19,6 @@ interface LeaderboardUser {
 
 export const Leaderboard = () => {
   const { leaderboard, isLoading, error } = useLeaderboard();
-  console.log(leaderboard);
   const { data: session } = useSession();
 
   if (isLoading) {
