@@ -77,7 +77,7 @@ export const generateWeeklyInsights = async (
     try {
       aiInsights = JSON.parse(cleanText!);
     } catch (error) {
-      console.error("Failed to parse Gemini response:", text);
+      console.error("Failed to parse Gemini response:", error);
       throw new Error("Failed to parse AI response");
     }
 

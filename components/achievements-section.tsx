@@ -187,7 +187,7 @@ export function AchievementsSection() {
                 {(activeCategory === "all"
                   ? completedAchievements
                   : completedAchievements.filter((a) =>
-                      getAchievementsByCategory(activeCategory as any).find(
+                      getAchievementsByCategory(activeCategory).find(
                         (ca) => ca.id === a.id
                       )
                     )
@@ -203,7 +203,7 @@ export function AchievementsSection() {
 
         {inProgressAchievements.length > 0 &&
           (activeCategory === "all" ||
-            getAchievementsByCategory(activeCategory as any).some((a) =>
+            getAchievementsByCategory(activeCategory).some((a) =>
               inProgressAchievements.find((ia) => ia.id === a.id)
             )) && (
             <div>
@@ -218,9 +218,8 @@ export function AchievementsSection() {
                 <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
                   {activeCategory === "all"
                     ? inProgressAchievements.length
-                    : getAchievementsByCategory(activeCategory as any).filter(
-                        (a) =>
-                          inProgressAchievements.find((ia) => ia.id === a.id)
+                    : getAchievementsByCategory(activeCategory).filter((a) =>
+                        inProgressAchievements.find((ia) => ia.id === a.id)
                       ).length}
                 </span>
               </div>
@@ -228,7 +227,7 @@ export function AchievementsSection() {
                 {(activeCategory === "all"
                   ? inProgressAchievements
                   : inProgressAchievements.filter((a) =>
-                      getAchievementsByCategory(activeCategory as any).find(
+                      getAchievementsByCategory(activeCategory).find(
                         (ia) => ia.id === a.id
                       )
                     )
@@ -244,7 +243,7 @@ export function AchievementsSection() {
 
         {lockedAchievements.length > 0 &&
           (activeCategory === "all" ||
-            getAchievementsByCategory(activeCategory as any).some((a) =>
+            getAchievementsByCategory(activeCategory).some((a) =>
               lockedAchievements.find((la) => la.id === a.id)
             )) && (
             <div>
@@ -257,8 +256,8 @@ export function AchievementsSection() {
                 <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
                   {activeCategory === "all"
                     ? lockedAchievements.length
-                    : getAchievementsByCategory(activeCategory as any).filter(
-                        (a) => lockedAchievements.find((la) => la.id === a.id)
+                    : getAchievementsByCategory(activeCategory).filter((a) =>
+                        lockedAchievements.find((la) => la.id === a.id)
                       ).length}
                 </span>
               </div>
@@ -266,7 +265,7 @@ export function AchievementsSection() {
                 {(activeCategory === "all"
                   ? lockedAchievements
                   : lockedAchievements.filter((a) =>
-                      getAchievementsByCategory(activeCategory as any).find(
+                      getAchievementsByCategory(activeCategory).find(
                         (la) => la.id === a.id
                       )
                     )

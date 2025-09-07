@@ -3,11 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAchievements } from "@/hooks/useAchievements";
-import {
-  getLevelBadge,
-  getLevelColor,
-  getAchievementCategoryIcon,
-} from "@/lib/achievements";
+import { getLevelColor, getAchievementCategoryIcon } from "@/lib/achievements";
 import { ACHIEVEMENT_ICONS } from "@/types/achievement-types";
 import { Progress } from "./ui/progress";
 import { ArrowBigUp } from "lucide-react";
@@ -34,7 +30,9 @@ export function UserLevelIcon() {
 
   const completedAchievements = achievements.filter((a) => a.isCompleted);
 
-  const renderAchievementIcon = (achievement: any) => {
+  const renderAchievementIcon = (achievement: {
+    achievement: { icon?: string; category: string };
+  }) => {
     if (
       achievement.achievement.icon &&
       ACHIEVEMENT_ICONS[
@@ -52,8 +50,6 @@ export function UserLevelIcon() {
     );
     return <CategoryIcon className="h-5 w-5 text-white" />;
   };
-
-  const LevelIcon = getLevelBadge(userProgress.level);
 
   return (
     <Card className="w-full border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 hover:shadow-md transition-all duration-300 to-red-50/50 dark:to-red-950/20">

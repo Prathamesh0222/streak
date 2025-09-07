@@ -53,7 +53,7 @@ export const NotificationBell = () => {
 
           {!isLoading && notifications.length === 0 && (
             <div className="text-sm text-muted-foreground">
-              You're all caught up.
+              You&apos;re all caught up.
             </div>
           )}
           <div className="flex justify-end">

@@ -12,9 +12,6 @@ import {
   Flame,
   TrendingUp,
   Check,
-  CheckCircle,
-  Clock,
-  AlertCircle,
   Target,
   Calendar,
   Trash,
@@ -179,7 +176,8 @@ export const HabitCard = ({
                 Delete Habit
               </DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete <strong>"{habit.title}"</strong>
+                Are you sure you want to delete{" "}
+                <strong>&quot;{habit.title}&quot;</strong>
                 ?
                 <br />
                 <span className="text-red-600 dark:text-red-400 text-sm mt-2 block">
