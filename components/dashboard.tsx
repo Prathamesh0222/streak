@@ -20,6 +20,7 @@ import { useHabits } from "@/hooks/useHabits";
 import { UserLevelIcon } from "./user-level-icons";
 import { WeeklyAIInsights } from "./weekly-ai-insights";
 import { NotificationBell } from "./notifications-bell";
+import { QuoteOfDay } from "./quote-of-day";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -105,8 +106,12 @@ export const Dashboard = () => {
           <div className="break-inside-avoid mb-6">
             <ProgressChart habits={habits} />
           </div>
+
           <div className="break-inside-avoid mb-6">
             <HabitCategoryChart habits={habits} />
+          </div>
+          <div className="break-inside-avoid mb-6">
+            <QuoteOfDay />
           </div>
           <div className="break-inside-avoid mb-6">
             <WeeklyStats habits={habits} loading={loading} />

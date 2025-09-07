@@ -50,7 +50,7 @@ export const HeatMap = () => {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 365);
   return (
-    <div className="p-6 rounded-xl bg-card border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 hover:shadow-md transition-all duration-300">
+    <div className="p-6 rounded-xl bg-card border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-foreground mb-1">
           Activity Overview

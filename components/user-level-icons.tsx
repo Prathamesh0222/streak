@@ -13,7 +13,7 @@ export function UserLevelIcon() {
 
   if (loading) {
     return (
-      <Card className="w-full border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 hover:shadow-md transition-all duration-300">
+      <Card className="w-full border shadow-none border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
         <CardContent className="p-6">
           <div className="animate-pulse space-y-4">
             <div className="h-6 bg-muted rounded w-3/4"></div>
@@ -52,7 +52,7 @@ export function UserLevelIcon() {
   };
 
   return (
-    <Card className="w-full border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 hover:shadow-md transition-all duration-300 to-red-50/50 dark:to-red-950/20">
+    <Card className="w-full border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300 to-red-50/50 dark:to-red-950/20">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg font-semibold">Your Progress</CardTitle>
         <div className="space-y-4">

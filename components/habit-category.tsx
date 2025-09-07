@@ -77,7 +77,7 @@ export function HabitCategoryChart({ habits }: HabitCategoryChartProps) {
   }
 
   return (
-    <Card className="flex flex-col border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 hover:shadow-md transition-all duration-300 w-full">
+    <Card className="flex flex-col border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300 w-full">
       <CardHeader className="items-center pb-0">
         <CardTitle>Habit Categories</CardTitle>
         <CardDescription>
