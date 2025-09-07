@@ -14,7 +14,9 @@ interface HabitTemplateProps {
 
 export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
   const { habits, createHabit } = useHabits();
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingTemplates, setLoadingTemplates] = useState<
+    Record<string, boolean>
+  >({});
 
   const isTemplateAdded = (template: HabitTemplate) => {
     return habits.some((habit) => habit.title === template.title);
@@ -52,7 +54,7 @@ export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
       return;
     }
 
-    setIsLoading(true);
+    setLoadingTemplates((prev) => ({ ...prev, [template.title]: true }));
 
     try {
       const habitData = {
@@ -73,7 +75,10 @@ export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
     } catch (error) {
       console.error("Failed to add habit:", error);
     } finally {
-      setIsLoading(false);
+      setLoadingTemplates((prev) => {
+        const { [template.title]: removed, ...rest } = prev;
+        return rest;
+      });
     }
   };
 
@@ -92,6 +97,7 @@ export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {HABIT_TEMPLATES.map((template) => {
           const isAdded = isTemplateAdded(template);
+          const isLoading = loadingTemplates[template.title] || false;
 
           return (
             <div
@@ -127,7 +133,7 @@ export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
                         </>
                       ) : isLoading ? (
                         <>
-                          <Check className="w-4 h-4 mr-1" />
+                          <Check className="w-4 h-4 mr-1 animate-spin" />
                           Adding...
                         </>
                       ) : (
