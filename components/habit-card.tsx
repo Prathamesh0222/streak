@@ -40,25 +40,6 @@ export const HabitCard = ({
     setIsDeleting(false);
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "COMPLETED":
-        return (
-          <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-        );
-      case "ONGOING":
-        return <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />;
-      case "PENDING":
-        return (
-          <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
-        );
-      default:
-        return (
-          <AlertCircle className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-        );
-    }
-  };
-
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "HIGH":

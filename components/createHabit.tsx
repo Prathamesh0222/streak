@@ -24,15 +24,7 @@ import {
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import {
-  Plus,
-  Target,
-  Tag,
-  Zap,
-  Repeat,
-  Activity,
-  TrendingUp,
-} from "lucide-react";
+import { Plus, Target, Tag, Zap, Repeat, Activity } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { HabitInput } from "@/lib/validate";
 import { PREDEFINED_CATEGORIES } from "@/types/habit-types";
@@ -84,11 +76,6 @@ export const createHabit = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-4">
-              <div className="flex items-center gap-2 pb-2">
-                <Target className="h-4 w-4 text-red-500" />
-                <h4 className="font-medium text-sm">Basic Information</h4>
-              </div>
-
               <FormField
                 control={form.control}
                 name="title"
@@ -204,11 +191,6 @@ export const createHabit = ({
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center gap-2 pb-2">
-                <Activity className="h-4 w-4 text-red-500" />
-                <h4 className="font-medium text-sm">Habit Settings</h4>
-              </div>
-
               <div className="grid grid-cols-3 gap-3">
                 <FormField
                   control={form.control}
@@ -300,11 +282,6 @@ export const createHabit = ({
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center gap-2 pb-2">
-                <TrendingUp className="h-4 w-4 text-red-500" />
-                <h4 className="font-medium text-sm">Goal Setting</h4>
-              </div>
-
               <FormField
                 control={form.control}
                 name="goalTarget"
