@@ -5,6 +5,7 @@ import { Settings } from "./settings";
 import { AchievementsSection } from "./achievements-section";
 import { useMemo } from "react";
 import { Leaderboard } from "./leaderboard";
+import { DashboardHeader } from "./dashboard-header";
 
 export const Main = ({ currentMenu }: { currentMenu: string }) => {
   const content = useMemo(() => {
@@ -27,7 +28,8 @@ export const Main = ({ currentMenu }: { currentMenu: string }) => {
   }, [currentMenu]);
 
   return (
-    <main className="lg:p-6 w-full h-screen overflow-hidden">
+    <main className="lg:pb-6 lg:pt-3 lg:p-6 flex flex-col gap-3 w-full h-screen overflow-hidden">
+      <DashboardHeader />
       <div className="border border-red-500/20 lg:rounded-2xl h-full p-8 shadow-sm overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div key={currentMenu}>{content}</div>
       </div>
