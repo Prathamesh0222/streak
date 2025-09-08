@@ -7,9 +7,15 @@ import {
   Calendar as CalendarIcon,
   Target,
   TrendingUp,
+  Lock,
+  Crown,
 } from "lucide-react";
 import { useHabitLogs } from "@/hooks/useHabitLogs";
+import { useSubscription } from "@/hooks/useSubscription";
 import { DateHabits } from "@/types/habit-types";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import axios from "axios";
 
 export const CalendarTrack = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -17,12 +23,26 @@ export const CalendarTrack = () => {
   );
 
   const { data: dateHabits, isLoading, error } = useHabitLogs(selectedDate);
+  const {
+    isFreePlan,
+    isPremium,
+    limits,
+    getEarliestAccessDate,
+    isLoading: subscriptionLoading,
+  } = useSubscription();
 
   const today = new Date();
   today.setHours(23, 59, 59, 999);
 
+  const earliestAccessDate = getEarliestAccessDate();
+
   const disableFutureDates = (date: Date) => {
-    return date > today;
+    if (date > today) return true;
+    if (isFreePlan && earliestAccessDate && date < earliestAccessDate) {
+      return true;
+    }
+
+    return false;
   };
 
   const getPriorityColor = (priority: string) => {
@@ -52,14 +72,72 @@ export const CalendarTrack = () => {
       ? Math.round((dateHabits.completedHabits / dateHabits.totalHabits) * 100)
       : 0;
 
+  const handleUpgrade = async () => {
+    try {
+      const { data } = await axios.post("/api/payment/create-checkout", {
+        planId: "pro_monthly",
+      });
+      window.location.href = data.checkoutUrl;
+    } catch (error) {
+      console.error("Error while upgrading", error);
+    }
+  };
+
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
-          <CalendarIcon className="h-4 w-4 text-white" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+            <CalendarIcon className="h-4 w-4 text-white" />
+          </div>
+          <h2 className="text-xl font-medium">Habit Tracker</h2>
         </div>
-        <h2 className="text-xl font-medium">Habit Tracker</h2>
+
+        <div className="flex items-center gap-2">
+          <Badge
+            variant={isPremium ? "default" : "secondary"}
+            className="flex items-center gap-1"
+          >
+            {isPremium ? (
+              <>
+                <Crown className="h-3 w-3" />
+                Premium
+              </>
+            ) : (
+              <>
+                <Lock className="h-3 w-3" />
+                Free Plan
+              </>
+            )}
+          </Badge>
+        </div>
       </div>
+
+      {isFreePlan && !subscriptionLoading && (
+        <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/20 dark:to-orange-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <Lock className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-medium text-red-800 dark:text-red-400 mb-1">
+                Limited Calendar Access
+              </h3>
+              <p className="text-sm text-red-700 dark:text-red-300 mb-3">
+                Free plan users can view habit data for the last{" "}
+                {limits?.calendarDays} days only. Upgrade to Premium for
+                unlimited calendar access.
+              </p>
+              <Button
+                size="sm"
+                onClick={handleUpgrade}
+                className="bg-red-500 hover:bg-red-600 text-white"
+              >
+                <Crown className="h-3 w-3 mr-1" />
+                Upgrade to Premium
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         <div className="space-y-6">
@@ -70,7 +148,37 @@ export const CalendarTrack = () => {
               onSelect={setSelectedDate}
               disabled={disableFutureDates}
               className="w-full mx-auto"
+              modifiers={{
+                restricted: (date) => {
+                  if (!isFreePlan || !earliestAccessDate || date <= today) {
+                    return false;
+                  }
+                  return date < earliestAccessDate;
+                },
+              }}
+              modifiersStyles={{
+                restricted: {
+                  textDecoration: "line-through",
+                  color: "#ed1826",
+                  opacity: 0.5,
+                },
+              }}
             />
+
+            {isFreePlan && (
+              <div className="mt-4 pt-4 border-t border-red-500/10">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <span>Available dates</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-muted rounded-full opacity-50"></div>
+                    <span>Premium only</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -81,6 +189,12 @@ export const CalendarTrack = () => {
             </h3>
             <p className="text-sm text-muted-foreground">
               View your habit progress for this day
+              {isFreePlan && (
+                <span className="text-red-500">
+                  {" "}
+                  • Last {limits?.calendarDays} days onlys
+                </span>
+              )}
             </p>
           </div>
 

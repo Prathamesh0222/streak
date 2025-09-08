@@ -37,6 +37,7 @@ export const createHabit = ({
   isLoading,
   showCustomCategory,
   setShowCustomCategory,
+  disabled = false,
 }: {
   isDialogOpen: boolean;
   setIsDialogOpen: (open: boolean) => void;
@@ -45,12 +46,16 @@ export const createHabit = ({
   isLoading: boolean;
   showCustomCategory: boolean;
   setShowCustomCategory: (show: boolean) => void;
+  disabled?: boolean;
 }) => {
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <div className="flex justify-end">
-          <Button className="bg-red-500 hover:bg-red-600 text-white rounded-xl">
+          <Button
+            disabled={disabled}
+            className="bg-red-500 hover:bg-red-600 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add Habit
           </Button>

@@ -13,6 +13,8 @@ import {
   Target,
   BookOpen,
   Bot,
+  Lock,
+  Crown,
 } from "lucide-react";
 import { HabitSuggestion, PREDEFINED_CATEGORIES } from "@/types/habit-types";
 import { createHabit as CreateHabitDialog } from "./createHabit";
@@ -28,6 +30,9 @@ import {
 import { useHabits } from "@/hooks/useHabits";
 import { HabitTemplates } from "./habit-template";
 import { AiAssistant } from "./ai-assistant";
+import { useSubscription } from "@/hooks/useSubscription";
+import { Badge } from "./ui/badge";
+import axios from "axios";
 
 export const Habits = () => {
   const {
@@ -39,6 +44,13 @@ export const Habits = () => {
     toggleHabitCompletion,
     isStatusUpdating,
   } = useHabits();
+
+  const {
+    isFreePlan,
+    isPremium,
+    limits,
+    isLoading: subscriptionLoading,
+  } = useSubscription();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -60,7 +72,19 @@ export const Habits = () => {
     },
   });
 
+  const canCreateHabit = useMemo(() => {
+    if (isPremium) return true;
+    if (!limits) return false;
+    return habits.length < limits.maxHabits;
+  }, [isPremium, limits, habits.length]);
+
+  const habitLimitReached = !canCreateHabit && isFreePlan;
+
   const onSubmit = async (values: HabitInput) => {
+    if (habitLimitReached) {
+      return;
+    }
+
     const success = await createHabit(values);
     if (success) {
       form.reset();
@@ -70,6 +94,10 @@ export const Habits = () => {
   };
 
   const handleAIHabitCreation = (suggestion: HabitSuggestion) => {
+    if (habitLimitReached) {
+      return;
+    }
+
     form.setValue("title", suggestion.title);
     form.setValue("description", suggestion.description);
     form.setValue("category", suggestion.category);
@@ -79,6 +107,24 @@ export const Habits = () => {
       form.setValue("goalTarget", suggestion.goalTarget);
     }
     setIsDialogOpen(true);
+  };
+
+  const handleCreateHabitClick = () => {
+    if (habitLimitReached) {
+      return;
+    }
+    setIsDialogOpen(true);
+  };
+
+  const handleUpgrade = async () => {
+    try {
+      const { data } = await axios.post("/api/payment/create-checkout", {
+        planId: "pro_monthly",
+      });
+      window.location.href = data.checkoutUrl;
+    } catch (error) {
+      console.error("Error while upgrading", error);
+    }
   };
 
   const filteredHabits = useMemo(() => {
@@ -112,16 +158,72 @@ export const Habits = () => {
           </div>
           <h2 className="text-xl font-medium">Habits</h2>
         </div>
-        {CreateHabitDialog({
-          isDialogOpen,
-          setIsDialogOpen,
-          form,
-          onSubmit,
-          isLoading: loading,
-          showCustomCategory,
-          setShowCustomCategory,
-        })}
+
+        <div className="flex items-center gap-3">
+          <Badge
+            variant={isPremium ? "default" : "secondary"}
+            className="flex items-center gap-1"
+          >
+            {isPremium ? (
+              <>
+                <Crown className="h-3 w-3" />
+                Premium
+              </>
+            ) : (
+              <>
+                <Lock className="h-3 w-3" />
+                Free Plan
+              </>
+            )}
+          </Badge>
+
+          {isFreePlan && limits && (
+            <Badge
+              variant={habitLimitReached ? "destructive" : "outline"}
+              className="text-xs"
+            >
+              {habits.length}/{limits.maxHabits} habits
+            </Badge>
+          )}
+
+          {CreateHabitDialog({
+            isDialogOpen,
+            setIsDialogOpen,
+            form,
+            onSubmit,
+            isLoading: loading,
+            showCustomCategory,
+            setShowCustomCategory,
+            disabled: habitLimitReached,
+          })}
+        </div>
       </div>
+
+      {habitLimitReached && !subscriptionLoading && (
+        <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/20 dark:to-orange-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <Lock className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-medium text-red-800 dark:text-red-400 mb-1">
+                Habit Limit Reached
+              </h3>
+              <p className="text-sm text-red-700 dark:text-red-300 mb-3">
+                You&apos;ve reached the maximum of {limits?.maxHabits} habits
+                for free users. Upgrade to Premium for unlimited habits and more
+                features.
+              </p>
+              <Button
+                size="sm"
+                onClick={handleUpgrade}
+                className="bg-red-500 hover:bg-red-600 text-white"
+              >
+                <Crown className="h-3 w-3 mr-1" />
+                Upgrade to Premium
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex gap-2 overflow-x-auto">
         {tabs.map((tab) => {
@@ -147,6 +249,7 @@ export const Habits = () => {
                   }`}
                 >
                   {habits.length}
+                  {isFreePlan && limits && `/${limits.maxHabits}`}
                 </span>
               )}
             </button>
@@ -227,15 +330,25 @@ export const Habits = () => {
               </p>
               {!searchQuery &&
                 statusFilter === "ALL" &&
-                categoryFilter === "ALL" && (
+                categoryFilter === "ALL" &&
+                !habitLimitReached && (
                   <Button
-                    onClick={() => setIsDialogOpen(true)}
+                    onClick={handleCreateHabitClick}
                     className="bg-red-500 hover:bg-red-600 text-white"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Create Your First Habit
                   </Button>
                 )}
+              {habitLimitReached && (
+                <Button
+                  onClick={handleUpgrade}
+                  className="bg-red-500 hover:bg-red-600 text-white"
+                >
+                  <Crown className="w-4 h-4 mr-2" />
+                  Upgrade to Create More
+                </Button>
+              )}
             </div>
           ) : (
             <div>
@@ -244,8 +357,13 @@ export const Habits = () => {
                   <Target className="h-3 w-3 text-white" />
                 </div>
                 <h3 className="font-medium">Your Habits</h3>
+                {isFreePlan && limits && (
+                  <span className="text-xs text-muted-foreground">
+                    ({habits.length}/{limits.maxHabits} used)
+                  </span>
+                )}
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredHabits.map((habit) => (
                   <HabitCard
                     key={habit.id}
@@ -265,13 +383,35 @@ export const Habits = () => {
 
       {activeTab === "template" && (
         <div className="space-y-6">
-          <HabitTemplates />
+          {habitLimitReached && (
+            <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+              <p className="text-sm text-yellow-800 dark:text-yellow-400">
+                <Lock className="h-4 w-4 inline mr-1" />
+                You&apos;ve reached your habit limit. Upgrade to add more habits
+                from templates.
+              </p>
+            </div>
+          )}
+          <HabitTemplates
+            onHabitAdded={() => {
+              setActiveTab("habits");
+            }}
+          />
         </div>
       )}
 
       <div className="hidden md:block">
         {activeTab === "ai-assistant" && (
           <div className="space-y-6">
+            {habitLimitReached && (
+              <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                <p className="text-sm text-yellow-800 dark:text-yellow-400">
+                  <Lock className="h-4 w-4 inline mr-1" />
+                  You&apos;ve reached your habit limit. Upgrade to create
+                  AI-suggested habits.
+                </p>
+              </div>
+            )}
             <div className="flex items-center gap-3">
               <div className="w-5 h-5 bg-red-500 rounded flex items-center justify-center">
                 <Bot className="h-3 w-3 text-white" />
@@ -281,6 +421,7 @@ export const Habits = () => {
             <AiAssistant
               habits={habits}
               onCreateHabit={handleAIHabitCreation}
+              disabled={habitLimitReached}
             />
           </div>
         )}

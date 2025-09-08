@@ -9,9 +9,11 @@ import { Badge } from "./ui/badge";
 export const AiAssistant = ({
   habits,
   onCreateHabit,
+  disabled = false,
 }: {
   habits: Habit[];
   onCreateHabit: (suggestion: HabitSuggestion) => void;
+  disabled?: boolean;
 }) => {
   const [hasStarted, setHasStarted] = useState<boolean>(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -162,7 +164,7 @@ export const AiAssistant = ({
           </form>
         </div>
       ) : (
-        <div className="overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] h-[640px] space-y-4">
+        <div className="overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] h-screen space-y-4">
           {messages.map((message) => (
             <div
               key={message.id}
@@ -200,7 +202,8 @@ export const AiAssistant = ({
                           <Button
                             onClick={() => onCreateHabit(suggestion)}
                             size="sm"
-                            className="bg-red-500 hover:bg-red-600 text-white shrink-0 h-7 px-2"
+                            disabled={disabled}
+                            className="bg-red-500 hover:bg-red-600 text-white shrink-0 h-7 px-2 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <Plus className="w-3 h-3 mr-1" />
                             Add
@@ -259,7 +262,7 @@ export const AiAssistant = ({
             </div>
           )}
           <div ref={messagesEndRef} />
-          <div className="fixed bottom-0 mb-24 md:mb-12 w-full flex justify-center items-center max-w-4xl mx-auto">
+          <div className=" mb-24 bottom-0 md:mb-12 w-full flex justify-center items-center max-w-4xl mx-auto">
             <form
               onSubmit={handleSubmit}
               className="relative max-w-3xl mx-auto w-full"
