@@ -23,6 +23,23 @@ model User {
   UserAchievements UserAchievement[]
   Notification     Notification[]
   ApiUsage         ApiUsage[]
+  Payment          Payment[]
+}
+
+model Payment {
+  id                  String        @id @default(uuid())
+  user                User          @relation(fields: [userId], references: [id])
+  userId              String
+  stripeSessionId     String        @unique
+  amount              Int
+  currency            String        @default("INR")
+  planId              String
+  status              PaymentStatus @default(PENDING)
+  subscriptionEndDate DateTime?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  @@index([userId, stripeSessionId])
 }
 
 model ApiUsage {
@@ -151,4 +168,11 @@ enum SubscriptionType {
 enum ApiType {
   AI_ASSISTANT
   AI_INSIGHTS
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
 }

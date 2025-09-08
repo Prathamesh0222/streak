@@ -76,8 +76,9 @@ export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
       console.error("Failed to add habit:", error);
     } finally {
       setLoadingTemplates((prev) => {
-        const { [template.title]: removed, ...rest } = prev;
-        return rest;
+        const next = { ...prev };
+        delete next[template.title];
+        return next;
       });
     }
   };
@@ -94,7 +95,7 @@ export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {HABIT_TEMPLATES.map((template) => {
           const isAdded = isTemplateAdded(template);
           const isLoading = loadingTemplates[template.title] || false;
