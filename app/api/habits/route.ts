@@ -5,6 +5,7 @@ import {
   calculateStreak,
   isCompletedToday,
 } from "@/lib/streak";
+import { checkHabitLimit } from "@/lib/subscription";
 import { habitSchema } from "@/lib/validate";
 
 import { getServerSession } from "next-auth";
@@ -14,6 +15,21 @@ export const POST = async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const habitLimit = await checkHabitLimit(session.user.id);
+
+  if (!habitLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: "Habit limit exceeded",
+        message: `You've reached your habit limit of ${habitLimit.limit}. Upgrade to Pro for unlimited habits!`,
+        current: habitLimit.current,
+        limit: habitLimit.limit,
+        upgradeRequired: true,
+      },
+      { status: 403 }
+    );
   }
 
   const body = await req.json();

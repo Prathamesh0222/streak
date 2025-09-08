@@ -33,15 +33,14 @@ export const POST = async (req: NextRequest) => {
     }
 
     let maxStreak = 0;
-    let currentStreak = 0;
-    let totalHabits = user.Habit.length;
+    const totalHabits = user.Habit.length;
     let consecutiveDays = 0;
 
     user.Habit.forEach((habit) => {
       const streak = calculateStreak(habit.HabitLogs);
       maxStreak = Math.max(maxStreak, streak);
       if (habit.id === habitId) {
-        currentStreak = streak;
+        maxStreak = streak;
       }
     });
 
