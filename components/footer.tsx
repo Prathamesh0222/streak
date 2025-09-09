@@ -6,7 +6,7 @@ export const Footer = () => {
   const GITHUB = process.env.GITHUB_URL;
 
   return (
-    <footer className="p-3 flex justify-between w-full max-w-7xl mx-auto items-center border-x">
+    <footer className="p-4 flex justify-between w-full max-w-7xl mx-auto items-center border-x">
       <p className="font-semibold text-muted-foreground">
         Designed & Developed By Prathamesh
       </p>
