@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky",
-    "seed": "bunx prisma/seed.ts"
+    "seed": "bun prisma/seed.ts"
   },
   "dependencies": {
     "@google/genai": "^1.16.0",
