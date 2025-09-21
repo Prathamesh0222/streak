@@ -9,16 +9,16 @@ import {
 
 const FAQS = [
   {
-    q: "What does my subscription include?",
-    a: "Unlimited habits on Pro, increased AI limits, and unlimited calendar history.",
+    q: "What does my Pro purchase include?",
+    a: "Unlimited habits on Pro, increased AI limits, and unlimited calendar history for 30 days.",
   },
   {
-    q: "How does the free trial work?",
-    a: "Try all Pro features. You can cancel anytime before it ends.",
+    q: "Is this a subscription?",
+    a: "No. It's a one-time payment that unlocks Pro for 30 days. There is no auto-renewal.",
   },
   {
-    q: "How do I cancel my subscription?",
-    a: "Manage billing from Settings. Cancellation takes effect at period end.",
+    q: "How do I cancel?",
+    a: "No cancellation is needed since there is no auto-renewal. Your Pro access ends automatically after 30 days.",
   },
   {
     q: "Do you offer refunds?",

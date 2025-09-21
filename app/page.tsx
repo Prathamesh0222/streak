@@ -3,6 +3,7 @@ import { Header } from "@/components/header";
 import { Hero } from "@/components/hero";
 import { FeaturesSection } from "@/components/features-section";
 import { FAQSection } from "@/components/faq-section";
+import { AdvancedFeatures } from "@/components/advanced-features";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
         <div className="flex-1">
           <Hero />
           <FeaturesSection />
+          <AdvancedFeatures />
           <FAQSection />
         </div>
         <div className="border-t w-full">
