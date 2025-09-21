@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Bell,
-  BarChart3,
-  Calendar,
-  Brain,
-  FileBarChart2,
-  Trophy,
-} from "lucide-react";
+import { Bell, BarChart3, Brain, FileBarChart2, Trophy } from "lucide-react";
 import { CustomCard, CustomContent } from "./custom-card";
 
 export const AdvancedFeatures = () => {
@@ -26,9 +19,7 @@ export const AdvancedFeatures = () => {
             AI-powered insights to optimize your habit-building journey.
           </p>
         </div>
-        {/* Alternating rows: Illustration + Copy */}
         <div className="space-y-20 max-w-4xl mx-auto">
-          {/* Row 1: Illustration left, text right */}
           <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-10">
             <div>
               <CustomCard>
@@ -62,32 +53,32 @@ export const AdvancedFeatures = () => {
             <div>
               <div className="flex items-center gap-2 text-red-500 font-semibold text-sm mb-2">
                 <BarChart3 className="w-4 h-4" />
-                <span>Real-time Tracking</span>
+                <span>Progress Tracking</span>
               </div>
               <h3 className="text-2xl md:text-3xl font-bold mb-3">
-                Real–time Activity Tracking
+                Daily Progress Visualization
               </h3>
               <p className="text-muted-foreground max-w-prose">
-                Monitor your progress in real time with live activity tracking.
-                See what is completed now, what is in progress, and where you
-                need attention.
+                Track your daily habit completion with beautiful heatmaps and
+                progress charts. See your consistency patterns and build
+                momentum with visual progress indicators.
               </p>
             </div>
           </div>
 
-          {/* Row 2: Text left, illustration right (reversed) */}
           <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-10">
             <div>
               <div className="flex items-center gap-2 text-red-500 font-semibold text-sm mb-2">
                 <FileBarChart2 className="w-4 h-4" />
-                <span>Reports</span>
+                <span>AI Insights</span>
               </div>
               <h3 className="text-2xl md:text-3xl font-bold mb-3">
-                Comprehensive Reports
+                Weekly AI-Powered Reports
               </h3>
               <p className="text-muted-foreground max-w-prose">
-                Weekly and monthly summaries that surface trends and highlight
-                your most impactful habits.
+                Get personalized weekly insights and analytics powered by AI.
+                Discover patterns, receive recommendations, and understand your
+                habit-building progress with smart analysis.
               </p>
             </div>
             <div>
@@ -114,7 +105,6 @@ export const AdvancedFeatures = () => {
             </div>
           </div>
 
-          {/* Row 3: Illustration left, text right */}
           <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-10">
             <div>
               <CustomCard>
@@ -130,7 +120,7 @@ export const AdvancedFeatures = () => {
                             >
                               <div className="text-xs font-medium mb-1 text-rose-600 flex items-center gap-2">
                                 <Bell className="w-4 h-4" />
-                                Notification
+                                Achievement
                               </div>
                               <div className="h-2 rounded-full bg-rose-400 w-3/5" />
                             </div>
@@ -145,19 +135,19 @@ export const AdvancedFeatures = () => {
             <div>
               <div className="flex items-center gap-2 text-red-500 font-semibold text-sm mb-2">
                 <Brain className="w-4 h-4" />
-                <span>Smart Nudges</span>
+                <span>Smart Notifications</span>
               </div>
               <h3 className="text-2xl md:text-3xl font-bold mb-3">
-                Smart Notifications
+                Achievement Notifications
               </h3>
               <p className="text-muted-foreground max-w-prose">
-                Timely reminders and AI suggestions keep you on track without
-                being overwhelming.
+                Stay motivated with timely achievement notifications and habit
+                reminders. Get notified when you unlock new milestones and
+                maintain your streak momentum.
               </p>
             </div>
           </div>
 
-          {/* Row 4: Text left, leaderboard illustration right */}
           <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-10">
             <div>
               <div className="flex items-center gap-2 text-red-500 font-semibold text-sm mb-2">
