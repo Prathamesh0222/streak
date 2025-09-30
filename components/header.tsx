@@ -14,7 +14,16 @@ export const Header = () => {
         <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-sm">
           <Flame className="w-5 h-5 text-white" />
         </div>
-        <h1 className="font-bold text-xl">Streak</h1>
+        <div className="flex text-sm gap-6 font-semibold items-center">
+          <button className="hover:underline cursor-pointer">Features</button>
+          <button
+            onClick={() => router.push("/pricing")}
+            className="hover:underline cursor-pointer"
+          >
+            Pricing
+          </button>
+          <button className="hover:underline cursor-pointer">FAQ</button>
+        </div>
       </div>
       <div className="flex items-center gap-3">
         <ModeToggle />
