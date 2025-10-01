@@ -11,8 +11,13 @@ export const Header = () => {
   return (
     <nav className="p-4 flex justify-between items-center backdrop-blur-sm sticky top-0 z-50 max-w-7xl mx-auto border-x">
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-sm">
-          <Flame className="w-5 h-5 text-white" />
+        <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-sm cursor-pointer hover:scale-105 duration-300 transition-all">
+          <Flame
+            onClick={() => {
+              router.push("/");
+            }}
+            className="w-5 h-5 text-white"
+          />
         </div>
         <div className="flex text-sm gap-6 font-semibold items-center">
           <button className="hover:underline cursor-pointer">Features</button>

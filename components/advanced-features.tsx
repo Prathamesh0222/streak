@@ -24,7 +24,7 @@ export const AdvancedFeatures = () => {
             <div>
               <CustomCard>
                 <CustomContent>
-                  <div className="bg-emerald-100/60 dark:bg-emerald-900/20 border rounded-2xl p-8 h-full">
+                  <div className="bg-emerald-100/60 dark:bg-emerald-900/20 border rounded-xl p-8 h-full">
                     <div className="mx-auto max-w-md">
                       <div className="w-4 h-4 rounded-full bg-red-400 mx-auto mb-6" />
                       <div className="rounded-xl bg-white/90 dark:bg-background border p-4 shadow-sm">
@@ -84,7 +84,7 @@ export const AdvancedFeatures = () => {
             <div>
               <CustomCard>
                 <CustomContent>
-                  <div className="bg-sky-100/60 dark:bg-sky-900/20 border rounded-2xl p-8 h-full">
+                  <div className="bg-sky-100/60 dark:bg-sky-900/20 border rounded-xl p-8 h-full">
                     <div className="mx-auto max-w-md">
                       <div className="rounded-xl bg-white/90 dark:bg-background border p-6 shadow-sm">
                         <div className="grid grid-cols-3 gap-3">
@@ -109,7 +109,7 @@ export const AdvancedFeatures = () => {
             <div>
               <CustomCard>
                 <CustomContent>
-                  <div className="bg-rose-100/60 dark:bg-rose-900/20 border rounded-2xl p-8 h-full">
+                  <div className="bg-rose-100/60 dark:bg-rose-900/20 border rounded-xl p-8 h-full">
                     <div className="mx-auto max-w-md">
                       <div className="rounded-xl bg-white/90 dark:bg-background border p-6 shadow-sm">
                         <div className="space-y-3">
@@ -165,7 +165,7 @@ export const AdvancedFeatures = () => {
             <div>
               <CustomCard>
                 <CustomContent>
-                  <div className="bg-amber-100/60 dark:bg-amber-900/20 border rounded-2xl p-8 h-full">
+                  <div className="bg-amber-100/60 dark:bg-amber-900/20 border rounded-xl p-8 h-full">
                     <div className="mx-auto max-w-md">
                       <div className="rounded-xl bg-white/90 dark:bg-background border p-4 shadow-sm space-y-2">
                         {[
