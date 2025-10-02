@@ -5,11 +5,13 @@ import { FeaturesSection } from "@/components/features-section";
 import { FAQSection } from "@/components/faq-section";
 import { AdvancedFeatures } from "@/components/advanced-features";
 import { PreFooterCTA } from "@/components/pre-footer-cta";
+import { ScrollHandler } from "@/components/scroll-handler";
 
 export default function Home() {
   return (
     <div>
       <div className="min-h-screen flex flex-col">
+        <ScrollHandler />
         <div className="border-b w-full">
           <Header />
         </div>
