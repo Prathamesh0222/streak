@@ -2,11 +2,23 @@
 
 import { Flame } from "lucide-react";
 import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ModeToggle } from "./mode-toggle";
 
 export const Header = () => {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const handleAnchor = (id: string) => {
+    if (pathname === "/") {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    } else {
+      router.push(`/?scrollTo=${id}`, { scroll: false });
+    }
+  };
 
   return (
     <nav className="p-4 flex justify-between items-center backdrop-blur-sm sticky top-0 z-50 max-w-7xl mx-auto border-x">
@@ -20,14 +32,24 @@ export const Header = () => {
           />
         </div>
         <div className="flex text-sm gap-6 font-semibold items-center">
-          <button className="hover:underline cursor-pointer">Features</button>
+          <button
+            onClick={() => handleAnchor("features")}
+            className="hover:underline cursor-pointer"
+          >
+            Features
+          </button>
           <button
             onClick={() => router.push("/pricing")}
             className="hover:underline cursor-pointer"
           >
             Pricing
           </button>
-          <button className="hover:underline cursor-pointer">FAQ</button>
+          <button
+            onClick={() => handleAnchor("faq")}
+            className="hover:underline cursor-pointer"
+          >
+            FAQ
+          </button>
         </div>
       </div>
       <div className="flex items-center gap-3">

@@ -20,7 +20,10 @@ export function FeaturesSection() {
   return (
     <>
       <div className="border-t w-full">
-        <section className="max-w-7xl mx-auto px-4 md:px-6 py-16 border-x">
+        <section
+          id="features"
+          className="max-w-7xl mx-auto px-4 md:px-6 py-16 border-x"
+        >
           <div className="text-center mb-10">
             <span className="inline-block text-xs px-3 py-1 rounded-full bg-red-300/70 border-red-500 text-red-700 dark:bg-red-900/50 border dark:border-red-500 dark:text-red-500 font-bold">
               Features
