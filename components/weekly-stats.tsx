@@ -92,57 +92,60 @@ export function WeeklyStats({
   );
 
   return (
-    <div className="border border-red-500/20 p-6 rounded-2xl transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group h-full bg-card">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">Weekly Stats</h3>
-        <span className="text-xs text-muted-foreground">Last 7 days</span>
-      </div>
+    <div className="border border-red-500/20 p-1 rounded-xl transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group h-full bg-card">
+      <div className="p-5 bg-background border border-red-500/20 rounded-lg">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Weekly Stats</h3>
+          <span className="text-xs text-muted-foreground">Last 7 days</span>
+        </div>
 
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="rounded-lg border border-border p-3">
-          <div className="text-xs text-muted-foreground">Completions</div>
-          <div className="text-xl font-semibold">{totalCompletions}</div>
-        </div>
-        <div className="rounded-lg border border-border p-3">
-          <div className="text-xs text-muted-foreground">Completion rate</div>
-          <div className="text-xl font-semibold">{rate}%</div>
-        </div>
-        <div className="rounded-lg border border-border p-3">
-          <div className="text-xs text-muted-foreground">Best day</div>
-          <div className="text-xl font-semibold">
-            {bestDay?.label || "-"} {bestDay?.count ? `(${bestDay.count})` : ""}
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="rounded-lg border border-border p-3">
+            <div className="text-xs text-muted-foreground">Completions</div>
+            <div className="text-xl font-semibold">{totalCompletions}</div>
+          </div>
+          <div className="rounded-lg border border-border p-3">
+            <div className="text-xs text-muted-foreground">Completion rate</div>
+            <div className="text-xl font-semibold">{rate}%</div>
+          </div>
+          <div className="rounded-lg border border-border p-3">
+            <div className="text-xs text-muted-foreground">Best day</div>
+            <div className="text-xl font-semibold">
+              {bestDay?.label || "-"}{" "}
+              {bestDay?.count ? `(${bestDay.count})` : ""}
+            </div>
           </div>
         </div>
-      </div>
 
-      <ChartContainer
-        id="weekly-stats"
-        className="h-60 w-full mt-10"
-        config={{
-          completions: {
-            label: "Completions",
-            color: "hsl(var(--primary))",
-          },
-        }}
-      >
-        <BarChart data={data}>
-          <CartesianGrid vertical={false} strokeDasharray="3 3" />
-          <XAxis
-            dataKey="label"
-            axisLine={false}
-            tickLine={false}
-            tickMargin={8}
-          />
-          <YAxis hide />
-          <ChartTooltip
-            cursor={{ fill: "rgba(0,0,0,0.05)" }}
-            content={
-              <ChartTooltipContent labelKey="label" nameKey="completions" />
-            }
-          />
-          <Bar dataKey="count" fill="#ef4444" radius={[6, 6, 0, 0]} />
-        </BarChart>
-      </ChartContainer>
+        <ChartContainer
+          id="weekly-stats"
+          className="h-60 w-full mt-10"
+          config={{
+            completions: {
+              label: "Completions",
+              color: "hsl(var(--primary))",
+            },
+          }}
+        >
+          <BarChart data={data}>
+            <CartesianGrid vertical={false} strokeDasharray="3 3" />
+            <XAxis
+              dataKey="label"
+              axisLine={false}
+              tickLine={false}
+              tickMargin={8}
+            />
+            <YAxis hide />
+            <ChartTooltip
+              cursor={{ fill: "rgba(0,0,0,0.05)" }}
+              content={
+                <ChartTooltipContent labelKey="label" nameKey="completions" />
+              }
+            />
+            <Bar dataKey="count" fill="#ef4444" radius={[6, 6, 0, 0]} />
+          </BarChart>
+        </ChartContainer>
+      </div>
     </div>
   );
 }

@@ -2,9 +2,9 @@
 
 import { Brain, Loader2, RefreshCw, Calendar } from "lucide-react";
 import { Habit } from "@/types/habit-types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useInsights } from "@/hooks/useInsights";
+import { CustomCard, CustomContent } from "./custom-card";
 
 interface WeeklyAIInsightsProps {
   habits: Habit[];
@@ -29,9 +29,9 @@ export function WeeklyAIInsights({ habits }: WeeklyAIInsightsProps) {
   if (!habits || habits.length === 0) return null;
 
   return (
-    <Card className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
+    <CustomCard className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
+      <CustomContent className="gap-2 w-full h-full bg-background rounded-lg border border-red-500/20 p-4">
+        <span className="flex items-center justify-between">
           <div className="flex items-center gap-2">Weekly AI Insights</div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -50,9 +50,7 @@ export function WeeklyAIInsights({ habits }: WeeklyAIInsightsProps) {
               />
             </Button>
           </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+        </span>
         {(isLoading || isGenerating) && (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-6 w-6 animate-spin text-red-500" />
@@ -126,7 +124,7 @@ export function WeeklyAIInsights({ habits }: WeeklyAIInsightsProps) {
               </Button>
             </div>
           )}
-      </CardContent>
-    </Card>
+      </CustomContent>
+    </CustomCard>
   );
 }
