@@ -1,5 +1,4 @@
-import CalendarHeatmap from "react-calendar-heatmap";
-import "react-calendar-heatmap/dist/styles.css";
+import ActivityCalendar from "react-activity-calendar";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -8,7 +7,7 @@ import { Habit } from "@/types/habit-types";
 export const HeatMap = () => {
   const { data: session } = useSession();
   const [calendarData, setCalendarData] = useState<
-    Array<{ date: string; count: number }>
+    Array<{ date: string; count: number; level: number }>
   >([]);
   useEffect(() => {
     const fetchHabits = async () => {
@@ -28,14 +27,26 @@ export const HeatMap = () => {
           });
         });
 
-        const calendarDataArray = Array.from(habitLogsMap.entries()).map(
-          ([date, count]) => ({
-            date,
-            count,
-          })
-        );
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 365);
 
-        setCalendarData(calendarDataArray);
+        const fullYearData = [];
+        for (
+          let d = new Date(startDate);
+          d <= endDate;
+          d.setDate(d.getDate() + 1)
+        ) {
+          const dateStr = d.toISOString().split("T")[0];
+          const count = habitLogsMap.get(dateStr) || 0;
+          fullYearData.push({
+            date: dateStr,
+            count,
+            level: count === 0 ? 0 : Math.min(Math.floor(count / 2) + 1, 4),
+          });
+        }
+
+        setCalendarData(fullYearData);
       } catch (error) {
         console.error("Failed to fetch habits:", error);
       }
@@ -46,56 +57,61 @@ export const HeatMap = () => {
     }
   }, [session?.user]);
 
-  const endDate = new Date();
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 365);
   return (
-    <div className="p-6 rounded-xl bg-card border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-foreground mb-1">
-          Activity Overview
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          Your habit completion streak over the past year
-        </p>
-      </div>
-      <div className="w-full overflow-x-auto">
-        <div className="min-w-[800px] w-full">
-          <CalendarHeatmap
-            startDate={startDate}
-            endDate={endDate}
-            values={calendarData}
-            classForValue={(value) => {
-              if (!value) {
-                return "color-empty";
-              }
-              if (value.count >= 5) return "color-scale-4";
-              if (value.count >= 3) return "color-scale-3";
-              if (value.count >= 1) return "color-scale-2";
-              return "color-scale-1";
+    <div className="p-1 rounded-xl bg-card border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
+      <div className="p-5 bg-background border border-red-500/20 rounded-lg">
+        <div className="mb-4">
+          <h3 className="font-semibold text-foreground">Activity Overview</h3>
+          <p className="text-sm text-muted-foreground">
+            Your habit completion streak over the past year
+          </p>
+        </div>
+        <div className="w-full overflow-x-auto">
+          <ActivityCalendar
+            data={
+              calendarData.length > 0
+                ? calendarData
+                : [
+                    {
+                      date: new Date().toLocaleDateString("en-CA"),
+                      count: 0,
+                      level: 0,
+                    },
+                  ]
+            }
+            theme={{
+              light: ["#f3f4f6", "#fecaca", "#fca5a5", "#f87171", "#ef4444"],
+              dark: ["#374151", "#eb6464", "#991b1b", "#b91c1c", "#dc2626"],
             }}
-            titleForValue={(value) => {
-              if (!value) return "No data";
-              return `${value.count} habit${
-                value.count === 1 ? "" : "s"
-              } completed on ${value.date}`;
+            colorScheme="light"
+            showWeekdayLabels
+            labels={{
+              months: [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ],
+              weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+              totalCount: "{{count}} habits in {{year}}",
+              legend: {
+                less: "Less",
+                more: "More",
+              },
             }}
+            blockSize={12}
+            blockRadius={3}
+            blockMargin={2}
           />
         </div>
-      </div>
-      <div className="flex justify-between items-center mt-6">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <span>Less</span>
-          <div className="flex gap-1">
-            <div className="w-3 h-3 bg-gray-200 dark:bg-gray-700 rounded-sm"></div>
-            <div className="w-3 h-3 bg-red-200 dark:bg-red-900 rounded-sm"></div>
-            <div className="w-3 h-3 bg-red-300 dark:bg-red-800 rounded-sm"></div>
-            <div className="w-3 h-3 bg-red-400 dark:bg-red-700 rounded-sm"></div>
-            <div className="w-3 h-3 bg-red-500 dark:bg-red-600 rounded-sm"></div>
-          </div>
-          <span>More</span>
-        </div>
-        <div className="text-sm text-muted-foreground">Last 12 months</div>
       </div>
     </div>
   );
