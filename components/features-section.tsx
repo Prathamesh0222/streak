@@ -15,6 +15,17 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { CustomCard, CustomContent } from "./custom-card";
+import { motion } from "framer-motion";
+
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06 } },
+};
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 6 },
+  show: { opacity: 1, y: 0 },
+};
 
 export function FeaturesSection() {
   return (
@@ -42,8 +53,17 @@ export function FeaturesSection() {
                 <CustomContent>
                   <div className="gap-4">
                     <div className="flex w-full h-full bg-background rounded-lg border p-2">
-                      <div className="flex flex-col gap-2 w-full p-3">
-                        <div className="flex p-3 border items-center justify-between gap-3 rounded-md">
+                      <motion.div
+                        className="flex flex-col gap-2 w-full p-3"
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                      >
+                        <motion.div
+                          className="flex p-3 border items-center justify-between gap-3 rounded-md"
+                          variants={fadeIn}
+                        >
                           <Flame className="w-10 h-10 border border-border rounded-full text-red-500 p-2.5 hover:scale-105 duration-300 ease-in-out bg-muted flex-shrink-0" />
                           <div className="flex flex-col gap-2 w-full p-2">
                             <div className="h-2 rounded-full bg-red-500 w-3/4" />
@@ -52,24 +72,30 @@ export function FeaturesSection() {
                           <div className="h-8 w-8 rounded-full bg-red-500 flex-shrink-0 flex items-center justify-center hover:scale-105 duration-300 ease-in-out ">
                             <Check className="w-4 h-4 text-white" />
                           </div>
-                        </div>
-                        <div className="px-3.5 border rounded-md flex items-center justify-between gap-3 bg-card">
+                        </motion.div>
+                        <motion.div
+                          className="px-3.5 border rounded-md flex items-center justify-between gap-3 bg-card"
+                          variants={fadeIn}
+                        >
                           <div className="w-5 h-5 border border-border rounded-full text-red-500 p-2.5" />
                           <div className="flex flex-col gap-2 w-full p-2">
                             <div className="h-1 rounded-full bg-red-500 w-1/2" />
                             <div className="h-1 rounded-full bg-red-500 w-full" />
                           </div>
                           <div className="h-5 w-5 rounded-full border flex-shrink-0 flex items-center justify-center" />
-                        </div>
-                        <div className="px-3.5 border rounded-md flex items-center justify-between gap-3 bg-card">
+                        </motion.div>
+                        <motion.div
+                          className="px-3.5 border rounded-md flex items-center justify-between gap-3 bg-card"
+                          variants={fadeIn}
+                        >
                           <div className="w-5 h-5 border border-border rounded-full text-red-500 p-2.5" />
                           <div className="flex flex-col gap-2 w-full p-2">
                             <div className="h-1 rounded-full bg-red-500 w-1/2" />
                             <div className="h-1 rounded-full bg-red-500 w-full" />
                           </div>
                           <div className="h-5 w-5 rounded-full border flex-shrink-0 flex items-center justify-center" />
-                        </div>
-                      </div>
+                        </motion.div>
+                      </motion.div>
                     </div>
                     <div className="p-4">
                       <h3 className="text-lg font-bold">Habit Tracking</h3>
@@ -85,7 +111,13 @@ export function FeaturesSection() {
                 <CustomContent>
                   <div className="gap-4">
                     <div className="w-full h-full bg-background rounded-lg border p-3 py-3.5">
-                      <div className="flex justify-center">
+                      <motion.div
+                        className="flex justify-center"
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                      >
                         {Array.from({ length: 22 }).map((_, rowIdx) => (
                           <div key={rowIdx}>
                             {Array.from({ length: 9 }).map((_, colIdx) => (
@@ -94,11 +126,11 @@ export function FeaturesSection() {
                                 className={`p-2 border rounded-sm ${
                                   rowIdx > 10 ? "bg-red-500" : "bg-white"
                                 }`}
-                              ></div>
+                              />
                             ))}
                           </div>
                         ))}
-                      </div>
+                      </motion.div>
                     </div>
                     <div className="p-4">
                       <h3 className="text-lg font-bold">Progress Heatmap</h3>
@@ -114,38 +146,56 @@ export function FeaturesSection() {
                 <CustomContent>
                   <div className="gap-4">
                     <div className="flex w-full h-full bg-background rounded-lg border p-3">
-                      <div className="flex flex-col gap-3 w-full  px-3">
-                        <div className="flex items-center gap-2 p-2 border rounded-md bg-card">
+                      <motion.div
+                        className="flex flex-col gap-3 w-full px-3"
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                      >
+                        <motion.div
+                          className="flex items-center gap-2 p-2 border rounded-md bg-card"
+                          variants={fadeIn}
+                        >
                           <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
                             <span className="text-white text-xs font-bold">
                               AI
                             </span>
                           </div>
                           <div className="flex-1 h-2 bg-muted rounded-full" />
-                        </div>
-                        <div className="space-y-5">
-                          <div className="flex gap-2 mx-2">
+                        </motion.div>
+                        <motion.div className="space-y-5" variants={container}>
+                          <motion.div
+                            className="flex gap-2 mx-2"
+                            variants={fadeIn}
+                          >
                             <div className="w-6 h-6 rounded-full bg-muted border" />
                             <div className="flex-1 space-y-1">
                               <div className="h-2 bg-red-500 rounded-full w-3/4" />
                               <div className="h-2 bg-red-500 rounded-full w-1/2" />
                             </div>
-                          </div>
-                          <div className="flex gap-2 justify-end mx-2">
+                          </motion.div>
+                          <motion.div
+                            className="flex gap-2 justify-end mx-2"
+                            variants={fadeIn}
+                          >
                             <div className="flex-1 space-y-1 max-w-2/3">
                               <div className="h-2 bg-muted rounded-full w-full" />
                               <div className="h-2 bg-muted rounded-full w-2/3" />
                             </div>
                             <div className="w-6 h-6 rounded-full bg-red-500 border" />
-                          </div>
-                        </div>
-                        <div className="flex gap-2 p-2 border rounded-md bg-card">
+                          </motion.div>
+                        </motion.div>
+                        <motion.div
+                          className="flex gap-2 p-2 border rounded-md bg-card"
+                          variants={fadeIn}
+                        >
                           <div className="flex-1 h-7 bg-muted rounded-md" />
                           <div className="w-7 h-7 bg-red-500 rounded-md flex items-center justify-center">
                             <ArrowRight className="w-3 h-3 text-white" />
                           </div>
-                        </div>
-                      </div>
+                        </motion.div>
+                      </motion.div>
                     </div>
                     <div className="p-4">
                       <h3 className="text-lg font-bold">AI Assistant</h3>
@@ -160,8 +210,17 @@ export function FeaturesSection() {
                 <CustomContent>
                   <div className="gap-4">
                     <div className="w-full h-full bg-background rounded-lg border p-3">
-                      <div className="space-y-3">
-                        <div className="grid grid-cols-2 gap-3">
+                      <motion.div
+                        className="space-y-3"
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                      >
+                        <motion.div
+                          className="grid grid-cols-2 gap-3"
+                          variants={container}
+                        >
                           <div className="text-center p-3 border rounded-lg bg-card">
                             <div className="relative w-12 h-12 mx-auto mb-2">
                               <div className="w-12 h-12 rounded-full border-2 border-muted"></div>
@@ -196,8 +255,8 @@ export function FeaturesSection() {
                               Streak
                             </div>
                           </div>
-                        </div>
-                        <div className="space-y-1">
+                        </motion.div>
+                        <motion.div className="space-y-1" variants={container}>
                           <div className="flex justify-between text-xs">
                             <span className="text-muted-foreground">
                               XP Progress
@@ -207,42 +266,75 @@ export function FeaturesSection() {
                             </span>
                           </div>
                           <div className="w-full h-2 bg-muted rounded-full border border-border/50">
-                            <div className="h-full bg-red-500 rounded-full w-3/5"></div>
+                            <motion.div
+                              className="h-full bg-red-500 rounded-full w-3/5"
+                              variants={fadeIn}
+                            ></motion.div>
                           </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
+                        </motion.div>
+                        <motion.div className="flex gap-2" variants={container}>
+                          <motion.div
+                            className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center"
+                            variants={fadeIn}
+                          >
                             <Trophy className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
+                          </motion.div>
+                          <motion.div
+                            className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center"
+                            variants={fadeIn}
+                          >
                             <Flame className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
+                          </motion.div>
+                          <motion.div
+                            className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center"
+                            variants={fadeIn}
+                          >
                             <Target className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
+                          </motion.div>
+                          <motion.div
+                            className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center"
+                            variants={fadeIn}
+                          >
                             <Zap className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                          </motion.div>
+                          <motion.div
+                            className="w-8 h-8 rounded-full bg-muted flex items-center justify-center"
+                            variants={fadeIn}
+                          >
                             <Star className="w-4 h-4 text-muted-foreground" />
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                          </motion.div>
+                          <motion.div
+                            className="w-8 h-8 rounded-full bg-muted flex items-center justify-center"
+                            variants={fadeIn}
+                          >
                             <Award className="w-4 h-4 text-muted-foreground" />
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
+                          </motion.div>
+                          <motion.div
+                            className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center"
+                            variants={fadeIn}
+                          >
                             <Crown className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
+                          </motion.div>
+                          <motion.div
+                            className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center"
+                            variants={fadeIn}
+                          >
                             <Shield className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
+                          </motion.div>
+                          <motion.div
+                            className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center"
+                            variants={fadeIn}
+                          >
                             <Medal className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                          </motion.div>
+                          <motion.div
+                            className="w-8 h-8 rounded-full bg-muted flex items-center justify-center"
+                            variants={fadeIn}
+                          >
                             <Gem className="w-4 h-4 text-muted-foreground" />
-                          </div>
-                        </div>
-                      </div>
+                          </motion.div>
+                        </motion.div>
+                      </motion.div>
                     </div>
                     <div className="p-4">
                       <h3 className="text-lg font-bold">Gamification</h3>

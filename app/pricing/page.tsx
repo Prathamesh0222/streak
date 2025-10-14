@@ -7,6 +7,8 @@ import { Check, X } from "lucide-react";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import axios from "axios";
+import { useState } from "react";
 
 export default function PricingPage() {
   const pro = PLANS.pro_monthly;
@@ -14,6 +16,28 @@ export default function PricingPage() {
   const rupees = pro.amount / 100;
   const monthlyPriceLabel = `₹${Math.round(rupees)}`;
   const freeLabel = "₹0";
+
+  const [isUpgrading, setIsUpgrading] = useState(false);
+
+  const upgrade = async () => {
+    if (isUpgrading) return;
+    try {
+      setIsUpgrading(true);
+      const res = await axios.post("/api/payment/create-checkout", {
+        planId: "pro_monthly",
+      });
+      const checkoutUrl = res.data?.checkoutUrl;
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      } else {
+        console.error("No checkoutUrl returned", res.data);
+      }
+    } catch (err) {
+      console.error("Failed to create checkout session", err);
+    } finally {
+      setIsUpgrading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -109,15 +133,13 @@ export default function PricingPage() {
                   </ul>
                 </div>
                 <div className="mt-6 p-3">
-                  <form action="/api/payment/create-checkout" method="post">
-                    <input type="hidden" name="planId" value="pro_monthly" />
-                    <Button
-                      type="submit"
-                      className="w-full bg-red-600 hover:bg-red-700 rounded-xl"
-                    >
-                      Upgrade to Pro
-                    </Button>
-                  </form>
+                  <Button
+                    onClick={upgrade}
+                    disabled={isUpgrading}
+                    className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-70 rounded-xl"
+                  >
+                    {isUpgrading ? "Redirecting…" : "Upgrade to Pro"}
+                  </Button>
                 </div>
               </CustomContent>
             </CustomCard>

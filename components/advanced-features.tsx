@@ -2,6 +2,19 @@
 
 import { Bell, BarChart3, Brain, FileBarChart2, Trophy } from "lucide-react";
 import { CustomCard, CustomContent } from "./custom-card";
+import { motion } from "framer-motion";
+
+const container = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.06 },
+  },
+};
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 6 },
+  show: { opacity: 1, y: 0 },
+};
 
 export const AdvancedFeatures = () => {
   return (
@@ -24,27 +37,73 @@ export const AdvancedFeatures = () => {
             <div>
               <CustomCard>
                 <CustomContent>
-                  <div className="bg-emerald-100/60 dark:bg-emerald-900/20 border rounded-xl p-8 h-full">
-                    <div className="mx-auto max-w-md">
-                      <div className="w-4 h-4 rounded-full bg-red-400 mx-auto mb-6" />
-                      <div className="rounded-xl bg-white/90 dark:bg-background border p-4 shadow-sm">
-                        <div className="space-y-3">
-                          {[1, 2, 3].map((i) => (
-                            <div key={i} className="flex items-center gap-3">
-                              <div className="w-5 h-5 rounded-md border bg-muted flex items-center justify-center">
-                                <span className="w-2 h-2 rounded-full bg-emerald-500 block" />
-                              </div>
-                              <div className="flex-1 h-2 rounded-full bg-emerald-500/80" />
-                              <div className="w-12 h-2 rounded-full bg-emerald-200" />
-                            </div>
+                  <div className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 border rounded-xl p-6 h-full">
+                    <div className="space-y-4">
+                      <div className="bg-white/90 dark:bg-background border rounded-lg p-4">
+                        <motion.div
+                          className="grid grid-cols-7 gap-1 mb-2"
+                          variants={container}
+                          initial="hidden"
+                          whileInView="show"
+                          viewport={{ once: true }}
+                        >
+                          {Array.from({ length: 35 }).map((_, i) => (
+                            <motion.div
+                              key={i}
+                              variants={fadeIn}
+                              className={`w-3 h-3 rounded-sm ${
+                                i % 7 < 3
+                                  ? "bg-emerald-400 dark:bg-emerald-600"
+                                  : i % 7 < 5
+                                  ? "bg-emerald-300 dark:bg-emerald-700"
+                                  : "bg-emerald-200 dark:bg-emerald-800"
+                              }`}
+                            />
                           ))}
+                        </motion.div>
+                        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                          <span>Mon</span>
+                          <span>Wed</span>
+                          <span>Fri</span>
+                          <span>Sun</span>
                         </div>
                       </div>
-                      <div className="flex justify-center gap-2 mt-6">
-                        <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                        <div className="w-2 h-2 rounded-full bg-emerald-300" />
-                        <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                      </div>
+
+                      <motion.div
+                        className="space-y-2"
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                      >
+                        {["Exercise", "Reading", "Meditation"].map(
+                          (habit, i) => (
+                            <motion.div
+                              key={habit}
+                              className="flex items-center gap-3"
+                              variants={fadeIn}
+                            >
+                              <motion.div
+                                className="w-6 h-6 bg-emerald-500 rounded-full"
+                                variants={fadeIn}
+                              />
+                              <div className="flex-1">
+                                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                  <motion.div
+                                    className="h-full bg-emerald-500 rounded-full"
+                                    style={{ width: `${60 + i * 15}%` }}
+                                    variants={fadeIn}
+                                  />
+                                </div>
+                              </div>
+                              <motion.div
+                                className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-8"
+                                variants={fadeIn}
+                              />
+                            </motion.div>
+                          )
+                        )}
+                      </motion.div>
                     </div>
                   </div>
                 </CustomContent>
@@ -84,20 +143,69 @@ export const AdvancedFeatures = () => {
             <div>
               <CustomCard>
                 <CustomContent>
-                  <div className="bg-sky-100/60 dark:bg-sky-900/20 border rounded-xl p-8 h-full">
-                    <div className="mx-auto max-w-md">
-                      <div className="rounded-xl bg-white/90 dark:bg-background border p-6 shadow-sm">
-                        <div className="grid grid-cols-3 gap-3">
-                          {Array.from({ length: 9 }).map((_, i) => (
-                            <div
+                  <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border rounded-xl p-6 h-full">
+                    <div className="space-y-4">
+                      <motion.div
+                        className="flex items-center gap-2 mb-4"
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                      >
+                        <motion.div
+                          className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg"
+                          variants={fadeIn}
+                        />
+                        <motion.div
+                          className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"
+                          variants={fadeIn}
+                        />
+                      </motion.div>
+
+                      <div className="bg-white/90 dark:bg-background border rounded-lg p-4">
+                        <motion.div
+                          className="h-32 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-lg flex items-end justify-between px-2"
+                          variants={container}
+                          initial="hidden"
+                          whileInView="show"
+                          viewport={{ once: true }}
+                        >
+                          {Array.from({ length: 7 }).map((_, i) => (
+                            <motion.div
                               key={i}
-                              className={`h-16 rounded-md ${
-                                i % 3 === 0 ? "bg-sky-400/60" : "bg-sky-200"
+                              variants={fadeIn}
+                              className={`w-6 rounded-t ${
+                                i % 2 === 0
+                                  ? "bg-purple-300 dark:bg-purple-600 h-16"
+                                  : "bg-blue-300 dark:bg-blue-600 h-12"
                               }`}
                             />
                           ))}
-                        </div>
+                        </motion.div>
                       </div>
+                      <motion.div
+                        className="space-y-2"
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                      >
+                        <motion.div
+                          className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"
+                          variants={fadeIn}
+                        />
+                        <motion.div
+                          className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"
+                          variants={fadeIn}
+                        />
+                        <motion.div
+                          className="flex items-center gap-2 mt-3"
+                          variants={fadeIn}
+                        >
+                          <div className="w-4 h-4 bg-purple-400 rounded-full" />
+                          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-20" />
+                        </motion.div>
+                      </motion.div>
                     </div>
                   </div>
                 </CustomContent>
@@ -109,24 +217,57 @@ export const AdvancedFeatures = () => {
             <div>
               <CustomCard>
                 <CustomContent>
-                  <div className="bg-rose-100/60 dark:bg-rose-900/20 border rounded-xl p-8 h-full">
-                    <div className="mx-auto max-w-md">
-                      <div className="rounded-xl bg-white/90 dark:bg-background border p-6 shadow-sm">
-                        <div className="space-y-3">
-                          {[1, 2, 3].map((i) => (
-                            <div
-                              key={i}
-                              className="p-3 rounded-md border bg-rose-500/10"
-                            >
-                              <div className="text-xs font-medium mb-1 text-rose-600 flex items-center gap-2">
-                                <Bell className="w-4 h-4" />
-                                Achievement
+                  <div className="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 border rounded-xl p-6 h-full">
+                    <div className="space-y-3">
+                      <motion.div
+                        className="flex items-center gap-2 mb-3"
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                      >
+                        <motion.div
+                          className="w-6 h-6 bg-rose-500 rounded-full"
+                          variants={fadeIn}
+                        />
+                        <motion.div
+                          className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-16"
+                          variants={fadeIn}
+                        />
+                        <motion.div
+                          className="ml-auto w-2 h-2 bg-rose-400 rounded-full"
+                          variants={fadeIn}
+                        />
+                      </motion.div>
+                      <motion.div
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                      >
+                        {[
+                          "7-day streak!",
+                          "New achievement!",
+                          "Goal completed!",
+                        ].map((text, i) => (
+                          <motion.div
+                            key={text}
+                            className="bg-white/90 dark:bg-background border rounded-lg p-3"
+                            variants={fadeIn}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                                <Bell className="w-4 h-4 text-white" />
                               </div>
-                              <div className="h-2 rounded-full bg-rose-400 w-3/5" />
+                              <div className="flex-1 space-y-1">
+                                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+                                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                              </div>
+                              <div className="w-2 h-2 bg-rose-400 rounded-full" />
                             </div>
-                          ))}
-                        </div>
-                      </div>
+                          </motion.div>
+                        ))}
+                      </motion.div>
                     </div>
                   </div>
                 </CustomContent>
@@ -165,59 +306,84 @@ export const AdvancedFeatures = () => {
             <div>
               <CustomCard>
                 <CustomContent>
-                  <div className="bg-amber-100/60 dark:bg-amber-900/20 border rounded-xl p-8 h-full">
-                    <div className="mx-auto max-w-md">
-                      <div className="rounded-xl bg-white/90 dark:bg-background border p-4 shadow-sm space-y-2">
+                  <div className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border rounded-xl p-6 h-full">
+                    <div className="space-y-3">
+                      <motion.div
+                        className="flex items-center gap-2 mb-4"
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                      >
+                        <motion.div
+                          className="w-8 h-8 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-lg"
+                          variants={fadeIn}
+                        />
+                        <motion.div
+                          className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"
+                          variants={fadeIn}
+                        />
+                      </motion.div>
+                      <motion.div
+                        className="bg-white/90 dark:bg-background border rounded-lg p-3 space-y-2"
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                      >
                         {[
                           {
+                            rank: 1,
                             name: "You",
                             xp: "1,250",
-                            rank: 1,
-                            highlight: true,
+                            isCurrent: true,
                           },
                           {
+                            rank: 2,
                             name: "Alex",
                             xp: "980",
-                            rank: 2,
-                            highlight: false,
+                            isCurrent: false,
                           },
                           {
+                            rank: 3,
                             name: "Sarah",
                             xp: "850",
-                            rank: 3,
-                            highlight: false,
+                            isCurrent: false,
                           },
-                        ].map((u) => (
-                          <div
-                            key={u.rank}
-                            className="flex items-center gap-3 p-2 rounded-md bg-muted/50"
+                        ].map((user, i) => (
+                          <motion.div
+                            key={user.rank}
+                            className="flex items-center gap-3 p-2 rounded-md"
+                            variants={fadeIn}
                           >
                             <div
                               className={`w-8 h-8 ${
-                                u.highlight ? "bg-red-500" : "bg-muted"
+                                user.isCurrent
+                                  ? "bg-gradient-to-r from-red-500 to-red-600 shadow-lg"
+                                  : "bg-gradient-to-r from-amber-400 to-yellow-400"
                               } rounded-full flex items-center justify-center`}
                             >
-                              <span
-                                className={`${
-                                  u.highlight
-                                    ? "text-white"
-                                    : "text-muted-foreground"
-                                } text-xs font-bold`}
-                              >
-                                {u.rank}
+                              <span className="text-white text-xs font-bold">
+                                {user.rank}
                               </span>
                             </div>
-                            <div className="flex-1">
-                              <div className="text-xs font-medium">
-                                {u.name}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {u.xp} XP
-                              </div>
+                            <div className="flex-1 space-y-1">
+                              <div
+                                className={`h-3 ${
+                                  user.isCurrent
+                                    ? "bg-red-200 dark:bg-red-900/30"
+                                    : "bg-gray-200 dark:bg-gray-700"
+                                } rounded w-3/4`}
+                              />
+                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
                             </div>
-                          </div>
+                            <div className="flex items-center gap-1">
+                              <div className="w-4 h-4 bg-amber-400 rounded" />
+                              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-8" />
+                            </div>
+                          </motion.div>
                         ))}
-                      </div>
+                      </motion.div>
                     </div>
                   </div>
                 </CustomContent>
