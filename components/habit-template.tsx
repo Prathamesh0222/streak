@@ -86,16 +86,16 @@ export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+        <h2 className="text-2xl font-bold text-foreground mb-2">
           Habit Templates
         </h2>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-muted-foreground">
           Choose from our curated collection of popular habits to get started
           quickly
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {HABIT_TEMPLATES.map((template) => {
           const isAdded = isTemplateAdded(template);
           const isLoading = loadingTemplates[template.title] || false;
@@ -103,20 +103,22 @@ export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
           return (
             <div
               key={template.id}
-              className={`border rounded-xl p-6 hover:shadow-md transition-all duration-300 h-full flex flex-col bg-card ${
+              className={`border rounded-xl p-1 transition-all duration-300 h-full ${
                 isAdded
-                  ? "border-red-500 bg-red-50 dark:bg-red-950/20"
-                  : "border-red-500/20 hover:border-red-200 dark:hover:border-red-800 duration-300"
+                  ? "border-red-500/30 bg-red-50 dark:bg-red-950/20 hover:border-red-400 dark:hover:border-red-700"
+                  : "border-red-500/20 bg-card hover:border-red-200 dark:hover:border-red-800"
               }`}
             >
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                        {template.title}
-                      </h4>
-                    </div>
+              <div
+                className={`p-6 bg-background border rounded-lg h-full flex flex-col ${
+                  isAdded ? "border-red-500/20" : "border-red-500/20"
+                }`}
+              >
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <h4 className="text-lg font-semibold text-foreground">
+                      {template.title}
+                    </h4>
                     <Button
                       onClick={() => handleAddTemplate(template)}
                       disabled={isLoading || isAdded}
@@ -124,8 +126,8 @@ export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
                       className={`${
                         isAdded
                           ? "bg-red-500 hover:bg-red-600"
-                          : "bg-red-600 hover:bg-red-500 cursor-pointer"
-                      } text-white`}
+                          : "bg-red-500 hover:bg-red-600 cursor-pointer"
+                      } text-white shadow-sm flex-shrink-0`}
                     >
                       {isAdded ? (
                         <>
@@ -134,7 +136,7 @@ export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
                         </>
                       ) : isLoading ? (
                         <>
-                          <Check className="w-4 h-4 mr-1 animate-spin" />
+                          <Clock className="w-4 h-4 mr-1 animate-spin" />
                           Adding...
                         </>
                       ) : (
@@ -146,36 +148,38 @@ export const HabitTemplates = ({ onHabitAdded }: HabitTemplateProps) => {
                     </Button>
                   </div>
 
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
+                  <p className="text-muted-foreground text-sm">
                     {template.description}
                   </p>
 
-                  <div className="flex flex-wrap gap-2 mb-3">
+                  <div className="flex flex-wrap gap-2">
                     <Badge
                       variant="outline"
-                      className="border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+                      className="border-red-500/20 text-foreground bg-muted"
                     >
                       {template.category}
                     </Badge>
                     <Badge className={getPriorityColor(template.priority)}>
                       {template.priority}
                     </Badge>
-                    <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-950/30 dark:text-blue-400 border-blue-200 dark:border-blue-800">
+                    <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800">
                       {template.frequency}
                     </Badge>
                   </div>
 
-                  <div className="flex items-center gap-4 text-sm mb-3">
-                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center gap-4 text-sm pt-2 border-t border-red-500/10">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       {getFrequencyIcon(template.frequency)}
-                      <span className="capitalize">
+                      <span className="capitalize font-medium">
                         {template.frequency.toLowerCase()}
                       </span>
                     </div>
                     {template.goalTarget && (
-                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center gap-2 text-muted-foreground">
                         <Target className="w-4 h-4 text-red-500" />
-                        <span>{template.goalTarget} day goal</span>
+                        <span className="font-medium">
+                          {template.goalTarget} day goal
+                        </span>
                       </div>
                     )}
                   </div>

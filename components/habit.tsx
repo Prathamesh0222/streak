@@ -150,7 +150,7 @@ export const Habits = () => {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 mt-8">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
@@ -225,7 +225,7 @@ export const Habits = () => {
         </div>
       )}
 
-      <div className="flex gap-2 overflow-x-auto">
+      <div className="flex gap-2  verflow-x-auto">
         {tabs.map((tab) => {
           const IconComponent = tab.icon;
           const isActive = activeTab === tab.id;
@@ -234,7 +234,7 @@ export const Habits = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 font-semibold border border-border/50 rounded-lg text-sm whitespace-nowrap transition-colors ${
                 isActive
                   ? "bg-red-500 text-white"
                   : "bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground"

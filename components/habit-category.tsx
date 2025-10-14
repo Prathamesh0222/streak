@@ -82,7 +82,7 @@ export function HabitCategoryChart({ habits }: HabitCategoryChartProps) {
       <CustomContent className="gap-2 w-full h-full bg-background rounded-lg border border-red-500/20 p-4">
         <span className="items-center pb-0">
           <h1 className="font-semibold">Habit Categories</h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Distribution of your habits by category
           </p>
         </span>
