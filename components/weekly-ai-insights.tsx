@@ -31,8 +31,10 @@ export function WeeklyAIInsights({ habits }: WeeklyAIInsightsProps) {
   return (
     <CustomCard className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
       <CustomContent className="gap-2 w-full h-full bg-background rounded-lg border border-red-500/20 p-4">
-        <span className="flex items-center justify-between">
-          <div className="flex items-center gap-2">Weekly AI Insights</div>
+        <span className="flex items-center justify-between mb-4">
+          <div className="flex items-center font-semibold gap-2">
+            Weekly AI Insights
+          </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Calendar className="h-3 w-3" />
@@ -95,12 +97,6 @@ export function WeeklyAIInsights({ habits }: WeeklyAIInsightsProps) {
                   </div>
                 ))}
               </div>
-
-              {isCached && (
-                <div className="text-xs text-muted-foreground text-center pt-2">
-                  Cached insights • Refresh for new analysis
-                </div>
-              )}
             </>
           )}
 

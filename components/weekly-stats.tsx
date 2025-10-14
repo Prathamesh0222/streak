@@ -92,7 +92,7 @@ export function WeeklyStats({
   );
 
   return (
-    <div className="border border-red-500/20 p-1 rounded-xl transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group h-full bg-card">
+    <div className="border border-red-500/20 p-1 rounded-xl transition-all duration-300 hover:border-red-200 dark:hover:border-red-800/75 group bg-card mb-2">
       <div className="p-5 bg-background border border-red-500/20 rounded-lg">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Weekly Stats</h3>

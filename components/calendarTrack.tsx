@@ -84,7 +84,7 @@ export const CalendarTrack = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 mt-8.5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
@@ -96,16 +96,20 @@ export const CalendarTrack = () => {
         <div className="flex items-center gap-2">
           <Badge
             variant={isPremium ? "default" : "secondary"}
-            className="flex items-center gap-1"
+            className={`flex items-center gap-1.5 px-3 py-1 ${
+              isPremium
+                ? "bg-red-500 hover:bg-red-600"
+                : "bg-muted hover:bg-muted/80"
+            }`}
           >
             {isPremium ? (
               <>
-                <Crown className="h-3 w-3" />
+                <Crown className="h-3.5 w-3.5" />
                 Premium
               </>
             ) : (
               <>
-                <Lock className="h-3 w-3" />
+                <Lock className="h-3.5 w-3.5" />
                 Free Plan
               </>
             )}
@@ -114,26 +118,32 @@ export const CalendarTrack = () => {
       </div>
 
       {isFreePlan && !subscriptionLoading && (
-        <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/20 dark:to-orange-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-          <div className="flex items-start gap-3">
-            <Lock className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <h3 className="font-medium text-red-800 dark:text-red-400 mb-1">
-                Limited Calendar Access
-              </h3>
-              <p className="text-sm text-red-700 dark:text-red-300 mb-3">
-                Free plan users can view habit data for the last{" "}
-                {limits?.calendarDays} days only. Upgrade to Premium for
-                unlimited calendar access.
-              </p>
-              <Button
-                size="sm"
-                onClick={handleUpgrade}
-                className="bg-red-500 hover:bg-red-600 text-white"
-              >
-                <Crown className="h-3 w-3 mr-1" />
-                Upgrade to Premium
-              </Button>
+        <div className="border border-red-500/20 rounded-xl bg-red-50 dark:bg-red-950/20 p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
+          <div className="p-5 bg-background border border-red-500/20 rounded-lg">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center flex-shrink-0 shadow-sm">
+                <Lock className="h-5 w-5 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-1">
+                  Limited Calendar Access
+                </h3>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Free plan users can view habit data for the last{" "}
+                  <span className="font-semibold text-red-500">
+                    {limits?.calendarDays} days
+                  </span>{" "}
+                  only. Upgrade to Premium for unlimited calendar access.
+                </p>
+                <Button
+                  size="sm"
+                  onClick={handleUpgrade}
+                  className="bg-red-500 hover:bg-red-600 text-white shadow-sm"
+                >
+                  <Crown className="h-3 w-3 mr-1.5" />
+                  Upgrade to Premium
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -141,204 +151,232 @@ export const CalendarTrack = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         <div className="space-y-6">
-          <div className="bg-card border border-red-500/10 rounded-lg p-6">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              disabled={disableFutureDates}
-              className="w-full mx-auto"
-              modifiers={{
-                restricted: (date) => {
-                  if (!isFreePlan || !earliestAccessDate || date <= today) {
-                    return false;
-                  }
-                  return date < earliestAccessDate;
-                },
-              }}
-              modifiersStyles={{
-                restricted: {
-                  textDecoration: "line-through",
-                  color: "#ed1826",
-                  opacity: 0.5,
-                },
-              }}
-            />
+          <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
+            <div className="p-5 bg-background border border-red-500/20 rounded-lg">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                disabled={disableFutureDates}
+                className="w-full mx-auto"
+                modifiers={{
+                  restricted: (date) => {
+                    if (!isFreePlan || !earliestAccessDate || date <= today) {
+                      return false;
+                    }
+                    return date < earliestAccessDate;
+                  },
+                }}
+                modifiersStyles={{
+                  restricted: {
+                    textDecoration: "line-through",
+                    color: "#ed1826",
+                    opacity: 0.5,
+                  },
+                }}
+              />
 
-            {isFreePlan && (
-              <div className="mt-4 pt-4 border-t border-red-500/10">
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <span>Available dates</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-muted rounded-full opacity-50"></div>
-                    <span>Premium only</span>
+              {isFreePlan && (
+                <div className="mt-4 pt-4 border-t border-red-500/20">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-red-500 rounded-full shadow-sm"></div>
+                      <span className="text-muted-foreground font-medium">
+                        Available dates
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-muted rounded-full opacity-50"></div>
+                      <span className="text-muted-foreground font-medium">
+                        Premium only
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
         <div className="space-y-6">
           <div>
-            <h3 className="text-lg font-medium mb-1">
+            <h3 className="text-lg font-semibold mb-1">
               {selectedDate ? formatDate(selectedDate) : "Select a date"}
             </h3>
             <p className="text-sm text-muted-foreground">
               View your habit progress for this day
               {isFreePlan && (
-                <span className="text-red-500">
+                <span className="text-red-500 font-medium">
                   {" "}
-                  • Last {limits?.calendarDays} days onlys
+                  • Last {limits?.calendarDays} days only
                 </span>
               )}
             </p>
           </div>
 
           {isLoading ? (
-            <div className="bg-card border border-red-500/10 rounded-lg p-6">
-              <div className="flex items-center justify-center gap-2">
-                <Clock className="w-4 h-4 animate-spin text-red-500" />
-                <span className="text-sm text-muted-foreground">
-                  Loading habits...
-                </span>
+            <div className="border border-red-500/20 rounded-xl bg-card p-1">
+              <div className="p-6 bg-background border border-red-500/20 rounded-lg">
+                <div className="flex items-center justify-center gap-2">
+                  <Clock className="w-5 h-5 animate-spin text-red-500" />
+                  <span className="text-sm text-muted-foreground font-medium">
+                    Loading habits...
+                  </span>
+                </div>
               </div>
             </div>
           ) : error ? (
-            <div className="bg-card border border-red-500/10 rounded-lg p-6">
-              <div className="text-center text-red-500 text-sm">
-                Failed to load habits for this date
+            <div className="border border-red-500/20 rounded-xl bg-card p-1">
+              <div className="p-6 bg-background border border-red-500/20 rounded-lg">
+                <div className="text-center text-red-500 text-sm font-medium">
+                  Failed to load habits for this date
+                </div>
               </div>
             </div>
           ) : dateHabits ? (
             <div className="space-y-6">
               <div className="grid grid-cols-3 gap-4">
-                <div className="bg-card border border-red-500/20 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="h-4 w-4 text-red-500" />
-                    <span className="text-xs font-medium text-muted-foreground">
-                      Completed
-                    </span>
-                  </div>
-                  <div className="text-2xl font-bold text-red-500">
-                    {dateHabits.completedHabits}
-                  </div>
-                </div>
-
-                <div className="bg-card border border-red-500/20 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Target className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-xs font-medium text-muted-foreground">
-                      Total
-                    </span>
-                  </div>
-                  <div className="text-2xl font-bold">
-                    {dateHabits.totalHabits}
+                <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
+                  <div className="p-4 bg-background border border-red-500/20 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle className="h-5 w-5 text-red-500" />
+                      <span className="text-xs font-semibold text-muted-foreground">
+                        Completed
+                      </span>
+                    </div>
+                    <div className="text-2xl font-bold text-red-500">
+                      {dateHabits.completedHabits}
+                    </div>
                   </div>
                 </div>
 
-                <div className="bg-card border border-red-500/20 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="h-4 w-4 text-red-500" />
-                    <span className="text-xs font-medium text-muted-foreground">
-                      Rate
-                    </span>
+                <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
+                  <div className="p-4 bg-background border border-red-500/20 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Target className="h-5 w-5 text-foreground" />
+                      <span className="text-xs font-semibold text-muted-foreground">
+                        Total
+                      </span>
+                    </div>
+                    <div className="text-2xl font-bold text-foreground">
+                      {dateHabits.totalHabits}
+                    </div>
                   </div>
-                  <div className="text-2xl font-bold text-red-500">
-                    {completionRate}%
+                </div>
+
+                <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
+                  <div className="p-4 bg-background border border-red-500/20 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="h-5 w-5 text-red-500" />
+                      <span className="text-xs font-semibold text-muted-foreground">
+                        Rate
+                      </span>
+                    </div>
+                    <div className="text-2xl font-bold text-red-500">
+                      {completionRate}%
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-red-500 rounded flex items-center justify-center">
-                    <Target className="h-3 w-3 text-white" />
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 bg-red-500 rounded-lg flex items-center justify-center shadow-sm">
+                    <Target className="h-4 w-4 text-white" />
                   </div>
-                  <h4 className="font-medium">Habit Details</h4>
+                  <h4 className="font-semibold">Habit Details</h4>
                 </div>
 
-                <div className="bg-card border border-red-500/20 rounded-lg max-h-[455px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] p-3 mb-12 lg:mb-0">
-                  {dateHabits.habits.length > 0 ? (
-                    <div className="p-4 space-y-3">
-                      {dateHabits.habits.map((habitLog: DateHabits) => (
-                        <div
-                          key={habitLog.id}
-                          className={`border rounded-lg p-3 transition-colors ${
-                            habitLog.isCompleted
-                              ? "border-red-500/20 bg-red-50/50 dark:bg-red-950/20"
-                              : "border-border bg-muted/30"
-                          }`}
-                        >
-                          <div className="flex items-start gap-3">
-                            <div
-                              className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                                habitLog.isCompleted ? "bg-red-500" : "bg-muted"
-                              }`}
-                            >
-                              {habitLog.isCompleted ? (
-                                <CheckCircle className="w-3 h-3 text-white" />
-                              ) : (
-                                <XCircle className="w-3 h-3 text-muted-foreground" />
-                              )}
-                            </div>
+                <div className="border border-red-500/20 rounded-xl bg-card p-1">
+                  <div className="bg-background border border-red-500/20 rounded-lg max-h-[455px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] p-3 mb-12 lg:mb-0">
+                    {dateHabits.habits.length > 0 ? (
+                      <div className="p-4 space-y-3">
+                        {dateHabits.habits.map((habitLog: DateHabits) => (
+                          <div
+                            key={habitLog.id}
+                            className={`border rounded-xl p-4 transition-all duration-200 ${
+                              habitLog.isCompleted
+                                ? "border-red-500/30 bg-red-50 dark:bg-red-950/20 shadow-sm"
+                                : "border-border bg-muted/30 hover:border-red-500/20"
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div
+                                className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ${
+                                  habitLog.isCompleted
+                                    ? "bg-red-500"
+                                    : "bg-muted"
+                                }`}
+                              >
+                                {habitLog.isCompleted ? (
+                                  <CheckCircle className="w-4 h-4 text-white" />
+                                ) : (
+                                  <XCircle className="w-4 h-4 text-muted-foreground" />
+                                )}
+                              </div>
 
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between mb-2">
-                                <h5 className="font-medium text-sm leading-tight">
-                                  {habitLog.habit.title}
-                                </h5>
-                                <div className="flex gap-2">
-                                  <div
-                                    className={`text-xs px-2 py-1 rounded ${getPriorityColor(
-                                      habitLog.habit.priority
-                                    )}`}
-                                  >
-                                    {habitLog.habit.priority}
-                                  </div>
-                                  <div
-                                    className={`text-xs px-2 py-1 rounded ${
-                                      habitLog.isCompleted
-                                        ? "bg-red-500 text-white"
-                                        : "bg-muted text-muted-foreground"
-                                    }`}
-                                  >
-                                    {habitLog.isCompleted ? "Done" : "Pending"}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between mb-2">
+                                  <h5 className="font-semibold text-sm leading-tight">
+                                    {habitLog.habit.title}
+                                  </h5>
+                                  <div className="flex gap-2">
+                                    <div
+                                      className={`text-xs px-2.5 py-1 rounded-lg font-medium shadow-sm ${getPriorityColor(
+                                        habitLog.habit.priority
+                                      )}`}
+                                    >
+                                      {habitLog.habit.priority}
+                                    </div>
+                                    <div
+                                      className={`text-xs px-2.5 py-1 rounded-lg font-medium ${
+                                        habitLog.isCompleted
+                                          ? "bg-red-500 text-white shadow-sm"
+                                          : "bg-muted text-muted-foreground"
+                                      }`}
+                                    >
+                                      {habitLog.isCompleted
+                                        ? "Done"
+                                        : "Pending"}
+                                    </div>
                                   </div>
                                 </div>
+                                {habitLog.habit.category && (
+                                  <p className="text-xs text-muted-foreground font-medium">
+                                    {habitLog.habit.category}
+                                  </p>
+                                )}
                               </div>
-                              {habitLog.habit.category && (
-                                <p className="text-xs text-muted-foreground">
-                                  {habitLog.habit.category}
-                                </p>
-                              )}
                             </div>
                           </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-8 text-center">
+                        <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mx-auto mb-3">
+                          <Target className="h-6 w-6 text-muted-foreground" />
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="p-8 text-center">
-                      <Target className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">
-                        No habits tracked for this date
-                      </p>
-                    </div>
-                  )}
+                        <p className="text-sm text-muted-foreground font-medium">
+                          No habits tracked for this date
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="bg-card border border-red-500/10 rounded-lg p-8 text-center">
-              <CalendarIcon className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">
-                {selectedDate
-                  ? "No data available for this date"
-                  : "Select a date to view habits"}
-              </p>
+            <div className="border border-red-500/20 rounded-xl bg-card p-1">
+              <div className="p-8 bg-background border border-red-500/20 rounded-lg text-center">
+                <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mx-auto mb-3">
+                  <CalendarIcon className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground font-medium">
+                  {selectedDate
+                    ? "No data available for this date"
+                    : "Select a date to view habits"}
+                </p>
+              </div>
             </div>
           )}
         </div>
