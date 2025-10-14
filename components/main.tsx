@@ -29,8 +29,8 @@ export const Main = ({ currentMenu }: { currentMenu: string }) => {
 
   return (
     <main className="lg:pb-6 lg:pt-3 lg:p-6 flex flex-col gap-3 w-full h-screen overflow-hidden">
-      <DashboardHeader />
-      <div className="border border-red-500/20 lg:rounded-2xl h-full p-8 shadow-sm overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] bg-background/50 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="border border-red-500/30 lg:rounded-2xl h-full p-8 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] backdrop-blur supports-[backdrop-filter]">
+        <DashboardHeader />
         <div key={currentMenu}>{content}</div>
       </div>
     </main>

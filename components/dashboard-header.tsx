@@ -17,7 +17,7 @@ export const DashboardHeader = () => {
   const { data: session } = useSession();
 
   return (
-    <header className="px-8 py-4 border w-full mx-auto rounded-2xl border-red-500/20">
+    <header className="px-2 w-full mx-auto rounded-2xl">
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-medium text-foreground">
           {new Date().toLocaleDateString("en-US", {
@@ -31,8 +31,8 @@ export const DashboardHeader = () => {
           <NotificationBell />
           <ModeToggle />
           <DropdownMenu>
-            <DropdownMenuTrigger className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 dark:focus-visible:ring-red-600">
-              <div className="w-10 h-10 rounded-full border border-border bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/20 dark:to-red-900/20 flex items-center justify-center hover:shadow-md transition-all duration-200 cursor-pointer">
+            <DropdownMenuTrigger className="rounded-full border-2 border-red-500/30">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/20 dark:to-red-900/20 flex items-center justify-center hover:shadow-md transition-all duration-200 cursor-pointer">
                 {session?.user?.image ? (
                   <Image
                     src={session.user.image}

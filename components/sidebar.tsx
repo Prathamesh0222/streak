@@ -62,11 +62,11 @@ export const Sidebar = ({
   return (
     <>
       <div
-        className={`hidden lg:flex bg-background rounded-r-2xl ${
+        className={`hidden lg:flex ${
           isSidebarOpen ? "w-60" : "w-16"
-        } border-r border-red-500/20 transition-all ease-in-out duration-300 flex-col`}
+        } border-r border-red-500/30 transition-all ease-in-out duration-300 flex-col`}
       >
-        <div className="p-4 border-b border-red-500/20">
+        <div className="p-4 border-b border-red-500/30">
           <div className="flex items-center justify-between">
             {isSidebarOpen && <Logo />}
 
