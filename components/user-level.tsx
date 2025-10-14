@@ -26,23 +26,21 @@ export function UserLevel() {
     (userProgress.xp / userProgress.xpForCurrentLevel) * 100;
 
   return (
-    <div className="bg-card border border-red-500/20 rounded-lg p-3">
-      <div className="p-4 pb-3">
-        <div className="flex items-center gap-2 text-sm font-medium mb-3">
+    <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
+      <div className="p-5 bg-background border border-red-500/20 rounded-lg">
+        <div className="flex items-center gap-2 text-sm font-semibold mb-4">
           {(() => {
             const LevelIcon = getLevelBadge(userProgress.level);
-            return <LevelIcon className="h-4 w-4" />;
+            return <LevelIcon className="h-5 w-5 text-red-500" />;
           })()}
           Level {userProgress.level}
           <Badge
-            variant="secondary"
-            className={getLevelColor(userProgress.level)}
+            variant="outline"
+            className="text-xs font-semibold rounded-lg border border-red-500/20 text-red-500 dark:text-red-400"
           >
             {userProgress.totalXp} XP
           </Badge>
         </div>
-      </div>
-      <div className="px-4 pb-4">
         <div className="space-y-2">
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>
@@ -51,6 +49,11 @@ export function UserLevel() {
             <span>{userProgress.xpToNextLevel} to next level</span>
           </div>
           <Progress value={progressPercentage} className="h-2" />
+          <div className="text-right">
+            <span className="text-xs font-semibold text-red-500 dark:text-red-400">
+              {Math.round(progressPercentage)}%
+            </span>
+          </div>
         </div>
       </div>
     </div>

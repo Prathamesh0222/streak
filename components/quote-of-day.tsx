@@ -60,7 +60,7 @@ export function QuoteOfDay() {
   }, []);
 
   return (
-    <Card className="w-full border shadow-none border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300 bg-gradient-to-br from-red-50/50 to-red-100/30 dark:from-red-950/20 dark:to-red-900/10">
+    <Card className="w-full border shadow-none border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300 bg-gradient-to-br from-red-50/50 to-red-100/30 dark:from-red-950/20 dark:to-red-900/10 mb-2">
       <CardContent className="px-6">
         <div className="flex items-start gap-4">
           <div className="flex-1">

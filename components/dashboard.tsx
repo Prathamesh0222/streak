@@ -27,7 +27,7 @@ export const Dashboard = () => {
         <h2 className="text-4xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
           {getGreeting()},{" "}
           <span className="text-red-500 underline underline-offset-4">
-            {session?.user?.name ?? "there"}
+            {session?.user?.name?.split(" ")[0] ?? "there"}
           </span>
         </h2>
         <p className="text-muted-foreground mt-2 text-lg">
@@ -37,28 +37,18 @@ export const Dashboard = () => {
           </span>{" "}
           today?
         </p>
-
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 mt-8 mb-12 md:mb-0">
-          <div className="break-inside-avoid mb-6">
+        <div className="grid grid-cols-3 gap-2 mt-8 mb-12 md:mb-0">
+          <div>
             <HeatMap />
-          </div>
-          <div className="break-inside-avoid mb-6">
             <UserLevelIcon />
           </div>
-          <div className="break-inside-avoid mb-6">
+          <div>
             <ProgressChart habits={habits} />
-          </div>
-
-          <div className="break-inside-avoid mb-6">
             <HabitCategoryChart habits={habits} />
           </div>
-          <div className="break-inside-avoid mb-6">
+          <div>
             <QuoteOfDay />
-          </div>
-          <div className="break-inside-avoid mb-6">
             <WeeklyStats habits={habits} loading={loading} />
-          </div>
-          <div className="break-inside-avoid mb-6">
             <WeeklyAIInsights habits={habits} />
           </div>
         </div>

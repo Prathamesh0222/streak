@@ -3,12 +3,14 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { Habit } from "@/types/habit-types";
+import { useTheme } from "next-themes";
 
 export const HeatMap = () => {
   const { data: session } = useSession();
   const [calendarData, setCalendarData] = useState<
     Array<{ date: string; count: number; level: number }>
   >([]);
+  const { theme } = useTheme();
   useEffect(() => {
     const fetchHabits = async () => {
       try {
@@ -58,7 +60,7 @@ export const HeatMap = () => {
   }, [session?.user]);
 
   return (
-    <div className="p-1 rounded-xl bg-card border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
+    <div className="p-1 rounded-xl bg-card border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300 mb-2">
       <div className="p-5 bg-background border border-red-500/20 rounded-lg">
         <div className="mb-4">
           <h3 className="font-semibold text-foreground">Activity Overview</h3>
@@ -83,7 +85,7 @@ export const HeatMap = () => {
               light: ["#f3f4f6", "#fecaca", "#fca5a5", "#f87171", "#ef4444"],
               dark: ["#374151", "#eb6464", "#991b1b", "#b91c1c", "#dc2626"],
             }}
-            colorScheme="light"
+            colorScheme={theme === "dark" ? "dark" : "light"}
             showWeekdayLabels
             labels={{
               months: [
