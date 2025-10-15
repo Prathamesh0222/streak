@@ -37,7 +37,21 @@ export const Dashboard = () => {
           </span>{" "}
           today?
         </p>
-        <div className="grid grid-cols-3 gap-2 mt-8 mb-12 md:mb-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-8 mb-12 md:mb-0 lg:hidden">
+          <div>
+            <HeatMap />
+            <UserLevelIcon />
+            <ProgressChart habits={habits} />
+          </div>
+          <div>
+            <QuoteOfDay />
+            <HabitCategoryChart habits={habits} />
+            <WeeklyStats habits={habits} loading={loading} />
+            <WeeklyAIInsights habits={habits} />
+          </div>
+        </div>
+
+        <div className="hidden lg:grid lg:grid-cols-3 gap-2 mt-8 mb-12 md:mb-0">
           <div>
             <HeatMap />
             <UserLevelIcon />

@@ -2,8 +2,6 @@
 
 A modern, feature-rich habit tracking application built with Next.js, designed to help users build consistent habits and track their progress with gamification elements.
 
-![Streak Landing Page](./public/landing_page_streak.png)
-
 ## Features
 
 ### Core Functionality

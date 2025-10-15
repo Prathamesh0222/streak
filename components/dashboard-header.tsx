@@ -21,7 +21,7 @@ export const DashboardHeader = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-medium text-foreground">
           {new Date().toLocaleDateString("en-US", {
-            weekday: "long",
+            weekday: "short",
             year: "numeric",
             month: "long",
             day: "numeric",
