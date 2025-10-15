@@ -1,26 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { getLevelFromXp } from "./achievements";
 import { prisma } from "./prisma";
-
-interface HabitCompletionData {
-  habitId: string;
-  userId: string;
-  habitPriority: "HIGH" | "MEDIUM" | "LOW";
-  habitTitle: string;
-}
-
-const calculateHabitXp = (priority: "HIGH" | "MEDIUM" | "LOW") => {
-  switch (priority) {
-    case "HIGH":
-      return 15;
-    case "MEDIUM":
-      return 12;
-    case "LOW":
-      return 8;
-    default:
-      return 10;
-  }
-};
+import { calculateHabitXp, HabitCompletionData } from "@/types/habit-types";
 
 export const createXpNotifications = async (
   tx: Prisma.TransactionClient,

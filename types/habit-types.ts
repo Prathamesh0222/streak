@@ -47,6 +47,26 @@ export interface Habit {
   lastCompletionDate: string | null;
 }
 
+export interface HabitCompletionData {
+  habitId: string;
+  userId: string;
+  habitPriority: "HIGH" | "MEDIUM" | "LOW";
+  habitTitle: string;
+}
+
+export const calculateHabitXp = (priority: "HIGH" | "MEDIUM" | "LOW") => {
+  switch (priority) {
+    case "HIGH":
+      return 15;
+    case "MEDIUM":
+      return 12;
+    case "LOW":
+      return 8;
+    default:
+      return 10;
+  }
+};
+
 export const PREDEFINED_CATEGORIES = [
   "Health & Fitness",
   "Productivity",

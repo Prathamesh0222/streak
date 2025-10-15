@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAchievements } from "@/hooks/useAchievements";
 import { getLevelColor, getAchievementCategoryIcon } from "@/lib/achievements";
@@ -14,7 +14,7 @@ export function UserLevelIcon() {
 
   if (loading) {
     return (
-      <Card className="w-full border shadow-none border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
+      <Card className="w-full bg-background border shadow-none border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
         <CardContent className="p-6">
           <div className="animate-pulse space-y-4">
             <div className="h-6 bg-muted rounded w-3/4"></div>
@@ -53,7 +53,7 @@ export function UserLevelIcon() {
   };
 
   return (
-    <CustomCard className="w-full border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300 to-red-50/50 dark:to-red-950/20 p-0.5">
+    <CustomCard className="w-full border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300 to-red-50/50 dark:to-red-950/20 p-0.5 mb-2 md:mb-0">
       <CustomContent>
         <div className="flex flex-col gap-2 w-full h-full bg-background rounded-lg border border-red-500/20 p-4">
           <h1 className="font-semibold">Your Progress</h1>
