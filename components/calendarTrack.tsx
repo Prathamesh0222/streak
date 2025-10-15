@@ -6,7 +6,6 @@ import {
   Clock,
   Calendar as CalendarIcon,
   Target,
-  TrendingUp,
   Lock,
   Crown,
 } from "lucide-react";
@@ -16,12 +15,14 @@ import { DateHabits } from "@/types/habit-types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import axios from "axios";
+import { CalendarComplete } from "./calendar-complete";
+import { CalendarStreak } from "./calendar-streak";
+import { CalendarXp } from "./calendar-xp";
 
 export const CalendarTrack = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date()
   );
-
   const { data: dateHabits, isLoading, error } = useHabitLogs(selectedDate);
   const {
     isFreePlan,
@@ -66,11 +67,6 @@ export const CalendarTrack = () => {
       day: "numeric",
     });
   };
-
-  const completionRate =
-    dateHabits?.totalHabits > 0
-      ? Math.round((dateHabits.completedHabits / dateHabits.totalHabits) * 100)
-      : 0;
 
   const handleUpgrade = async () => {
     try {
@@ -235,47 +231,21 @@ export const CalendarTrack = () => {
             </div>
           ) : dateHabits ? (
             <div className="space-y-6">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
-                  <div className="p-4 bg-background border border-red-500/20 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle className="h-5 w-5 text-red-500" />
-                      <span className="text-xs font-semibold text-muted-foreground">
-                        Completed
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold text-red-500">
-                      {dateHabits.completedHabits}
-                    </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                <CalendarComplete selectedDate={selectedDate} />
+                <div className="flex w-full gap-2 md:hidden">
+                  <div className="w-1/2">
+                    <CalendarStreak selectedDate={selectedDate} />
+                  </div>
+                  <div className="w-1/2">
+                    <CalendarXp selectedDate={selectedDate} />
                   </div>
                 </div>
-
-                <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
-                  <div className="p-4 bg-background border border-red-500/20 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Target className="h-5 w-5 text-foreground" />
-                      <span className="text-xs font-semibold text-muted-foreground">
-                        Total
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold text-foreground">
-                      {dateHabits.totalHabits}
-                    </div>
-                  </div>
+                <div className="hidden md:block">
+                  <CalendarStreak selectedDate={selectedDate} />
                 </div>
-
-                <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
-                  <div className="p-4 bg-background border border-red-500/20 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="h-5 w-5 text-red-500" />
-                      <span className="text-xs font-semibold text-muted-foreground">
-                        Rate
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold text-red-500">
-                      {completionRate}%
-                    </div>
-                  </div>
+                <div className="hidden md:block">
+                  <CalendarXp selectedDate={selectedDate} />
                 </div>
               </div>
 
