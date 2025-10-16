@@ -113,103 +113,23 @@ export const CalendarTrack = () => {
         </div>
       </div>
 
-      {isFreePlan && !subscriptionLoading && (
-        <div className="border border-red-500/20 rounded-xl bg-red-50 dark:bg-red-950/20 p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
-          <div className="p-5 bg-background border border-red-500/20 rounded-lg">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center flex-shrink-0 shadow-sm">
-                <Lock className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-foreground mb-1">
-                  Limited Calendar Access
-                </h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Free plan users can view habit data for the last{" "}
-                  <span className="font-semibold text-red-500">
-                    {limits?.calendarDays} days
-                  </span>{" "}
-                  only. Upgrade to Premium for unlimited calendar access.
-                </p>
-                <Button
-                  size="sm"
-                  onClick={handleUpgrade}
-                  className="bg-red-500 hover:bg-red-600 text-white shadow-sm"
-                >
-                  <Crown className="h-3 w-3 mr-1.5" />
-                  Upgrade to Premium
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <div>
+        <h3 className="text-lg font-semibold mb-1">
+          {selectedDate ? formatDate(selectedDate) : "Select a date"}
+        </h3>
+        <p className="text-sm text-muted-foreground">
+          View your habit progress for this day
+          {isFreePlan && (
+            <span className="text-red-500 font-medium">
+              {" "}
+              • Last {limits?.calendarDays} days only
+            </span>
+          )}
+        </p>
+      </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
-            <div className="p-5 bg-background border border-red-500/20 rounded-lg">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                disabled={disableFutureDates}
-                className="w-full mx-auto"
-                modifiers={{
-                  restricted: (date) => {
-                    if (!isFreePlan || !earliestAccessDate || date <= today) {
-                      return false;
-                    }
-                    return date < earliestAccessDate;
-                  },
-                }}
-                modifiersStyles={{
-                  restricted: {
-                    textDecoration: "line-through",
-                    color: "#ed1826",
-                    opacity: 0.5,
-                  },
-                }}
-              />
-
-              {isFreePlan && (
-                <div className="mt-4 pt-4 border-t border-red-500/20">
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-red-500 rounded-full shadow-sm"></div>
-                      <span className="text-muted-foreground font-medium">
-                        Available dates
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-muted rounded-full opacity-50"></div>
-                      <span className="text-muted-foreground font-medium">
-                        Premium only
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-lg font-semibold mb-1">
-              {selectedDate ? formatDate(selectedDate) : "Select a date"}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              View your habit progress for this day
-              {isFreePlan && (
-                <span className="text-red-500 font-medium">
-                  {" "}
-                  • Last {limits?.calendarDays} days only
-                </span>
-              )}
-            </p>
-          </div>
-
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        <div className="space-y-3 xl:col-span-8">
           {isLoading ? (
             <div className="border border-red-500/20 rounded-xl bg-card p-1">
               <div className="p-6 bg-background border border-red-500/20 rounded-lg">
@@ -250,13 +170,6 @@ export const CalendarTrack = () => {
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-red-500 rounded-lg flex items-center justify-center shadow-sm">
-                    <Target className="h-4 w-4 text-white" />
-                  </div>
-                  <h4 className="font-semibold">Habit Details</h4>
-                </div>
-
                 <div className="border border-red-500/20 rounded-xl bg-card p-1">
                   <div className="bg-background border border-red-500/20 rounded-lg max-h-[455px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] p-3 mb-12 lg:mb-0">
                     {dateHabits.habits.length > 0 ? (
@@ -346,6 +259,84 @@ export const CalendarTrack = () => {
                     ? "No data available for this date"
                     : "Select a date to view habits"}
                 </p>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="space-y-3 xl:col-span-4">
+          <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
+            <div className="p-5 bg-background border border-red-500/20 rounded-lg">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                disabled={disableFutureDates}
+                className="w-full mx-auto"
+                modifiers={{
+                  restricted: (date) => {
+                    if (!isFreePlan || !earliestAccessDate || date <= today) {
+                      return false;
+                    }
+                    return date < earliestAccessDate;
+                  },
+                }}
+                modifiersStyles={{
+                  restricted: {
+                    textDecoration: "line-through",
+                    color: "#ed1826",
+                    opacity: 0.5,
+                  },
+                }}
+              />
+
+              {isFreePlan && (
+                <div className="mt-4 pt-4 border-t border-red-500/20">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-red-500 rounded-full shadow-sm"></div>
+                      <span className="text-muted-foreground font-medium">
+                        Available dates
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-muted rounded-full opacity-50"></div>
+                      <span className="text-muted-foreground font-medium">
+                        Premium only
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          {isFreePlan && !subscriptionLoading && (
+            <div className="border border-red-500/20 rounded-xl bg-red-50 dark:bg-red-950/20 p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
+              <div className="p-5 bg-background border border-red-500/20 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <Lock className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-foreground mb-1">
+                      Limited Calendar Access
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Free plan users can view habit data for the last{" "}
+                      <span className="font-semibold text-red-500">
+                        {limits?.calendarDays} days
+                      </span>{" "}
+                      only. Upgrade to Premium for unlimited calendar access.
+                    </p>
+                    <Button
+                      size="sm"
+                      onClick={handleUpgrade}
+                      className="bg-red-500 hover:bg-red-600 text-white shadow-sm"
+                    >
+                      <Crown className="h-3 w-3 mr-1.5" />
+                      Upgrade to Premium
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           )}

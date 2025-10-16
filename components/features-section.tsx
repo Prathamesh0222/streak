@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { CustomCard, CustomContent } from "./custom-card";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { Badge } from "./ui/badge";
 
 const container = {
   hidden: {},
@@ -28,6 +30,20 @@ const fadeIn = {
 };
 
 export function FeaturesSection() {
+  const [heatmapCols, setHeatmapCols] = useState(20);
+
+  useEffect(() => {
+    const onResize = () => {
+      const w = window.innerWidth;
+      if (w >= 1280) setHeatmapCols(20);
+      else if (w >= 1024) setHeatmapCols(18);
+      else if (w >= 768) setHeatmapCols(17);
+      else setHeatmapCols(16);
+    };
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
   return (
     <>
       <div className="border-t w-full">
@@ -36,19 +52,19 @@ export function FeaturesSection() {
           className="max-w-7xl mx-auto px-4 md:px-6 py-16 border-x"
         >
           <div className="text-center mb-10">
-            <span className="inline-block text-xs px-3 py-1 rounded-full bg-red-300/70 border-red-500 text-red-700 dark:bg-red-900/50 border dark:border-red-500 dark:text-red-500 font-bold">
+            <Badge className="inline-block text-xs rounded-full bg-red-300/70 border-red-500 text-red-700 dark:bg-red-900/50 border dark:border-red-500 dark:text-red-500 font-bold">
               Features
-            </span>
+            </Badge>
             <h2 className="mt-3 text-3xl md:text-4xl font-bold">
               Everything you need to build lasting habits
             </h2>
-            <p className="mt-2 text-muted-foreground">
+            <p className="mt-2 text-muted-foreground text-sm md:text-base">
               Track your progress, get AI-powered insights, and stay motivated
               with our comprehensive habit-building platform.
             </p>
           </div>
           <div className="max-w-4xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <CustomCard>
                 <CustomContent>
                   <div className="gap-4">
@@ -118,18 +134,22 @@ export function FeaturesSection() {
                         whileInView="show"
                         viewport={{ once: true }}
                       >
-                        {Array.from({ length: 22 }).map((_, rowIdx) => (
-                          <div key={rowIdx}>
-                            {Array.from({ length: 9 }).map((_, colIdx) => (
-                              <div
-                                key={colIdx}
-                                className={`p-2 border rounded-sm ${
-                                  rowIdx > 10 ? "bg-red-500" : "bg-white"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        ))}
+                        {Array.from({ length: heatmapCols }).map(
+                          (_, rowIdx) => (
+                            <div key={rowIdx}>
+                              {Array.from({ length: 9 }).map((_, colIdx) => (
+                                <div
+                                  key={colIdx}
+                                  className={`p-2 border rounded-sm ${
+                                    rowIdx > Math.floor(heatmapCols / 2) - 1
+                                      ? "bg-red-500"
+                                      : "bg-white"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          )
+                        )}
                       </motion.div>
                     </div>
                     <div className="p-4">
