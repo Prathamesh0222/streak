@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useAchievements } from "@/hooks/useAchievements";
-import { getLevelBadge, getLevelColor } from "@/lib/achievements";
+import { getLevelBadge } from "@/lib/achievements";
 
 export function UserLevel() {
   const { userProgress, loading } = useAchievements();

@@ -76,33 +76,31 @@ export const AdvancedFeatures = () => {
                         whileInView="show"
                         viewport={{ once: true }}
                       >
-                        {["Exercise", "Reading", "Meditation"].map(
-                          (habit, i) => (
+                        {["Exercise", "Reading", "Meditation"].map((habit) => (
+                          <motion.div
+                            key={habit}
+                            className="flex items-center gap-3"
+                            variants={fadeIn}
+                          >
                             <motion.div
-                              key={habit}
-                              className="flex items-center gap-3"
+                              className="w-6 h-6 bg-emerald-500 rounded-full"
                               variants={fadeIn}
-                            >
-                              <motion.div
-                                className="w-6 h-6 bg-emerald-500 rounded-full"
-                                variants={fadeIn}
-                              />
-                              <div className="flex-1">
-                                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                  <motion.div
-                                    className="h-full bg-emerald-500 rounded-full"
-                                    style={{ width: `${60 + i * 15}%` }}
-                                    variants={fadeIn}
-                                  />
-                                </div>
+                            />
+                            <div className="flex-1">
+                              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                <motion.div
+                                  className="h-full bg-emerald-500 rounded-full"
+                                  style={{ width: "75%" }}
+                                  variants={fadeIn}
+                                />
                               </div>
-                              <motion.div
-                                className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-8"
-                                variants={fadeIn}
-                              />
-                            </motion.div>
-                          )
-                        )}
+                            </div>
+                            <motion.div
+                              className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-8"
+                              variants={fadeIn}
+                            />
+                          </motion.div>
+                        ))}
                       </motion.div>
                     </div>
                   </div>
@@ -350,7 +348,7 @@ export const AdvancedFeatures = () => {
                             xp: "850",
                             isCurrent: false,
                           },
-                        ].map((user, i) => (
+                        ].map((user) => (
                           <motion.div
                             key={user.rank}
                             className="flex items-center gap-3 p-2 rounded-md"

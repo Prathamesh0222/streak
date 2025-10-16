@@ -14,7 +14,6 @@ export function WeeklyAIInsights({ habits }: WeeklyAIInsightsProps) {
   const {
     insights,
     weekRange,
-    isCached,
     isLoading,
     error,
     refreshInsights,
