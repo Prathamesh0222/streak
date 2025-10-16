@@ -225,7 +225,7 @@ export const Habits = () => {
         </div>
       )}
 
-      <div className="flex gap-2  verflow-x-auto">
+      <div className="flex gap-2 overflow-x-auto">
         {tabs.map((tab) => {
           const IconComponent = tab.icon;
           const isActive = activeTab === tab.id;
@@ -269,12 +269,12 @@ export const Habits = () => {
                 className="pl-10 pr-4 border-red-500/20 focus:border-red-500"
               />
             </div>
-            <div className="flex gap-3">
+            <div className="flex md:flex-row flex-col w-full gap-3">
               <Select
                 value={statusFilter}
                 onValueChange={(value) => setStatusFilter(value)}
               >
-                <SelectTrigger className="w-[160px] border-red-500/20">
+                <SelectTrigger className="md:w-[160px] w-full border-red-500/20 rounded-xl bg-card">
                   <div className="flex items-center gap-2 text-sm">
                     <Activity className="w-4 h-4 text-red-500" />
                     <SelectValue placeholder="Status" />
@@ -291,7 +291,7 @@ export const Habits = () => {
                 value={categoryFilter}
                 onValueChange={(value) => setCategoryFilter(value)}
               >
-                <SelectTrigger className="w-[180px] border-red-500/20">
+                <SelectTrigger className="md:w-[180px] w-full rounded-xl border-red-500/20 bg-card">
                   <div className="flex items-center gap-2 text-sm">
                     <Tag className="w-4 h-4 text-red-500" />
                     <SelectValue placeholder="Category" />

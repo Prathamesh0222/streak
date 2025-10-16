@@ -60,7 +60,7 @@ export const HeatMap = () => {
   }, [session?.user]);
 
   return (
-    <div className="p-1 rounded-xl bg-card border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300 mb-2">
+    <div className="p-1 rounded-xl bg-card border border-red-500/20 hover:border-red-200 dark:hover:border-red-950 transition-all duration-300 mb-2">
       <div className="p-5 bg-background border border-red-500/20 rounded-lg">
         <div className="mb-4">
           <h3 className="font-semibold text-foreground">Activity Overview</h3>

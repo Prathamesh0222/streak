@@ -60,7 +60,7 @@ export function HabitCategoryChart({ habits }: HabitCategoryChartProps) {
 
   if (chartData.length === 0) {
     return (
-      <Card className="flex flex-col">
+      <Card className="flex flex-col bg-background">
         <CardHeader className="items-center pb-0">
           <CardTitle>Habit Categories</CardTitle>
           <CardDescription>No habits created yet</CardDescription>
@@ -78,7 +78,7 @@ export function HabitCategoryChart({ habits }: HabitCategoryChartProps) {
   }
 
   return (
-    <CustomCard className="flex flex-col border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300 w-full md:mb-0 mb-2">
+    <CustomCard className="flex flex-col border border-red-500/20 hover:border-red-200 dark:hover:border-red-900/60 transition-all duration-300 w-full md:mb-0 mb-2">
       <CustomContent className="gap-2 w-full h-full bg-background rounded-lg border border-red-500/20 p-4">
         <span className="items-center pb-0">
           <h1 className="font-semibold">Habit Categories</h1>
