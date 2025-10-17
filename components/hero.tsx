@@ -5,9 +5,18 @@ import { Badge } from "./ui/badge";
 import { ArrowRight, Flame } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 export const Hero = () => {
   const router = useRouter();
+  const { theme } = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const stats = [
     { number: "10+", label: "Habit Categories" },
@@ -16,8 +25,25 @@ export const Hero = () => {
   ];
 
   return (
-    <div className="relative h-full overflow-hidden max-w-7xl mx-auto md:border-x bg-gradient-to-b from-red-400/50 via-white to-white dark:from-red-950/50 dark:via-black dark:to-black">
-      <div className="relative h-full mt-12">
+    <div className="relative min-h-screen overflow-hidden max-w-7xl mx-auto md:border-x bg-gradient-to-b from-red-400/50 via-white to-white dark:from-red-950/50 dark:via-black dark:to-black">
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: 50,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: 0.2,
+          ease: "easeOut",
+          damping: 10,
+          stiffness: 100,
+          delay: 0.4,
+        }}
+        className="relative h-full mt-12"
+      >
         <div className="flex flex-col items-center justify-center text-center h-full py-12">
           <Badge className="mb-4 rounded-xl bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100 items-center border dark:border-white/15 border-black/15">
             <Flame /> Daily Discipline
@@ -48,7 +74,24 @@ export const Hero = () => {
             </Button>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-6 md:gap-13 mt-12">
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: 50,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            transition={{
+              duration: 0.2,
+              ease: "easeOut",
+              damping: 10,
+              stiffness: 100,
+              delay: 0.5,
+            }}
+            className="flex flex-wrap justify-center gap-6 md:gap-13 mt-12"
+          >
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
@@ -59,18 +102,41 @@ export const Hero = () => {
                 </div>
               </div>
             ))}
-          </div>
-          <div className="flex justify-center items-center p-8">
+          </motion.div>
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: 50,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            transition={{
+              duration: 0.2,
+              ease: "easeOut",
+              damping: 10,
+              stiffness: 100,
+              delay: 0.6,
+            }}
+            className="flex justify-center items-center p-8 mt-4"
+          >
             <Image
-              src="/dashboard.png"
+              src={
+                isMounted
+                  ? theme === "dark"
+                    ? "/dashboard_dark.png"
+                    : "/dashboard_light.png"
+                  : "/dashboard_light.png"
+              }
               alt="Hero"
               width={1000}
               height={1000}
-              className="border rounded-2xl relative w-full overflow-hidden shadow-2xl [mask-image:linear-gradient(to_bottom,white,white_40%,transparent)]"
+              className="border border-border/50 rounded-xl relative w-full overflow-hidden shadow-2xl [mask-image:linear-gradient(to_bottom,white,white_40%,transparent)]"
             />
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
