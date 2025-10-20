@@ -25,10 +25,11 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { GoogleIcon } from "@/app/icons/GoogleIcon";
 import { useState } from "react";
-import { Eye } from "lucide-react";
+import { Eye, Loader2 } from "lucide-react";
 
 export const Auth = ({ isSignIn }: { isSignIn: boolean }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<SignInInput | SignUpInput>({
     resolver: zodResolver(isSignIn ? signInSchema : signUpSchema),
     defaultValues: {
@@ -43,6 +44,7 @@ export const Auth = ({ isSignIn }: { isSignIn: boolean }) => {
   };
 
   const onSubmit = async (values: SignInInput | SignUpInput) => {
+    setIsLoading(true);
     try {
       if (!isSignIn) {
         const response = await axios.post(`/api/register`, values);
@@ -74,14 +76,16 @@ export const Auth = ({ isSignIn }: { isSignIn: boolean }) => {
       }
     } catch (error) {
       console.error("Auth error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col justify-center h-screen">
       <div className="flex justify-center">
-        <div className="p-8 border rounded-xl shadow-xl">
-          <div className="text-center mb-3">
+        <div className="p-8 rounded-xl space-y-5">
+          <div className="text-center mb-5">
             <h1 className="text-xl font-semibold">
               {isSignIn ? "Login" : "Register"}
             </h1>
@@ -94,7 +98,7 @@ export const Auth = ({ isSignIn }: { isSignIn: boolean }) => {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4 w-[350px]"
+              className="space-y-5 w-[450px]"
             >
               {!isSignIn && (
                 <FormField
@@ -102,9 +106,16 @@ export const Auth = ({ isSignIn }: { isSignIn: boolean }) => {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel className="font-semibold mb-1">
+                        Username
+                      </FormLabel>
                       <FormControl>
-                        <Input placeholder="John Doe" {...field} />
+                        <Input
+                          className="rounded-xl py-5"
+                          placeholder="John Doe"
+                          disabled={isLoading}
+                          {...field}
+                        />
                       </FormControl>
 
                       <FormMessage />
@@ -118,9 +129,14 @@ export const Auth = ({ isSignIn }: { isSignIn: boolean }) => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="font-semibold mb-1">Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="john@example.com" {...field} />
+                      <Input
+                        className="rounded-xl py-5"
+                        placeholder="john@example.com"
+                        disabled={isLoading}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -131,12 +147,16 @@ export const Auth = ({ isSignIn }: { isSignIn: boolean }) => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="font-semibold mb-1">
+                      Password
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
+                          className="rounded-xl py-5"
                           type={showPassword ? "text" : "password"}
                           placeholder="***********"
+                          disabled={isLoading}
                           {...field}
                         />
                         <Eye
@@ -156,8 +176,21 @@ export const Auth = ({ isSignIn }: { isSignIn: boolean }) => {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Submit
+              <Button
+                type="submit"
+                className="w-full rounded-xl py-5 cursor-pointer bg-red-600 hover:bg-red-700 text-white font-semibold"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    {isSignIn ? "Signing In..." : "Creating Account..."}
+                  </>
+                ) : isSignIn ? (
+                  "Sign In"
+                ) : (
+                  "Sign Up"
+                )}
               </Button>
             </form>
           </Form>
@@ -169,7 +202,7 @@ export const Auth = ({ isSignIn }: { isSignIn: boolean }) => {
           </div>
           <Button
             variant={"outline"}
-            className="w-full flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2 rounded-xl py-5 cursor-pointer font-semibold"
             onClick={() => signIn("google")}
           >
             <GoogleIcon /> Continue with Google
@@ -180,14 +213,14 @@ export const Auth = ({ isSignIn }: { isSignIn: boolean }) => {
                 Don&apos;t have an Account?
               </p>
               <Link className="hover:underline font-semibold" href={"/signup"}>
-                Register
+                Sign Up
               </Link>
             </div>
           ) : (
             <div className="text-sm text-center flex justify-center mt-3 gap-1">
               <p className="text-muted-foreground">Already have an Account?</p>
               <Link className="hover:underline font-semibold" href={"/signin"}>
-                Login
+                Sign In
               </Link>
             </div>
           )}
