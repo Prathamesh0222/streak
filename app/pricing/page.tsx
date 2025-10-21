@@ -89,7 +89,7 @@ export default function PricingPage() {
 
                 <div className="mt-6 p-3">
                   <Link href="/signup">
-                    <Button className="w-full bg-red-600 hover:bg-red-700 rounded-xl">
+                    <Button className="w-full bg-red-600 hover:bg-red-700 rounded-xl text-white">
                       Get started free
                     </Button>
                   </Link>
@@ -99,7 +99,7 @@ export default function PricingPage() {
 
             <CustomCard className="rounded-2xl relative border-2 border-red-600">
               <CustomContent>
-                <div className="absolute -top-3 right-4 text-xs bg-red-600 text-white px-2 py-1 rounded shadow">
+                <div className="absolute -top-3 right-4 text-xs bg-red-600 text-white px-2 py-1 rounded  font-bold tracking-tight">
                   Best Value
                 </div>
                 <div className="border p-4 rounded-xl bg-background">
@@ -136,7 +136,7 @@ export default function PricingPage() {
                   <Button
                     onClick={upgrade}
                     disabled={isUpgrading}
-                    className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-70 rounded-xl"
+                    className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-70 rounded-xl text-white"
                   >
                     {isUpgrading ? "Redirecting…" : "Upgrade to Pro"}
                   </Button>

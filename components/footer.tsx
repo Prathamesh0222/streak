@@ -7,7 +7,7 @@ export const Footer = () => {
   return (
     <footer className="w-full border-t">
       <div className="mx-auto w-full max-w-7xl px-4 py-10 md:px-6 border-x">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-10 max-w-5xl mx-auto md:grid-cols-3">
           <div className="flex flex-col gap-3">
             <Logo />
             <p className="text-sm text-muted-foreground">
@@ -48,7 +48,7 @@ export const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
-                  href="#"
+                  href="/privacy"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Privacy Policy
@@ -56,7 +56,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/terms"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Terms & Conditions
@@ -64,7 +64,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/refunds"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Refunds & Cancellation
@@ -76,12 +76,9 @@ export const Footer = () => {
 
         <div className="mt-10 h-px w-full bg-border" aria-hidden="true" />
 
-        <div className="mt-6 flex items-center justify-between">
+        <div className="mt-6 flex items-center justify-between max-w-5xl mx-auto">
           <p className="text-xs text-muted-foreground">
             © {year} Streak. All rights reserved.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Designed & Developed by Prathamesh
           </p>
         </div>
       </div>
