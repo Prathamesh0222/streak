@@ -37,7 +37,6 @@ export interface Habit {
   priority: "HIGH" | "MEDIUM" | "LOW";
   frequency: "DAILY" | "WEEKLY" | "MONTHLY";
   goalTarget?: number;
-  isGoalActive?: boolean;
   createdAt: string;
   HabitLogs: HabitLog[];
   currentStreak: number;
