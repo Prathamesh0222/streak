@@ -28,7 +28,7 @@ export function WeeklyAIInsights({ habits }: WeeklyAIInsightsProps) {
   if (!habits || habits.length === 0) return null;
 
   return (
-    <CustomCard className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
+    <CustomCard className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-900/60 transition-all duration-300">
       <CustomContent className="gap-2 w-full h-full bg-background rounded-lg border border-red-500/20 p-4">
         <span className="flex items-center justify-between mb-4">
           <div className="flex items-center font-semibold gap-2">

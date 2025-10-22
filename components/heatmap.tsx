@@ -11,44 +11,45 @@ export const HeatMap = () => {
     Array<{ date: string; count: number; level: number }>
   >([]);
   const { theme } = useTheme();
+
   useEffect(() => {
     const fetchHabits = async () => {
       try {
         const response = await axios.get("/api/habits");
-        const fetchedHabits: Habit[] = response.data;
+        const habits: Habit[] = response.data;
 
-        const habitLogsMap = new Map<string, number>();
+        const dayCounts = new Map<string, number>();
 
-        fetchedHabits.forEach((habit) => {
+        habits.forEach((habit) => {
           habit.HabitLogs.forEach((log) => {
-            const dateKey = new Date(log.date).toISOString().split("T")[0];
-            const currentCount = habitLogsMap.get(dateKey) || 0;
             if (log.isCompleted) {
-              habitLogsMap.set(dateKey, currentCount + 1);
+              const date = new Date(log.date).toISOString().split("T")[0];
+              dayCounts.set(date, (dayCounts.get(date) || 0) + 1);
             }
           });
         });
 
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - 365);
+        const today = new Date();
+        const oneYearAgo = new Date(today);
+        oneYearAgo.setDate(today.getDate() - 365);
 
-        const fullYearData = [];
+        const calendarData = [];
         for (
-          let d = new Date(startDate);
-          d <= endDate;
+          let d = new Date(oneYearAgo);
+          d <= today;
           d.setDate(d.getDate() + 1)
         ) {
           const dateStr = d.toISOString().split("T")[0];
-          const count = habitLogsMap.get(dateStr) || 0;
-          fullYearData.push({
+          const count = dayCounts.get(dateStr) || 0;
+
+          calendarData.push({
             date: dateStr,
             count,
             level: count === 0 ? 0 : Math.min(Math.floor(count / 2) + 1, 4),
           });
         }
 
-        setCalendarData(fullYearData);
+        setCalendarData(calendarData);
       } catch (error) {
         console.error("Failed to fetch habits:", error);
       }
@@ -85,6 +86,7 @@ export const HeatMap = () => {
               light: ["#f3f4f6", "#fecaca", "#fca5a5", "#f87171", "#ef4444"],
               dark: ["#374151", "#eb6464", "#991b1b", "#b91c1c", "#dc2626"],
             }}
+            hideTotalCount={true}
             colorScheme={theme === "dark" ? "dark" : "light"}
             showWeekdayLabels
             labels={{
@@ -103,7 +105,6 @@ export const HeatMap = () => {
                 "Dec",
               ],
               weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-              totalCount: "{{count}} habits in {{year}}",
               legend: {
                 less: "Less",
                 more: "More",
