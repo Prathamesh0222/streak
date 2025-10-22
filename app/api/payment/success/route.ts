@@ -27,46 +27,28 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const userId = session.metadata?.userId;
-    const planId = session.metadata?.planId;
+    const payment = await prisma.payment.findUnique({
+      where: { stripeSessionId: sessionId },
+      include: { user: true },
+    });
 
-    if (!userId || !planId) {
-      return NextResponse.json(
-        { error: "Invalid session metadata" },
-        { status: 400 }
-      );
+    if (!payment) {
+      return NextResponse.json({
+        success: true,
+        pending: true,
+        message: "Payment confirmed! Processing your subscription...",
+      });
     }
-
-    const subscriptionEndDate = new Date();
-    if (planId === "pro_monthly") {
-      subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + 1);
-    }
-
-    await prisma.$transaction([
-      prisma.user.update({
-        where: { id: userId },
-        data: {
-          subscription: "PRO",
-        },
-      }),
-      prisma.payment.create({
-        data: {
-          userId,
-          stripeSessionId: sessionId,
-          amount: session.amount_total || 0,
-          currency: session.currency || "inr",
-          planId,
-          status: "COMPLETED",
-          subscriptionEndDate,
-        },
-      }),
-    ]);
 
     return NextResponse.json({
       success: true,
       message: "Payment successful! Welcome to Pro!",
-      subscription: "PRO",
-      subscriptionEndDate,
+      subscription: payment.user.subscription,
+      subscriptionEndDate: payment.subscriptionEndDate,
+      amount: payment.amount,
+      currency: payment.currency,
+      transactionId: payment.stripeSessionId,
+      planId: payment.planId,
     });
   } catch (error) {
     console.error("Payment success error:", error);

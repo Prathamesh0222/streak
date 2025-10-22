@@ -5,7 +5,7 @@ import Stripe from "stripe";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
-  const signature = req.headers.get("stripe-signature") as string;
+  const signature = req.headers.get("stripe-signature") ?? "";
 
   let event: Stripe.Event;
 
@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     );
-  } catch (error) {
-    console.error("Webhook signature verification failed:", error);
+  } catch (err) {
+    console.error("Webhook signature verification failed:", err);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
@@ -25,59 +25,169 @@ export async function POST(req: NextRequest) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
 
-        if (session.payment_status === "paid") {
-          const userId = session.metadata?.userId;
-          const planId = session.metadata?.planId;
+        if (session.payment_status !== "paid") break;
 
-          if (!userId || !planId) {
-            console.error("Missing metadata in session:", session.id);
-            break;
-          }
+        const userId = session.metadata?.userId;
+        const planId = session.metadata?.planId;
+        const customerId = session.customer as string;
+        const subscriptionId = session.subscription as string;
 
-          const subscriptionEndDate = new Date();
-          if (planId === "pro_monthly") {
-            subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + 1);
-          }
+        if (!userId || !planId || !subscriptionId) break;
 
-          await prisma.$transaction([
-            prisma.user.update({
-              where: { id: userId },
-              data: {
-                subscription: "PRO",
-              },
-            }),
-            prisma.payment.upsert({
-              where: { stripeSessionId: session.id },
-              update: {
-                status: "COMPLETED",
-                subscriptionEndDate,
-              },
-              create: {
-                userId,
-                stripeSessionId: session.id,
-                amount: session.amount_total || 0,
-                currency: session.currency || "inr",
-                planId,
-                status: "COMPLETED",
-                subscriptionEndDate,
-              },
-            }),
-          ]);
+        const subscriptionEndDate = new Date();
+        subscriptionEndDate.setDate(subscriptionEndDate.getDate() + 30);
 
-          console.log(`Subscription activated for user: ${userId}`);
-        }
+        await prisma.$transaction([
+          prisma.user.update({
+            where: { id: userId },
+            data: { subscription: "PRO" },
+          }),
+          prisma.payment.create({
+            data: {
+              userId,
+              stripeSessionId: session.id,
+              stripeCustomerId: customerId,
+              stripeSubscriptionId: subscriptionId,
+              amount: session.amount_total ?? 0,
+              currency: session.currency?.toUpperCase() ?? "INR",
+              planId,
+              status: "COMPLETED",
+              subscriptionEndDate,
+            },
+          }),
+        ]);
+
         break;
       }
 
-      case "checkout.session.expired": {
-        const session = event.data.object as Stripe.Checkout.Session;
+      case "invoice.payment_succeeded": {
+        const invoice = event.data.object as Stripe.Invoice;
 
-        await prisma.payment.updateMany({
-          where: { stripeSessionId: session.id },
-          data: { status: "FAILED" },
+        if (invoice.billing_reason === "subscription_create") break;
+
+        const customerId = invoice.customer as string;
+        const subRef = invoice.parent?.subscription_details?.subscription;
+        const subscriptionId = typeof subRef === "string" ? subRef : subRef?.id;
+
+        if (!subscriptionId) break;
+
+        const existingPayment = await prisma.payment.findFirst({
+          where: { stripeCustomerId: customerId },
+          select: { userId: true, planId: true },
+          orderBy: { createdAt: "desc" },
         });
 
-        console.log(`Checkout session expired: ${session.id}`);
+        if (!existingPayment) break;
+
+        const subscriptionEndDate = new Date(invoice.period_end * 1000);
+
+        await prisma.$transaction([
+          prisma.payment.create({
+            data: {
+              userId: existingPayment.userId,
+              stripeCustomerId: customerId,
+              stripeSubscriptionId: subscriptionId,
+              stripeInvoiceId: invoice.id,
+              amount: invoice.amount_paid,
+              currency: invoice.currency?.toUpperCase() ?? "INR",
+              planId: existingPayment.planId,
+              status: "COMPLETED",
+              subscriptionEndDate,
+            },
+          }),
+          prisma.user.update({
+            where: { id: existingPayment.userId },
+            data: { subscription: "PRO" },
+          }),
+        ]);
+
+        break;
+      }
+
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as Stripe.Invoice;
+        const customerId = invoice.customer as string;
+        const subRef = invoice.parent?.subscription_details?.subscription;
+        const subscriptionId = typeof subRef === "string" ? subRef : subRef?.id;
+
+        if (!subscriptionId) break;
+
+        const existingPayment = await prisma.payment.findFirst({
+          where: { stripeCustomerId: customerId },
+          select: { userId: true, planId: true },
+          orderBy: { createdAt: "desc" },
+        });
+        if (!existingPayment) break;
+
+        await prisma.$transaction([
+          prisma.payment.create({
+            data: {
+              userId: existingPayment.userId,
+              stripeCustomerId: customerId,
+              stripeSubscriptionId: subscriptionId,
+              stripeInvoiceId: invoice.id,
+              amount: invoice.amount_due,
+              currency: invoice.currency?.toUpperCase() ?? "INR",
+              planId: existingPayment.planId,
+              status: "FAILED",
+            },
+          }),
+          prisma.user.update({
+            where: { id: existingPayment.userId },
+            data: { subscription: "FREE" },
+          }),
+        ]);
+
+        break;
+      }
+
+      case "customer.subscription.updated":
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as Stripe.Subscription;
+        const customerId = subscription.customer as string;
+        const subscriptionId = subscription.id;
+
+        const existingPayment = await prisma.payment.findFirst({
+          where: {
+            stripeCustomerId: customerId,
+            stripeSubscriptionId: subscriptionId,
+          },
+          select: { userId: true },
+          orderBy: { createdAt: "desc" },
+        });
+        if (!existingPayment) break;
+
+        const userSubscription: "FREE" | "PRO" =
+          subscription.status === "active" || subscription.status === "trialing"
+            ? "PRO"
+            : "FREE";
+
+        const subscriptionEndDate =
+          userSubscription === "PRO"
+            ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+            : undefined;
+
+        if (subscriptionEndDate) {
+          await prisma.$transaction([
+            prisma.payment.updateMany({
+              where: {
+                stripeSubscriptionId: subscriptionId,
+                userId: existingPayment.userId,
+              },
+              data: { subscriptionEndDate },
+            }),
+            prisma.user.update({
+              where: { id: existingPayment.userId },
+              data: { subscription: userSubscription },
+            }),
+          ]);
+        } else {
+          await prisma.user.update({
+            where: { id: existingPayment.userId },
+            data: { subscription: userSubscription },
+          });
+        }
+
         break;
       }
 
@@ -86,8 +196,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ received: true });
-  } catch (error) {
-    console.error("Webhook processing error:", error);
+  } catch (err) {
+    console.error("Webhook processing failed:", err);
     return NextResponse.json(
       { error: "Webhook processing failed" },
       { status: 500 }

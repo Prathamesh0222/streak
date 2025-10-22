@@ -38,10 +38,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const existingPayment = await prisma.payment.findFirst({
+      where: { userId: user.id },
+      select: { stripeCustomerId: true },
+      orderBy: { createdAt: "desc" },
+    });
+
     const checkoutUrl = await createCheckoutSession(
       planId,
       user.id,
-      user.email
+      user.email,
+      existingPayment?.stripeCustomerId
     );
 
     return NextResponse.json({ checkoutUrl });
