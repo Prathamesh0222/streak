@@ -68,7 +68,7 @@ export const Sidebar = ({
       >
         <div className="p-4 border-b border-red-500/30">
           <div className="flex items-center justify-between">
-            {isSidebarOpen && <Logo />}
+            {isSidebarOpen && <Logo size={4} />}
 
             {isSidebarOpen ? (
               <button

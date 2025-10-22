@@ -9,7 +9,7 @@ export const Footer = () => {
       <div className="mx-auto w-full max-w-7xl px-4 py-10 md:px-6 border-x">
         <div className="grid grid-cols-1 gap-10 max-w-5xl mx-auto md:grid-cols-3">
           <div className="flex flex-col gap-3">
-            <Logo />
+            <Logo size={5} />
             <p className="text-sm text-muted-foreground">
               Making habit tracking simple for everyone.
             </p>
