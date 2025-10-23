@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +14,7 @@ import {
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const [isProcessing, setIsProcessing] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const searchParams = useSearchParams();
@@ -236,5 +236,31 @@ export default function PaymentSuccessPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+          <Card className="w-full max-w-md border-red-500/20 shadow-xl">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <div className="relative mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center animate-pulse">
+                  <Loader2 className="w-8 h-8 animate-spin text-white" />
+                </div>
+              </div>
+              <h2 className="text-lg font-semibold mb-2">Loading...</h2>
+              <p className="text-sm text-muted-foreground text-center">
+                Please wait while we load your payment details
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      }
+    >
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }

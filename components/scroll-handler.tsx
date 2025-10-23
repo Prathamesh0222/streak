@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-export function ScrollHandler() {
+function ScrollHandlerContent() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -18,4 +18,12 @@ export function ScrollHandler() {
   }, [searchParams]);
 
   return null;
+}
+
+export function ScrollHandler() {
+  return (
+    <Suspense fallback={null}>
+      <ScrollHandlerContent />
+    </Suspense>
+  );
 }
