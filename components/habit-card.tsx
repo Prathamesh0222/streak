@@ -16,6 +16,7 @@ import {
   Calendar,
   Trash,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { HabitCardProps } from "@/types/habit-types";
 import { Progress } from "@/components/ui/progress";
@@ -24,6 +25,7 @@ import { useState } from "react";
 export const HabitCard = ({
   habit,
   isLoading,
+  isToggleCompletionPending,
   onToggleCompletion,
   onDeleteHabit,
 }: HabitCardProps) => {
@@ -50,12 +52,16 @@ export const HabitCard = ({
     }
   };
 
+  const isProcessing = isToggleCompletionPending || isLoading;
+
   return (
     <div
-      className={`border rounded-xl p-6 hover:shadow-md transition-all duration-300 h-full flex flex-col bg-card ${
-        habit.completedToday
-          ? "border-red-500 bg-red-50 dark:bg-red-950/20"
-          : "border-red-500/20 hover:border-red-200 dark:hover:border-red-800"
+      className={`border rounded-xl p-6 transition-all duration-300 h-full flex flex-col bg-card ${
+        isProcessing
+          ? "opacity-60 pointer-events-none"
+          : habit.completedToday
+          ? "border-red-500 bg-red-50 dark:bg-red-950/20 hover:shadow-md"
+          : "border-red-500/20 hover:border-red-200 dark:hover:border-red-800 hover:shadow-md"
       }`}
     >
       <div className="flex justify-between items-start mb-4">
@@ -74,14 +80,22 @@ export const HabitCard = ({
                   habit.completedToday
                 )
               }
-              disabled={isLoading}
-              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 cursor-pointer ${
+              disabled={isProcessing}
+              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                isProcessing
+                  ? "cursor-not-allowed opacity-50"
+                  : "cursor-pointer"
+              } ${
                 habit.completedToday
                   ? "bg-red-500 border-red-500 text-white"
                   : "border-gray-300 dark:border-gray-600 hover:border-red-500 dark:hover:border-red-400"
               }`}
             >
-              {habit.completedToday && <Check className="w-4 h-4" />}
+              {isProcessing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : habit.completedToday ? (
+                <Check className="w-4 h-4" />
+              ) : null}
             </button>
           </div>
 

@@ -43,6 +43,7 @@ export const Habits = () => {
     deleteHabit,
     toggleHabitCompletion,
     isStatusUpdating,
+    isToggleCompletionPending,
   } = useHabits();
 
   const {
@@ -370,6 +371,7 @@ export const Habits = () => {
                     habit={habit}
                     isLoading={loading}
                     isStatusUpdating={isStatusUpdating}
+                    isToggleCompletionPending={isToggleCompletionPending}
                     onToggleCompletion={toggleHabitCompletion}
                     onUpdateStatus={updateHabit}
                     onDeleteHabit={deleteHabit}

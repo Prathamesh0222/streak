@@ -85,6 +85,7 @@ export interface HabitCardProps {
   habit: Habit;
   isLoading: boolean;
   isStatusUpdating: boolean;
+  isToggleCompletionPending: boolean;
   onToggleCompletion: (
     habitId: string,
     date: string,
