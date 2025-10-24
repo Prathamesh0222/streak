@@ -1,10 +1,7 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { useAchievements } from "@/hooks/useAchievements";
 import { AchievementCard } from "./achievement-card";
-import { UserLevel } from "./user-level";
 import {
   Trophy,
   Target,
@@ -13,7 +10,6 @@ import {
   Clock,
   Lock,
   Award,
-  Star,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -25,7 +21,6 @@ export function AchievementsSection() {
     getInProgressAchievements,
     getLockedAchievements,
     getAchievementsByCategory,
-    getCompletionRate,
   } = useAchievements();
 
   const [activeCategory, setActiveCategory] = useState("all");
@@ -59,7 +54,6 @@ export function AchievementsSection() {
   const completedAchievements = getCompletedAchievements();
   const inProgressAchievements = getInProgressAchievements();
   const lockedAchievements = getLockedAchievements();
-  const completionRate = getCompletionRate();
 
   const categories = [
     { id: "all", name: "All", icon: Award },
@@ -80,62 +74,6 @@ export function AchievementsSection() {
           <Trophy className="h-4 w-4 text-white" />
         </div>
         <h2 className="text-xl font-medium">Achievements</h2>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <UserLevel />
-
-        <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
-          <div className="p-5 bg-background border border-red-500/20 rounded-lg h-full">
-            <div className="flex items-center gap-2 text-sm font-semibold mb-4">
-              <Star className="h-5 w-5 text-red-500" />
-              Achievements
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Completed</span>
-                <span className="font-semibold text-foreground">
-                  {completedAchievements.length} / {achievements.length}
-                </span>
-              </div>
-              <Progress value={completionRate} className="h-2" />
-              <div className="text-right">
-                <span className="text-xs font-semibold text-red-500 dark:text-red-400">
-                  {Math.round(completionRate)}%
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
-          <div className="p-5 bg-background border border-red-500/20 rounded-lg h-full">
-            <div className="flex items-center gap-2 mb-4">
-              <CheckCircle className="h-5 w-5 text-red-500" />
-              <span className="font-semibold text-sm">Status</span>
-            </div>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-muted-foreground">Active</span>
-                <Badge
-                  variant="default"
-                  className="bg-red-500 hover:bg-red-600 text-xs px-2.5 py-0.5"
-                >
-                  {inProgressAchievements.length}
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-muted-foreground">Pending</span>
-                <Badge
-                  variant="outline"
-                  className="text-xs px-2.5 py-0.5 border-red-500/20"
-                >
-                  {lockedAchievements.length}
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div className="flex gap-2 overflow-x-auto">

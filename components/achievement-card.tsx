@@ -8,6 +8,7 @@ import {
 import { getAchievementCategoryIcon } from "@/lib/achievements";
 import { CheckCircle, Lock } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { CustomCard, CustomContent } from "./custom-card";
 
 interface AchievementCardProps {
   achievement: AchievementProgress;
@@ -53,9 +54,9 @@ export function AchievementCard({
 
   if (isLocked) {
     return (
-      <div className="border border-border rounded-xl bg-card p-1 hover:border-red-500/20 transition-all duration-300 group">
-        <div
-          className={`${cardSize} bg-background border border-border rounded-lg`}
+      <CustomCard className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-900/60 transition-all duration-300 group">
+        <CustomContent
+          className={`${cardSize} bg-background border border-red-500/20 rounded-lg`}
         >
           <div className="flex flex-col items-center text-center space-y-3">
             <div
@@ -75,15 +76,15 @@ export function AchievementCard({
               Locked
             </div>
           </div>
-        </div>
-      </div>
+        </CustomContent>
+      </CustomCard>
     );
   }
 
   if (isCompleted) {
     return (
-      <div className="border border-red-500/20 rounded-xl bg-red-50 dark:bg-red-950/20 p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300 hover:shadow-lg w-full md:w-1/2 group">
-        <div
+      <CustomCard className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-900/60 transition-all duration-300 hover:shadow-lg w-full md:w-1/2 group bg-red-50 dark:bg-red-950/20">
+        <CustomContent
           className={`${cardSize} bg-red-50 dark:bg-red-950/20 border border-red-500/20 rounded-lg`}
         >
           <div className="flex items-start justify-between mb-3">
@@ -135,14 +136,14 @@ export function AchievementCard({
               </p>
             </div>
           )}
-        </div>
-      </div>
+        </CustomContent>
+      </CustomCard>
     );
   }
 
   return (
-    <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300 group">
-      <div
+    <CustomCard className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-900/60 transition-all duration-300 group">
+      <CustomContent
         className={`${cardSize} bg-background border border-red-500/20 rounded-lg relative overflow-hidden`}
       >
         <div className="absolute top-0 left-0 h-0.5 bg-red-500 transition-all duration-500" />
@@ -192,7 +193,7 @@ export function AchievementCard({
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </CustomContent>
+    </CustomCard>
   );
 }
