@@ -20,7 +20,7 @@ export const CalendarXp = ({
       ) || 0;
 
   return (
-    <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300 h-full">
+    <div className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-900/60 rounded-xl bg-card p-1 transition-all duration-300 h-full">
       <div className="p-4 bg-background border border-red-500/20 rounded-lg h-full">
         <div className="text-center flex flex-col justify-center h-full">
           <div className="text-4xl font-bold text-red-500 mb-1">+{totalXp}</div>

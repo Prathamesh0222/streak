@@ -48,7 +48,7 @@ export const CalendarComplete = ({
   ];
 
   return (
-    <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
+    <div className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-900/60 rounded-xl bg-card p-1 transition-all duration-300">
       <div className="p-4 bg-background border border-red-500/20 rounded-lg">
         <ChartContainer
           config={chartConfig}

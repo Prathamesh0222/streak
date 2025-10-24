@@ -1,13 +1,12 @@
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import {
-  CheckCircle,
-  XCircle,
   Clock,
   Calendar as CalendarIcon,
   Target,
   Lock,
   Crown,
+  Check,
 } from "lucide-react";
 import { useHabitLogs } from "@/hooks/useHabitLogs";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -18,6 +17,7 @@ import axios from "axios";
 import { CalendarComplete } from "./calendar-complete";
 import { CalendarStreak } from "./calendar-streak";
 import { CalendarXp } from "./calendar-xp";
+import { CustomCard, CustomContent } from "./custom-card";
 
 export const CalendarTrack = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -44,19 +44,6 @@ export const CalendarTrack = () => {
     }
 
     return false;
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "HIGH":
-        return "bg-red-500 text-white";
-      case "MEDIUM":
-        return "bg-orange-500 text-white";
-      case "LOW":
-        return "bg-green-500 text-white";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
   };
 
   const formatDate = (date: Date) => {
@@ -142,13 +129,13 @@ export const CalendarTrack = () => {
               </div>
             </div>
           ) : error ? (
-            <div className="border border-red-500/20 rounded-xl bg-card p-1">
-              <div className="p-6 bg-background border border-red-500/20 rounded-lg">
+            <CustomCard className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-900/60 transition-all duration-300">
+              <CustomContent className="gap-2 w-full h-full bg-background rounded-lg border border-red-500/20 p-4">
                 <div className="text-center text-red-500 text-sm font-medium">
                   Failed to load habits for this date
                 </div>
-              </div>
-            </div>
+              </CustomContent>
+            </CustomCard>
           ) : dateHabits ? (
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -170,87 +157,82 @@ export const CalendarTrack = () => {
               </div>
 
               <div className="space-y-4">
-                <div className="border border-red-500/20 rounded-xl bg-card p-1">
-                  <div className="bg-background border border-red-500/20 rounded-lg max-h-[455px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] p-3 mb-12 lg:mb-0">
+                <CustomCard className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-900/60 transition-all duration-300">
+                  <CustomContent className="gap-2 w-full h-full bg-background rounded-lg border border-red-500/20 p-4 max-h-[455px] overflow-y-auto scrollbar-hide">
                     {dateHabits.habits.length > 0 ? (
-                      <div className="p-4 space-y-3">
+                      <div className="space-y-4">
                         {dateHabits.habits.map((habitLog: DateHabits) => (
                           <div
                             key={habitLog.id}
-                            className={`border rounded-xl p-4 transition-all duration-200 ${
+                            className={`group flex items-center gap-4 p-4 rounded-xl transition-all duration-200 ${
                               habitLog.isCompleted
-                                ? "border-red-500/30 bg-red-50 dark:bg-red-950/20 shadow-sm"
-                                : "border-border bg-muted/30 hover:border-red-500/20"
+                                ? "bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30"
+                                : "bg-gray-50/50 dark:bg-gray-900/30 border border-gray-100 dark:border-gray-800 hover:bg-red-50/50 dark:hover:bg-red-950/10"
                             }`}
                           >
-                            <div className="flex items-start gap-3">
+                            <div className="flex-shrink-0">
                               <div
-                                className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ${
+                                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                                   habitLog.isCompleted
-                                    ? "bg-red-500"
-                                    : "bg-muted"
+                                    ? "bg-red-500 border-red-500 text-white"
+                                    : "border-gray-300 dark:border-gray-600 bg-transparent"
                                 }`}
                               >
-                                {habitLog.isCompleted ? (
-                                  <CheckCircle className="w-4 h-4 text-white" />
-                                ) : (
-                                  <XCircle className="w-4 h-4 text-muted-foreground" />
+                                {habitLog.isCompleted && (
+                                  <Check className="w-4 h-4" />
                                 )}
+                              </div>
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <h5 className="font-medium text-sm text-gray-900 dark:text-gray-100 truncate">
+                                  {habitLog.habit.title}
+                                </h5>
+                                <div className="flex items-center gap-2 ml-3">
+                                  <span
+                                    className={`text-xs px-2 py-1 rounded-md font-medium ${
+                                      habitLog.isCompleted
+                                        ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                                        : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                                    }`}
+                                  >
+                                    {habitLog.isCompleted
+                                      ? "Completed"
+                                      : "Pending"}
+                                  </span>
+                                </div>
                               </div>
 
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between mb-2">
-                                  <h5 className="font-semibold text-sm leading-tight">
-                                    {habitLog.habit.title}
-                                  </h5>
-                                  <div className="flex gap-2">
-                                    <div
-                                      className={`text-xs px-2.5 py-1 rounded-lg font-medium shadow-sm ${getPriorityColor(
-                                        habitLog.habit.priority
-                                      )}`}
-                                    >
-                                      {habitLog.habit.priority}
-                                    </div>
-                                    <div
-                                      className={`text-xs px-2.5 py-1 rounded-lg font-medium ${
-                                        habitLog.isCompleted
-                                          ? "bg-red-500 text-white shadow-sm"
-                                          : "bg-muted text-muted-foreground"
-                                      }`}
-                                    >
-                                      {habitLog.isCompleted
-                                        ? "Done"
-                                        : "Pending"}
-                                    </div>
-                                  </div>
-                                </div>
-                                {habitLog.habit.category && (
-                                  <p className="text-xs text-muted-foreground font-medium">
-                                    {habitLog.habit.category}
-                                  </p>
-                                )}
-                              </div>
+                              {habitLog.habit.category && (
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                  {habitLog.habit.category}
+                                </p>
+                              )}
                             </div>
                           </div>
                         ))}
                       </div>
                     ) : (
                       <div className="p-8 text-center">
-                        <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mx-auto mb-3">
-                          <Target className="h-6 w-6 text-muted-foreground" />
+                        <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
+                          <Target className="h-6 w-6 text-gray-400 dark:text-gray-500" />
                         </div>
-                        <p className="text-sm text-muted-foreground font-medium">
-                          No habits tracked for this date
+                        <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+                          No habits for this date
+                        </h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Select a different date to view habits
                         </p>
                       </div>
                     )}
-                  </div>
-                </div>
+                  </CustomContent>
+                </CustomCard>
               </div>
             </div>
           ) : (
-            <div className="border border-red-500/20 rounded-xl bg-card p-1">
-              <div className="p-8 bg-background border border-red-500/20 rounded-lg text-center">
+            <CustomCard className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-900/60 transition-all duration-300">
+              <CustomContent className="gap-2 w-full h-full bg-background rounded-lg border border-red-500/20 p-4 text-center">
                 <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mx-auto mb-3">
                   <CalendarIcon className="h-6 w-6 text-muted-foreground" />
                 </div>
@@ -259,13 +241,13 @@ export const CalendarTrack = () => {
                     ? "No data available for this date"
                     : "Select a date to view habits"}
                 </p>
-              </div>
-            </div>
+              </CustomContent>
+            </CustomCard>
           )}
         </div>
         <div className="space-y-3 xl:col-span-4">
-          <div className="border border-red-500/20 rounded-xl bg-card p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
-            <div className="p-5 bg-background border border-red-500/20 rounded-lg">
+          <CustomCard className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-900/60 transition-all duration-300">
+            <CustomContent className="gap-2 w-full h-full bg-background rounded-lg border border-red-500/20 p-4">
               <Calendar
                 mode="single"
                 selected={selectedDate}
@@ -307,11 +289,11 @@ export const CalendarTrack = () => {
                   </div>
                 </div>
               )}
-            </div>
-          </div>
+            </CustomContent>
+          </CustomCard>
           {isFreePlan && !subscriptionLoading && (
-            <div className="border border-red-500/20 rounded-xl bg-red-50 dark:bg-red-950/20 p-1 hover:border-red-200 dark:hover:border-red-800 transition-all duration-300">
-              <div className="p-5 bg-background border border-red-500/20 rounded-lg">
+            <CustomCard className="border border-red-500/20 hover:border-red-200 dark:hover:border-red-900/60 transition-all duration-300 bg-red-50 dark:bg-red-950/20">
+              <CustomContent className="gap-2 w-full h-full bg-background rounded-lg border border-red-500/20 p-4">
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center flex-shrink-0 shadow-sm">
                     <Lock className="h-5 w-5 text-white" />
@@ -337,8 +319,8 @@ export const CalendarTrack = () => {
                     </Button>
                   </div>
                 </div>
-              </div>
-            </div>
+              </CustomContent>
+            </CustomCard>
           )}
         </div>
       </div>
