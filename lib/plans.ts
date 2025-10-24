@@ -1,6 +1,6 @@
 export type PlanId = "pro_monthly";
 
-const MONTHLY_AMOUNT = process.env.NODE_ENV === "development" ? 5000 : 29900;
+const MONTHLY_AMOUNT = 5000;
 
 export const PLANS: Record<
   PlanId,

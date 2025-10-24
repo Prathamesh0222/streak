@@ -3,9 +3,11 @@ import axios from "axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { HabitInput } from "@/lib/validate";
+import { useEffect, useRef } from "react";
 
 export const useHabits = () => {
   const queryClient = useQueryClient();
+  const processedHabitsRef = useRef<Set<string>>(new Set());
 
   const {
     data: habits = [],
@@ -15,14 +17,33 @@ export const useHabits = () => {
     queryKey: ["habits"],
     queryFn: async (): Promise<Habit[]> => {
       const response = await axios.get("/api/habits");
-      const fetchedHabits: Habit[] = response.data;
+      return response.data;
+    },
+  });
 
-      const habitsToRemove = fetchedHabits.filter((habit) => {
+  useEffect(() => {
+    if (loading || habits.length === 0) return;
+
+    const processHabits = async () => {
+      const habitsToRemove = habits.filter((habit) => {
         if (!habit.goalTarget) return false;
+        if (processedHabitsRef.current.has(habit.id)) return false;
         return habit.goalProgress.isAchieved;
       });
 
+      const habitsToReset = habits.filter(
+        (habit) =>
+          habit.frequency === "DAILY" &&
+          habit.status === "COMPLETED" &&
+          !habit.completedToday &&
+          !processedHabitsRef.current.has(habit.id)
+      );
+
       if (habitsToRemove.length > 0) {
+        habitsToRemove.forEach((habit) =>
+          processedHabitsRef.current.add(habit.id)
+        );
+
         if (habitsToRemove.length === 1) {
           toast.success(
             `Congratulations! You completed "${habitsToRemove[0].title}" challenge!`
@@ -33,50 +54,44 @@ export const useHabits = () => {
           );
         }
 
-        Promise.all(
-          habitsToRemove.map((habit) => axios.delete(`/api/habits/${habit.id}`))
-        )
-          .then(() => {
-            queryClient.invalidateQueries({ queryKey: ["habits"] });
-          })
-          .catch((error) =>
-            console.error("Failed to delete completed habits:", error)
+        try {
+          await Promise.all(
+            habitsToRemove.map((habit) =>
+              axios.delete(`/api/habits/${habit.id}`)
+            )
           );
+          queryClient.invalidateQueries({ queryKey: ["habits"] });
+        } catch (error) {
+          console.error("Failed to delete completed habits:", error);
+          habitsToRemove.forEach((habit) =>
+            processedHabitsRef.current.delete(habit.id)
+          );
+        }
       }
-
-      const remainingHabits = fetchedHabits.filter(
-        (habit) => !habitsToRemove.some((removed) => removed.id === habit.id)
-      );
-
-      const habitsToReset = remainingHabits.filter(
-        (habit) =>
-          habit.frequency === "DAILY" &&
-          habit.status === "COMPLETED" &&
-          !habit.completedToday
-      );
 
       if (habitsToReset.length > 0) {
-        Promise.all(
-          habitsToReset.map((habit) =>
-            axios.patch(`/api/habits/${habit.id}`, { status: "PENDING" })
-          )
-        )
-          .then(() => {
-            queryClient.invalidateQueries({ queryKey: ["habits"] });
-          })
-          .catch((error) =>
-            console.error("Failed to reset daily habits:", error)
-          );
-      }
+        habitsToReset.forEach((habit) =>
+          processedHabitsRef.current.add(habit.id)
+        );
 
-      return remainingHabits.map((habit) => {
-        if (habitsToReset.some((h) => h.id === habit.id)) {
-          return { ...habit, status: "PENDING" as const };
+        try {
+          await Promise.all(
+            habitsToReset.map((habit) =>
+              axios.patch(`/api/habits/${habit.id}`, { status: "PENDING" })
+            )
+          );
+          queryClient.invalidateQueries({ queryKey: ["habits"] });
+        } catch (error) {
+          console.error("Failed to reset daily habits:", error);
+          habitsToReset.forEach((habit) =>
+            processedHabitsRef.current.delete(habit.id)
+          );
         }
-        return habit;
-      });
-    },
-  });
+      }
+    };
+
+    processHabits();
+  }, [habits, loading, queryClient]);
 
   const toggleHabitCompletion = useMutation({
     mutationFn: async ({
@@ -100,14 +115,10 @@ export const useHabits = () => {
       });
 
       if (!isCompleted) {
-        try {
-          await axios.post("/api/achievements/check", {
-            habitId,
-            action: "complete",
-          });
-        } catch (error) {
-          console.error("Failed to check achievements:", error);
-        }
+        await axios.post("/api/achievements/check", {
+          habitId,
+          action: "complete",
+        });
       }
     },
     onSuccess: () => {
@@ -157,14 +168,10 @@ export const useHabits = () => {
     mutationFn: async (habitData: HabitInput) => {
       const response = await axios.post("/api/habits", habitData);
 
-      try {
-        await axios.post("/api/achievements/check", {
-          habitId: response.data.id,
-          action: "create",
-        });
-      } catch (error) {
-        console.error("Failed to check achievements:", error);
-      }
+      await axios.post("/api/achievements/check", {
+        habitId: response.data.id,
+        action: "create",
+      });
 
       return response.data;
     },
@@ -201,5 +208,6 @@ export const useHabits = () => {
       });
     },
     isStatusUpdating: updateHabit.isPending,
+    isToggleCompletionPending: toggleHabitCompletion.isPending,
   };
 };
