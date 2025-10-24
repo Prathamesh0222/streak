@@ -24,7 +24,17 @@ export const PATCH = async (req: NextRequest) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { ids, markAll } = await req.json();
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid request body" },
+      { status: 400 }
+    );
+  }
+
+  const { ids, markAll } = body;
 
   if (markAll) {
     await prisma.notification.updateMany({

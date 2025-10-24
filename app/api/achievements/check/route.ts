@@ -11,8 +11,18 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  let body;
   try {
-    const { habitId } = await req.json();
+    body = await req.json();
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid request body" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const { habitId } = body;
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },

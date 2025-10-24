@@ -14,7 +14,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { planId } = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid request body" },
+        { status: 400 }
+      );
+    }
+
+    const { planId } = body;
     if (!planId) {
       return NextResponse.json(
         { error: "Plan ID is required" },

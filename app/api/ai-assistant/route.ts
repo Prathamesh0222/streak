@@ -27,7 +27,17 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    const { prompt, existingHabits } = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid request body" },
+        { status: 400 }
+      );
+    }
+
+    const { prompt, existingHabits } = body;
 
     if (!prompt || !prompt.trim()) {
       return NextResponse.json(

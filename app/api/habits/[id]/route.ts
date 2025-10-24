@@ -19,8 +19,25 @@ export const PATCH = async (
     );
   }
 
-  const { status } = await req.json();
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid request body" },
+      { status: 400 }
+    );
+  }
+
+  const { status } = body;
   const param = await params;
+
+  if (!status || !["COMPLETED", "PENDING", "ONGOING"].includes(status)) {
+    return NextResponse.json(
+      { error: "Invalid status value" },
+      { status: 400 }
+    );
+  }
 
   try {
     const updatedHabit = await prisma.habit.update({
